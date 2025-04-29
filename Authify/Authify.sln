@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Core", "Authify.Core\Authify.Core.csproj", "{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Application", "Authify.Application\Authify.Application.csproj", "{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
