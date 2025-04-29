@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Core", "Authify.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Application", "Authify.Application\Authify.Application.csproj", "{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.UI", "Authify.UI\Authify.UI.csproj", "{3F8735C5-18C0-4706-B4EF-0BCFC306013E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
