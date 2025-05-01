@@ -5,6 +5,6 @@ namespace Authify.Core.Interfaces;
 
 public interface IAuthService
 {
-    Task<OperationResult> LoginAsync(LoginRequest request);
+    Task<OperationResult<string>> LoginAsync(LoginRequest request);
     Task<OperationResult> VerifyOtpAsync(OtpVerificationRequest request);
 }

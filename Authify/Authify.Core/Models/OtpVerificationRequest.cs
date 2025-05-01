@@ -2,6 +2,6 @@
 
 public class OtpVerificationRequest
 {
-    public string Email { get; set; } = string.Empty;
+    public string Token { get; set; }
     public string OtpCode { get; set; } = string.Empty;
 }

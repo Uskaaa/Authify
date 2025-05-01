@@ -51,6 +51,8 @@ public class ServiceCollectionExtensions
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddHttpContextAccessor();
+        services.AddDataProtection();
 
         services.AddSingleton(new SmtpClient
         {
