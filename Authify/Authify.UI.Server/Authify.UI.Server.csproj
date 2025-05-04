@@ -16,10 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Authify.Core\Authify.Core.csproj" />
     </ItemGroup>
 

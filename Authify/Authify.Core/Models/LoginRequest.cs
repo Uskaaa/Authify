@@ -1,4 +1,4 @@
-﻿namespace Authify.Core.Models;
+﻿namespace Authify.Core.Server.Models;
 
 public class LoginRequest
 {

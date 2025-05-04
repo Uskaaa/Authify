@@ -1,5 +1,6 @@
 ﻿using Authify.Core.Common;
 using Authify.Core.Models;
+using Authify.Core.Server.Models;
 
 namespace Authify.Core.Interfaces;
 
