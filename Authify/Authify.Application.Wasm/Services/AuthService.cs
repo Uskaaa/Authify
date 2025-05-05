@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         var isValid = await _otpService.ValidateOtpAsync(email, request.OtpCode);
         if (!isValid)
             return OperationResult.Fail("Invalid OTP code.");
-
+        
         var jwtToken = _jwtTokenService.GenerateToken(user);
 
         return OperationResult<string>.Ok(jwtToken);

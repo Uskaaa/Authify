@@ -32,7 +32,7 @@ public class UserService : IUserService
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        var confirmationLink = $"https://your-app.com/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+        var confirmationLink = $"https://your-app.com/api/User/confirmemail?userId={user.Id}&token={Uri.EscapeDataString(token)}";
         await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
 
         return OperationResult.Ok();
