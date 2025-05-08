@@ -68,6 +68,7 @@ public class ServiceCollectionExtensions
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IExternalAuthService, ExternalAuthService>();
         services.AddHttpContextAccessor();
         services.AddDataProtection();
 
