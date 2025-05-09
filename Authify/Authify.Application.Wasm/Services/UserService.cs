@@ -1,8 +1,10 @@
-﻿using Authify.Core.Common;
+﻿using Authify.Application.Extensions;
+using Authify.Core.Common;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Authify.Core.Server.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace Authify.Application.Services;
 
@@ -10,11 +12,13 @@ public class UserService : IUserService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IEmailSender _emailSender;
+    private readonly InfrastructureOptions _infrastructureOptions;
 
-    public UserService(UserManager<IdentityUser> userManager, IEmailSender emailSender)
+    public UserService(UserManager<IdentityUser> userManager, IEmailSender emailSender,  InfrastructureOptions infrastructureOptions)
     {
         _userManager = userManager;
         _emailSender = emailSender;
+        _infrastructureOptions = infrastructureOptions;
     }
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
@@ -32,7 +36,7 @@ public class UserService : IUserService
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-        var confirmationLink = $"https://your-app.com/api/User/confirmemail?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+        var confirmationLink = $"https:/{_infrastructureOptions.Domain}/api/User/confirmemail?userId={user.Id}&token={Uri.EscapeDataString(token)}";
         await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
 
         return OperationResult.Ok();
@@ -58,7 +62,7 @@ public class UserService : IUserService
             return OperationResult.Fail("Invalid request.");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resetLink = $"https://your-app.com/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+        var resetLink = $"https://{_infrastructureOptions.Domain}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
         await _emailSender.SendEmailAsync(user.Email!, "Reset your password", $"Reset your password by clicking <a href='{resetLink}'>here</a>.");
 

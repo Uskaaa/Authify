@@ -47,6 +47,7 @@ public class ServiceCollectionExtensions
                 githubOptions.Scope.Add("user:email");
             });
         
+        services.AddSingleton(options);
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IOtpService, OtpService>();

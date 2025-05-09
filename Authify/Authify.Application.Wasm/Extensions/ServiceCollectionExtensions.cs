@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Authify.Application.Extensions;
@@ -63,7 +64,8 @@ public class ServiceCollectionExtensions
                 githubOptions.ClientSecret = options.GitHubClientSecret;
                 githubOptions.Scope.Add("user:email");
             });
-        
+
+        services.AddSingleton(options);
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IOtpService, OtpService>();

@@ -2,6 +2,7 @@
 
 public class InfrastructureOptions
 {
+    public string Domain { get; set; } = string.Empty;
     public string ConnectionString { get; set; } = string.Empty;
     public string SmtpHost { get; set; } = string.Empty;
     public int SmtpPort { get; set; }
