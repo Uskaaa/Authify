@@ -17,17 +17,17 @@ public class ServiceCollectionExtensions
         var options = new InfrastructureOptions();
         configureOptions(options);
 
-        services.AddDbContext<AuthDbContext>(db =>
-            db.UseSqlite(options.ConnectionString));
-        
-        services.AddIdentity<IdentityUser, IdentityRole>(identityOptions =>
-            {
-                identityOptions.SignIn.RequireConfirmedEmail = true;
-                identityOptions.Password.RequireDigit = true;
-                identityOptions.Password.RequiredLength = 6;
-            })
-            .AddEntityFrameworkStores<AuthDbContext>()
-            .AddDefaultTokenProviders();
+        // services.AddDbContext<AuthDbContext>(db =>
+        //     db.UseSqlite(options.ConnectionString));
+        //
+        // services.AddIdentity<IdentityUser, IdentityRole>(identityOptions =>
+        //     {
+        //         identityOptions.SignIn.RequireConfirmedEmail = true;
+        //         identityOptions.Password.RequireDigit = true;
+        //         identityOptions.Password.RequiredLength = 6;
+        //     })
+        //     .AddEntityFrameworkStores<AuthDbContext>()
+        //     .AddDefaultTokenProviders();
 
         services.AddAuthentication(options =>
             {
