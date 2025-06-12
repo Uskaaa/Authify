@@ -46,6 +46,7 @@ public class ServiceCollectionExtensions
                 githubOptions.ClientSecret = options.GitHubClientSecret;
                 githubOptions.Scope.Add("user:email");
             });
+        services.AddAuthorization();
         
         services.AddSingleton(options);
         services.AddScoped<IAuthService, AuthService>();
