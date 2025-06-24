@@ -1,0 +1,171 @@
+@page "/otp"
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JS
+
+<div class="otp-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Verify Your Email</h1>
+            <p>Enter the 6-digit code sent to your email</p>
+        </div>
+        @if (!isVerified)
+        {
+            <EditForm Model="this" OnValidSubmit="HandleValidSubmit" class="auth-form">
+                <div class="otp-inputs">
+                    @for (int i = 0; i < 6; i++)
+                    {
+                        
+                        var i1 = i;
+                        <input @ref="otpRefs[i1]" class="form-control" maxlength="1" inputmode="numeric" pattern="[0-9]" value="@OtpDigits[i]" @oninput="e => OnOtpInput(e, i)" @onkeydown="e => OnOtpKeyDown(e, i)" />
+                    }
+                </div>
+                <ValidationMessage For="@(() => Otpp)" />
+                @if (showTimer)
+                {
+                    <div class="otp-timer">
+                        <span>Resend code in</span>
+                        <span id="timer">@TimerDisplay</span>
+                    </div>
+                }
+                <button type="submit" class="btn btn-primary" disabled="@(isLoading)">
+                    @if (isLoading)
+                    {
+                        <i class="fas fa-spinner fa-spin"></i>
+                    }
+                    else
+                    {
+                        <span>Verify</span>
+                    }
+                </button>
+            </EditForm>
+        }
+        else
+        {
+            <div class="success-message">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Verified!</h2>
+                <p>Your email has been successfully verified.</p>
+                <a href="login" class="btn btn-primary">Continue to Login</a>
+            </div>
+        }
+        <p class="auth-footer">
+            Didn't receive the code? <a href="#" id="resendCode" @onclick="ResendCode" style="display:@(showTimer ? "none" : "inline")">Resend</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    [Required]
+    public string[] OtpDigits { get; set; } = new string[6];
+    private ElementReference[] otpRefs = new ElementReference[6];
+    private bool isLoading = false;
+    private bool isVerified = false;
+    private int timeLeft = 60;
+    private bool showTimer = true;
+    private System.Threading.Timer timer;
+    private DotNetObjectReference<Otp> objRef;
+
+    protected override void OnInitialized()
+    {
+        StartTimer();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            for (int i = 0; i < 6; i++)
+            {
+                await JS.InvokeVoidAsync("otpPasteHandler", otpRefs[i], objRef, i);
+            }
+        }
+    }
+
+
+
+    [JSInvokable]
+    public void OnOtpPaste(string pasted, int index)
+    {
+        if (!string.IsNullOrEmpty(pasted) && pasted.All(char.IsDigit))
+        {
+            for (int i = 0; i < Math.Min(6, pasted.Length); i++)
+            {
+                OtpDigits[i] = pasted[i].ToString();
+            }
+            StateHasChanged();
+        }
+    }
+
+    private string Otpp => string.Concat(OtpDigits);
+    private string TimerDisplay => $"{timeLeft / 60:00}:{timeLeft % 60:00}";
+
+    private void StartTimer()
+    {
+        showTimer = true;
+        timeLeft = 60;
+        timer?.Dispose();
+        timer = new System.Threading.Timer(_ =>
+        {
+            if (timeLeft > 0)
+            {
+                timeLeft--;
+                InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                showTimer = false;
+                timer?.Dispose();
+                InvokeAsync(StateHasChanged);
+            }
+        }, null, 1000, 1000);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Otpp.Length != 6 || Otpp.Any(c => !char.IsDigit(c)))
+            return;
+        isLoading = true;
+        await Task.Delay(2000);
+        isLoading = false;
+        isVerified = true;
+    }
+
+    private void ResendCode()
+    {
+        for (int i = 0; i < 6; i++) OtpDigits[i] = string.Empty;
+        StartTimer();
+        _ = Task.Delay(100).ContinueWith(_ => InvokeAsync(() => otpRefs[0].FocusAsync()));
+    }
+
+    private void OnOtpInput(ChangeEventArgs e, int index)
+    {
+        var value = e.Value?.ToString() ?? "";
+        if (!string.IsNullOrEmpty(value) && !char.IsDigit(value[0]))
+        {
+            OtpDigits[index] = "";
+            return;
+        }
+        OtpDigits[index] = value.Length > 1 ? value[0].ToString() : value;
+        if (!string.IsNullOrEmpty(OtpDigits[index]) && index < 5)
+        {
+            _ = Task.Delay(1).ContinueWith(_ => InvokeAsync(() => otpRefs[index + 1].FocusAsync()));
+        }
+    }
+
+    private void OnOtpKeyDown(KeyboardEventArgs e, int index)
+    {
+        if (e.Key == "Backspace" && string.IsNullOrEmpty(OtpDigits[index]) && index > 0)
+        {
+            _ = Task.Delay(1).ContinueWith(_ => InvokeAsync(() => otpRefs[index - 1].FocusAsync()));
+        }
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+    
+} 

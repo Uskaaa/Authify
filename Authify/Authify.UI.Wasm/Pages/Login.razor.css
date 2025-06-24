@@ -1,0 +1,227 @@
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+}
+
+.login-container .auth-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.login-container .auth-card:hover {
+    transform: translateY(-2px);
+}
+
+.login-container .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-container .auth-header h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.login-container .auth-header p {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.login-container .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-container .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.login-container .form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.login-container .form-group input,
+.login-container .form-group .form-control {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.login-container .form-group input:focus,
+.login-container .form-group .form-control:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.login-container .password-input {
+    position: relative;
+    width: 100%;
+}
+
+.login-container .password-input input,
+.login-container .password-input .form-control {
+    padding-right: 2.5rem;
+}
+
+.login-container .toggle-password {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.login-container .toggle-password:hover {
+    color: #1f2937;
+}
+
+.login-container .validation-message,
+.login-container .form-group .validation-message,
+.login-container .form-group .error-message {
+    color: #ef4444;
+    font-size: 0.75rem;
+    min-height: 1rem;
+}
+
+.login-container .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.login-container .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+}
+
+.login-container .forgot-password {
+    color: #4f46e5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.login-container .forgot-password:hover {
+    color: #4338ca;
+}
+
+.login-container .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.login-container .btn-primary {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.login-container .btn-primary:hover {
+    background-color: #4338ca;
+}
+
+.login-container .btn-oauth {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.login-container .btn-oauth:hover {
+    background-color: #f3f4f6;
+}
+
+.login-container .divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.login-container .divider::before,
+.login-container .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.login-container .divider span {
+    padding: 0 1rem;
+}
+
+.login-container .oauth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.login-container .auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.login-container .auth-footer a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.login-container .auth-footer a:hover {
+    color: #4338ca;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 0.5rem;
+    }
+    .login-container .auth-card {
+        padding: 1.5rem;
+    }
+    .login-container .auth-header h1 {
+        font-size: 1.5rem;
+    }
+} 
