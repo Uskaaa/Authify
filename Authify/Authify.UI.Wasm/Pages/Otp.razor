@@ -1,10 +1,15 @@
 @page "/otp"
 @using System.ComponentModel.DataAnnotations
+@using Authify.Core.Interfaces
+@using Authify.Core.Models
 @using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JS
 @implements IAsyncDisposable
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
 
-<div @ref="containerRef" class="otp-container">
+<div @ref="_containerRef" class="otp-container">
     <div class="auth-card">
         <div class="auth-header">
             <h1>Verify Your Email</h1>
@@ -22,8 +27,8 @@
             </div>
             
             <ValidationMessage For="@(() => OtpCode)" />
-            <button type="submit" class="btn btn-primary" disabled="@(isVerifying || OtpCode?.Length != 6)">
-                @if (isVerifying) { <i class="fas fa-spinner fa-spin"></i> } else { <span>Verify</span> }
+            <button type="submit" class="btn btn-primary" disabled="@(_isVerifying || OtpCode?.Length != 6)">
+                @if (_isVerifying) { <i class="fas fa-spinner fa-spin"></i> } else { <span>Verify</span> }
             </button>
         </EditForm>
         
@@ -32,44 +37,63 @@
 </div>
 
 @code {
-    private ElementReference containerRef;
-    private DotNetObjectReference<Otp> objRef;
+    private ElementReference _containerRef;
+    private DotNetObjectReference<Otp>? _objRef;
 
     [Required(ErrorMessage = "Der Code ist erforderlich.")]
     [StringLength(6, MinimumLength = 6, ErrorMessage = "Der Code muss 6-stellig sein.")]
     private string OtpCode { get; set; }
 
-    private bool isVerifying = false;
+    private OtpVerificationRequest _request = new OtpVerificationRequest();
+    private bool _isVerifying = false;
+    private bool _error = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        _request.Token = query.GetValueOrDefault("token")!;
+        return base.OnInitializedAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            objRef = DotNetObjectReference.Create(this);
-            // Einmaliger Aufruf, um das JavaScript-Modul zu starten
-            await JS.InvokeVoidAsync("initializeOtpHandler", containerRef, objRef);
+            _objRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("initializeOtpHandler", _containerRef, _objRef);
         }
     }
 
     [JSInvokable]
     public void OnOtpCompleted(string otp)
     {
-        // Diese Methode wird von JS aufgerufen, wenn der Code vollständig ist.
-        // Sie könnten hier z.B. automatisch den Submit auslösen.
+        
         Console.WriteLine($"OTP vollständig: {otp}. Löst Validierung aus.");
-        StateHasChanged(); // UI aktualisieren, falls nötig
+        _ = HandleValidSubmit();
+        StateHasChanged();
     }
 
     private async Task HandleValidSubmit()
     {
-        isVerifying = true;
-        await Task.Delay(1500); // Simuliert API-Aufruf
+        _isVerifying = true;
+        _request.OtpCode = OtpCode;
+        var result = await AuthService.VerifyOtpAsync(_request);
         Console.WriteLine($"Verifiziere Code: {OtpCode}");
-        isVerifying = false;
+        _isVerifying = false;
+        if (result.Success)
+        {
+            _error = false;
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            _error = true;
+        }
     }
 
     public async ValueTask DisposeAsync()
     {
-        objRef?.Dispose();
+        _objRef?.Dispose();
     }
 }
