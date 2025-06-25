@@ -42,13 +42,13 @@ public class UserService : IUserService
         return OperationResult.Ok();
     }
 
-    public async Task<OperationResult> ConfirmEmailAsync(string userId, string token)
+    public async Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest request)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null)
             return OperationResult.Fail("User not found.");
 
-        var result = await _userManager.ConfirmEmailAsync(user, token);
+        var result = await _userManager.ConfirmEmailAsync(user, request.Token);
 
         return result.Succeeded
             ? OperationResult.Ok()

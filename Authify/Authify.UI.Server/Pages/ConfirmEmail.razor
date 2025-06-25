@@ -2,11 +2,23 @@
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
 
-<h3>ConfirmEmail</h3>
+@if (_error)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> Unable to confirm email. Please check the link or contact support.
+    </div>
+}
+else
+{
+    <div class="alert alert-success">
+        <strong>Success!</strong> Your email has been confirmed successfully.
+    </div>
+}
 
 @code {
 
     private EmailConfirmationRequest _request = new EmailConfirmationRequest();
+    private bool _error = false;
     
     protected override Task OnInitializedAsync()
     {
@@ -17,9 +29,15 @@
         
         var result = UserService.ConfirmEmailAsync(_request);
         
-        if ()
+        if (result.Result.Success)
         {
-            
+            _error = false;
+            Task.Delay(1000);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            _error = true;
         }
         
         return base.OnInitializedAsync();

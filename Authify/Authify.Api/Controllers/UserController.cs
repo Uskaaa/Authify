@@ -29,7 +29,12 @@ public class UserController : ControllerBase
     [HttpGet(nameof(ConfirmEmail))]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
     {
-        var result = await _userService.ConfirmEmailAsync(userId, token);
+        EmailConfirmationRequest emailConfirmationRequest = new()
+        {
+            UserId = userId,
+            Token = token
+        };
+        var result = await _userService.ConfirmEmailAsync(emailConfirmationRequest);
         
         if (result.Success) return Ok();
         
