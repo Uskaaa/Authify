@@ -7,7 +7,7 @@ namespace Authify.Core.Interfaces;
 public interface IUserService
 {
     Task<OperationResult> RegisterAsync(RegisterRequest request);
-    Task<OperationResult> ConfirmEmailAsync(string userId, string token);
+    Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest request);
     Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest request);
     Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest request);
 }

@@ -1,0 +1,28 @@
+﻿@page "/confirm-email"
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+
+<h3>ConfirmEmail</h3>
+
+@code {
+
+    private EmailConfirmationRequest _request = new EmailConfirmationRequest();
+    
+    protected override Task OnInitializedAsync()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        _request.UserId = query.GetValueOrDefault("userId")!;
+        _request.Token = query.GetValueOrDefault("token")!;
+        
+        var result = UserService.ConfirmEmailAsync(_request);
+        
+        if ()
+        {
+            
+        }
+        
+        return base.OnInitializedAsync();
+    }
+    
+}
