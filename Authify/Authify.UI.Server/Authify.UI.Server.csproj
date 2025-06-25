@@ -19,4 +19,8 @@
       <ProjectReference Include="..\Authify.Core\Authify.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="js\" />
+    </ItemGroup>
+
 </Project>
