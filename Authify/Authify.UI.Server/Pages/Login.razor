@@ -1,5 +1,8 @@
 @page "/login"
-@using System.ComponentModel.DataAnnotations
+@using Authify.Core.Server.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
 
 <div class="login-container">
     <div class="auth-card">
@@ -7,32 +10,32 @@
             <h1>Welcome Back</h1>
             <p>Please enter your credentials to login</p>
         </div>
-        <EditForm Model="model" OnValidSubmit="HandleValidSubmit" class="auth-form">
+        <EditForm Model="_request" OnValidSubmit="HandleValidSubmit" class="auth-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label for="email">Email</label>
-                <InputText id="email" class="form-control" @bind-Value="model.Email" />
-                <ValidationMessage For="@(() => model.Email)" />
+                <InputText id="email" class="form-control" @bind-Value="_request.UsernameOrEmail" />
+                <ValidationMessage For="@(() => _request.UsernameOrEmail)" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-input">
-                    <InputText id="password" class="form-control" @bind-Value="model.Password" type="@(showPassword ? "text" : "password")" />
+                    <InputText id="password" class="form-control" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" />
                     <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
-                        <i class="fas @(showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                        <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                     </button>
                 </div>
-                <ValidationMessage For="@(() => model.Password)" />
+                <ValidationMessage For="@(() => _request.Password)" />
             </div>
             <div class="form-options">
                 <label class="remember-me">
-                    <InputCheckbox @bind-Value="model.RememberMe" />
+                    <InputCheckbox @bind-Value="_request.RememberMe" />
                     <span>Remember me</span>
                 </label>
                 <a href="forgot-password" class="forgot-password">Forgot password?</a>
             </div>
-            <button type="submit" class="btn btn-primary" disabled="@(isLoading)">
-                @if (isLoading)
+            <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
+                @if (_isLoading)
                 {
                     <i class="fas fa-spinner fa-spin"></i>
                 }
@@ -62,22 +65,30 @@
 </div>
 
 @code {
-    private LoginModel model = new();
-    private bool isLoading = false;
-    private bool showPassword = false;
+    private LoginRequest _request = new();
+    private bool _isLoading = false;
+    private bool _showPassword = false;
+    private bool _errorLogin = false;
 
     private async Task HandleValidSubmit()
     {
-        isLoading = true;
-        // Simuliere API Call
-        await Task.Delay(2000);
-        isLoading = false;
-        // Hier ggf. Redirect oder Erfolgsmeldung
+        _isLoading = true;
+        var result = await AuthService.LoginAsync(_request);
+        _isLoading = false;
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo($"/Otp?token={result.Data}");
+            _errorLogin = false;
+        }
+        else
+        {
+            _errorLogin = true;
+        }
     }
 
     private void TogglePasswordVisibility()
     {
-        showPassword = !showPassword;
+        _showPassword = !_showPassword;
     }
 
     private void GoogleOAuth()
@@ -88,18 +99,5 @@
     private void GitHubOAuth()
     {
         // Platzhalter für GitHub OAuth
-    }
-
-    public class LoginModel
-    {
-        [Required(ErrorMessage = "Please enter your email address")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "Please enter your password")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
-        public string Password { get; set; }
-
-        public bool RememberMe { get; set; }
     }
 } 
