@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Authify.Core\Authify.Core.csproj" />
+      <ProjectReference Include="..\Authify.UI.Wasm\Authify.UI.Wasm.csproj" />
     </ItemGroup>
 
 </Project>
