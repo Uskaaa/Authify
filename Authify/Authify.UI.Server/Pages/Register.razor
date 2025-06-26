@@ -1,5 +1,9 @@
 @page "/register"
 @using System.ComponentModel.DataAnnotations
+@using Authify.Core.Server.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
 
 <div class="register-container">
     <div class="auth-card">
@@ -7,47 +11,47 @@
             <h1>Create Account</h1>
             <p>Please fill in your details to register</p>
         </div>
-        <EditForm Model="model" OnValidSubmit="HandleValidSubmit" class="auth-form">
+        <EditForm Model="_request" OnValidSubmit="HandleValidSubmit" class="auth-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <InputText id="fullName" class="form-control" @bind-Value="model.FullName" />
-                <ValidationMessage For="@(() => model.FullName)" />
+                <InputText id="fullName" class="form-control" @bind-Value="_request.Username" />
+                <ValidationMessage For="@(() => _request.Username)" />
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <InputText id="email" class="form-control" @bind-Value="model.Email" />
-                <ValidationMessage For="@(() => model.Email)" />
+                <InputText id="email" class="form-control" @bind-Value="_request.Email" />
+                <ValidationMessage For="@(() => _request.Email)" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-input">
-                    <InputText id="password" class="form-control" @bind-Value="model.Password" type="@(showPassword ? "text" : "password")" />
+                    <InputText id="password" class="form-control" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" />
                     <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
-                        <i class="fas @(showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                        <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                     </button>
                 </div>
-                <ValidationMessage For="@(() => model.Password)" />
+                <ValidationMessage For="@(() => _request.Password)" />
             </div>
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
                 <div class="password-input">
-                    <InputText id="confirmPassword" class="form-control" @bind-Value="model.ConfirmPassword" type="@(showConfirmPassword ? "text" : "password")" />
+                    <InputText id="confirmPassword" class="form-control" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" />
                     <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
-                        <i class="fas @(showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                        <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
                     </button>
                 </div>
-                <ValidationMessage For="@(() => model.ConfirmPassword)" />
+                <ValidationMessage For="@(() => _request.ConfirmPassword)" />
             </div>
             <div class="form-options">
                 <label class="terms">
-                    <InputCheckbox @bind-Value="model.TermsAccepted" />
+                    <InputCheckbox @bind-Value="_request.TermsAccepted" />
                     <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
                 </label>
-                <ValidationMessage For="@(() => model.TermsAccepted)" />
+                <ValidationMessage For="@(() => _request.TermsAccepted)" />
             </div>
-            <button type="submit" class="btn btn-primary" disabled="@(isLoading)">
-                @if (isLoading)
+            <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
+                @if (_isLoading)
                 {
                     <i class="fas fa-spinner fa-spin"></i>
                 }
@@ -77,27 +81,34 @@
 </div>
 
 @code {
-    private RegisterModel model = new();
-    private bool isLoading = false;
-    private bool showPassword = false;
-    private bool showConfirmPassword = false;
+    private RegisterRequest _request = new();
+    private bool _isLoading = false;
+    private bool _showPassword = false;
+    private bool _showConfirmPassword = false;
 
     private async Task HandleValidSubmit()
     {
-        isLoading = true;
-        await Task.Delay(2000);
-        isLoading = false;
-        // Hier ggf. Redirect oder Erfolgsmeldung
+        _isLoading = true;
+        var result = await UserService.RegisterAsync(_request);
+        _isLoading = false;
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo("/confirm-email");
+        }
+        else
+        {
+            Console.WriteLine($"Registration failed: {result.ErrorMessage}");
+        }
     }
 
     private void TogglePasswordVisibility()
     {
-        showPassword = !showPassword;
+        _showPassword = !_showPassword;
     }
 
     private void ToggleConfirmPasswordVisibility()
     {
-        showConfirmPassword = !showConfirmPassword;
+        _showConfirmPassword = !_showConfirmPassword;
     }
 
     private void GoogleOAuth()
@@ -108,34 +119,5 @@
     private void GitHubOAuth()
     {
         // Platzhalter für GitHub OAuth
-    }
-
-    public class RegisterModel : IValidatableObject
-    {
-        [Required(ErrorMessage = "Please enter your full name")]
-        [MinLength(2, ErrorMessage = "Please enter your full name")]
-        public string FullName { get; set; }
-
-        [Required(ErrorMessage = "Please enter your email address")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "Please enter your password")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
-        public string Password { get; set; }
-
-        [Required(ErrorMessage = "Please confirm your password")]
-        public string ConfirmPassword { get; set; }
-
-        [Range(typeof(bool), "true", "true", ErrorMessage = "You must agree to the terms and conditions")]
-        public bool TermsAccepted { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Password != ConfirmPassword)
-            {
-                yield return new ValidationResult("Passwords do not match", new[] { nameof(ConfirmPassword) });
-            }
-        }
     }
 } 

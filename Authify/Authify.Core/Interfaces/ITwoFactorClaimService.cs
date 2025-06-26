@@ -6,7 +6,7 @@ namespace Authify.Core.Interfaces;
 
 public interface ITwoFactorClaimService
 {
-    Task<OperationResult> AddClaimAsync(string userId, TwoFactorMethod twoFactorMethod);
+    Task<OperationResult> AddClaimAsync(TwoFactorRequest request);
     Task<OperationResult> CheckClaimsAsync(string userId);
-    Task<OperationResult> RemoveClaimAsync(string userId, TwoFactorMethod twoFactorMethod);
+    Task<OperationResult> RemoveClaimAsync(TwoFactorRequest request);
 }

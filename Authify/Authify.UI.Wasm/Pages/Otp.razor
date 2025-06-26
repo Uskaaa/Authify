@@ -1,13 +1,13 @@
 @page "/otp"
 @using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Json
 @using Authify.Core.Interfaces
 @using Authify.Core.Models
 @using Microsoft.JSInterop
-@using Microsoft.AspNetCore.Components.Forms
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 @inject NavigationManager NavigationManager
-@inject IAuthService AuthService
+@inject HttpClient HttpClient
 
 <div @ref="_containerRef" class="otp-container">
     <div class="auth-card">
@@ -78,10 +78,10 @@
     {
         _isVerifying = true;
         _request.OtpCode = OtpCode;
-        var result = await AuthService.VerifyOtpAsync(_request);
+        var result = await HttpClient.PostAsJsonAsync("api/auth/verifyotp", _request);
         Console.WriteLine($"Verifiziere Code: {OtpCode}");
         _isVerifying = false;
-        if (result.Success)
+        if (result.IsSuccessStatusCode)
         {
             _error = false;
             NavigationManager.NavigateTo("/");
