@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Authify.Application.Extensions;
 
-public class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMyAuthifyInfrastructure(IServiceCollection services, Action<InfrastructureOptions> configureOptions)
     {
