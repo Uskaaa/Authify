@@ -4,59 +4,101 @@ using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Authify.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Authify.Application.Services;
 
 public class TwoFactorClaimService : ITwoFactorClaimService
 {
     private readonly UserManager<IdentityUser> _userManager;
-    
-    public TwoFactorClaimService(UserManager<IdentityUser> userManager)
+    private readonly DbContext _dbContext;
+
+    public TwoFactorClaimService(UserManager<IdentityUser> userManager, DbContext dbContext)
     {
         _userManager = userManager;
+        _dbContext = dbContext;
     }
 
-    public async Task<OperationResult> AddClaimAsync(TwoFactorRequest request)
+    // Hinzufügen oder Aktualisieren einer Methode
+    public async Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request)
     {
         var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null)
             return OperationResult.Fail("User not found.");
-        
-        var result = await _userManager.AddClaimAsync(user, new Claim("TwoFactor", request.TwoFactorMethod.ToString()));
-        
-        return result.Succeeded
-            ? OperationResult.Ok()
-            : OperationResult.Fail("Failed to add claim.");
+
+        var existing = await _dbContext.Set<UserTwoFactor>()
+            .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.Method == request.TwoFactorMethod);
+
+        if (existing != null)
+        {
+            existing.IsEnabled = request.IsEnabled;
+            existing.Priority = request.Priority;
+        }
+        else
+        {
+            await _dbContext.Set<UserTwoFactor>().AddAsync(new UserTwoFactor
+            {
+                UserId = request.UserId,
+                Method = request.TwoFactorMethod,
+                IsEnabled = request.IsEnabled,
+                Priority = request.Priority
+            });
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return OperationResult.Ok();
     }
 
-    public async Task<OperationResult> CheckClaimsAsync(string userId)
+    // Entfernen einer Methode
+    public async Task<OperationResult> RemoveAsync(TwoFactorRequest request)
+    {
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+            return OperationResult.Fail("User not found.");
+
+        var existing = await _dbContext.Set<UserTwoFactor>()
+            .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.Method == request.TwoFactorMethod);
+
+        if (existing == null)
+            return OperationResult.Fail("TwoFactor method not found.");
+
+        _dbContext.Set<UserTwoFactor>().Remove(existing);
+        await _dbContext.SaveChangesAsync();
+
+        return OperationResult.Ok();
+    }
+
+    // Alle Methoden eines Users abfragen
+    public async Task<OperationResult<List<UserTwoFactor>>> GetAllAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return OperationResult.Fail("User not found.");
-        
-        var claims = await _userManager.GetClaimsAsync(user);
+            return OperationResult<List<UserTwoFactor>>.Fail("User not found.");
 
-        return claims.Count == 0 ? OperationResult.Fail("No claims found for the user.") : OperationResult<List<Claim>>.Ok(claims.ToList());
+        var methods = await _dbContext.Set<UserTwoFactor>()
+            .Where(x => x.UserId == userId)
+            .OrderBy(x => x.Priority)
+            .ToListAsync();
+
+        return methods.Count == 0
+            ? OperationResult<List<UserTwoFactor>>.Fail("No two-factor methods found for the user.")
+            : OperationResult<List<UserTwoFactor>>.Ok(methods);
     }
-    
-    public async Task<OperationResult> RemoveClaimAsync(TwoFactorRequest request)
-    {
-        var user = await _userManager.FindByIdAsync(request.UserId);
-        if (user == null)
-            return OperationResult.Fail("User not found.");
-        
-        var claims = await _userManager.GetClaimsAsync(user);
-        var claimToRemove = claims.FirstOrDefault(c => c.Type == "TwoFactor" && c.Value == request.TwoFactorMethod.ToString());
-        
-        if (claimToRemove == null)
-            return OperationResult.Fail("Claim not found.");
-        
 
-        var result = await _userManager.RemoveClaimAsync(user, claimToRemove);
-        
-        return result.Succeeded
-            ? OperationResult.Ok()
-            : OperationResult.Fail("Failed to remove claim.");
+    // Bevorzugte Methode abfragen
+    public async Task<OperationResult<UserTwoFactor>> GetPreferredAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return OperationResult<UserTwoFactor>.Fail("User not found.");
+
+        var preferred = await _dbContext.Set<UserTwoFactor>()
+            .Where(x => x.UserId == userId && x.IsEnabled)
+            .OrderBy(x => x.Priority)
+            .FirstOrDefaultAsync();
+
+        return preferred == null
+            ? OperationResult<UserTwoFactor>.Fail("No enabled two-factor method found.")
+            : OperationResult<UserTwoFactor>.Ok(preferred);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Authify.Core.Interfaces;
 
-public class ISmsSender
+public interface ISmsSender
 {
-    
+    Task SendSmsAsync(string destination, string otp);
 }

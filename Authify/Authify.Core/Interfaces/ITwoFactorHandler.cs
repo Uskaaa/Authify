@@ -1,6 +1,6 @@
 ﻿namespace Authify.Core.Interfaces;
 
-public class ITwoFactorHandler
+public interface ITwoFactorHandler
 {
-    
+    Task SendOtpAsync(string destination, string otp);
 }
