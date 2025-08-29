@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.UI.Wasm", "Authify.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Api", "Authify.Api\Authify.Api.csproj", "{4D3E2953-9583-4FB8-8067-F2A545763056}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Client.Server", "Authify.Client.Server\Authify.Client.Server.csproj", "{4013D57E-D94F-4BC7-862D-470E15C3425C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Client.Wasm", "Authify.Client.Wasm\Authify.Client.Wasm.csproj", "{68EE448A-9863-4889-A6A9-090547837FF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,13 @@ Global
 		{4D3E2953-9583-4FB8-8067-F2A545763056}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D3E2953-9583-4FB8-8067-F2A545763056}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D3E2953-9583-4FB8-8067-F2A545763056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4013D57E-D94F-4BC7-862D-470E15C3425C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4013D57E-D94F-4BC7-862D-470E15C3425C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4013D57E-D94F-4BC7-862D-470E15C3425C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4013D57E-D94F-4BC7-862D-470E15C3425C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68EE448A-9863-4889-A6A9-090547837FF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68EE448A-9863-4889-A6A9-090547837FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68EE448A-9863-4889-A6A9-090547837FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68EE448A-9863-4889-A6A9-090547837FF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

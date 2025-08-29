@@ -1,7 +1,7 @@
 ﻿using Authify.Core.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Core.Models;
-
 
 public class UserTwoFactor
 {
