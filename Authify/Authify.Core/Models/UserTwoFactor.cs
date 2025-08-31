@@ -1,18 +1,18 @@
-﻿using Authify.Core.Models.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Authify.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Core.Models;
 
 public class UserTwoFactor
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-
+    [Key]
     public string UserId { get; set; }
-    public IdentityUser User { get; set; }
 
+    [ForeignKey(nameof(UserId))]
+    public IdentityUser User { get; set; } 
     public TwoFactorMethod Method { get; set; }
-
     public bool IsEnabled { get; set; } = true;
-
     public int Priority { get; set; } = 0;
 }

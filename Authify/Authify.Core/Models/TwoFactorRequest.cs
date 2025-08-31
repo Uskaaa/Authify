@@ -4,8 +4,6 @@ namespace Authify.Core.Models;
 
 public class TwoFactorRequest
 {
-    public string UserId { get; set; }
-
     // Die 2FA-Methode, z.B. Email oder SMS
     public TwoFactorMethod TwoFactorMethod { get; set; }
 

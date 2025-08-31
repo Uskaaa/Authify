@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Authify.Core.Server.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Api.Controllers;
@@ -50,11 +52,26 @@ public class UserController : ControllerBase
         
         return BadRequest("Something went wrong.");
     }
-
+    
     [HttpPost(nameof(ResetPassword))]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
     {
         var result = await _userService.ResetPasswordAsync(resetPasswordRequest);
+        
+        if (result.Success) return Ok();
+        
+        return BadRequest("Something went wrong.");
+    }
+    
+    [Authorize]
+    [HttpPost(nameof(ChangePassword))]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+    {
+        var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+        
+        var result = await _userService.ChangePasswordAsync(userId, changePasswordRequest);
         
         if (result.Success) return Ok();
         

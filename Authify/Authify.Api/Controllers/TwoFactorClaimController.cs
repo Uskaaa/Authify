@@ -1,47 +1,84 @@
-﻿using Authify.Core.Interfaces;
+﻿using System.Security.Claims;
+using Authify.Core.Interfaces;
 using Authify.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Api.Controllers;
 
+
 [ApiController]
-[Route("api/[Controller]")]
-public class TwoFactorClaimController : Controller
+[Route("api/[controller]")]
+[Authorize]
+public class TwoFactorClaimController : ControllerBase
 {
     private readonly ITwoFactorClaimService _twoFactorClaimService;
-    
+
     public TwoFactorClaimController(ITwoFactorClaimService twoFactorClaimService)
     {
         _twoFactorClaimService = twoFactorClaimService;
     }
-    
-    [HttpPost(nameof(AddClaim))]
-    public async Task<IActionResult> AddClaim([FromBody] TwoFactorRequest request)
-    {
-        var result = await _twoFactorClaimService.AddClaimAsync(request);
 
-        if (result.Success) return Ok();
-        
-        return BadRequest("Something went wrong.");
+    private string? GetUserId()
+    {
+        return User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
-    
-    [HttpPost(nameof(CheckClaims))]
-    public async Task<IActionResult> CheckClaims([FromBody] string userId)
-    {
-        var claims = await _twoFactorClaimService.CheckClaimsAsync(userId);
 
-        if (claims.Success) return Ok(claims);
-        
-        return BadRequest("Something went wrong.");
+    /// <summary>
+    /// Fügt eine neue TwoFactor-Methode hinzu oder aktualisiert eine bestehende.
+    /// </summary>
+    [HttpPost("add-or-update")]
+    public async Task<IActionResult> AddOrUpdate([FromBody] TwoFactorRequest request)
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.AddOrUpdateAsync(userId, request);
+
+        return result.Success ? Ok(result) : BadRequest(result);
     }
-    
-    [HttpPost(nameof(RemoveClaim))]
-    public async Task<IActionResult> RemoveClaim([FromBody] TwoFactorRequest request)
-    {
-        var result = await _twoFactorClaimService.RemoveClaimAsync(request);
 
-        if (result.Success) return Ok();
-        
-        return BadRequest("Something went wrong.");
+    /// <summary>
+    /// Entfernt eine TwoFactor-Methode.
+    /// </summary>
+    [HttpPost("remove")]
+    public async Task<IActionResult> Remove([FromBody] TwoFactorRequest request)
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.RemoveAsync(userId, request);
+
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    /// <summary>
+    /// Gibt alle TwoFactor-Methoden des aktuellen Users zurück.
+    /// </summary>
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.GetAllAsync(userId);
+        return result.Success ? Ok(result) : NotFound(result);
+    }
+
+    /// <summary>
+    /// Gibt die bevorzugte TwoFactor-Methode des aktuellen Users zurück.
+    /// </summary>
+    [HttpGet("preferred")]
+    public async Task<IActionResult> GetPreferred()
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.GetPreferredAsync(userId);
+        return result.Success ? Ok(result) : NotFound(result);
     }
 }

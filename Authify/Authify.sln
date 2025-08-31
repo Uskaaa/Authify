@@ -2,11 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Core", "Authify.Core\Authify.Core.csproj", "{BA0AB2D3-FE92-4316-B8D2-44622C6D9EE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Application.Server", "Authify.Application.Server\Authify.Application.Server.csproj", "{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Application", "Authify.Application\Authify.Application.csproj", "{F4D7BF84-F0D1-4D94-A713-D55B96A7E9E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.UI.Server", "Authify.UI.Server\Authify.UI.Server.csproj", "{3F8735C5-18C0-4706-B4EF-0BCFC306013E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.Application.Wasm", "Authify.Application.Wasm\Authify.Application.Wasm.csproj", "{3214B5D4-62B5-4A40-A869-4AF9C115A9AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authify.UI.Wasm", "Authify.UI.Wasm\Authify.UI.Wasm.csproj", "{B606CD9F-C1FF-4768-AD18-73B7DD6DD777}"
 EndProject
@@ -34,10 +32,6 @@ Global
 		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F8735C5-18C0-4706-B4EF-0BCFC306013E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3214B5D4-62B5-4A40-A869-4AF9C115A9AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3214B5D4-62B5-4A40-A869-4AF9C115A9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3214B5D4-62B5-4A40-A869-4AF9C115A9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3214B5D4-62B5-4A40-A869-4AF9C115A9AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B606CD9F-C1FF-4768-AD18-73B7DD6DD777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B606CD9F-C1FF-4768-AD18-73B7DD6DD777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B606CD9F-C1FF-4768-AD18-73B7DD6DD777}.Release|Any CPU.ActiveCfg = Release|Any CPU

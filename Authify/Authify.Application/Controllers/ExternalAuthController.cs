@@ -1,9 +1,10 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Authify.Application.Services;
 using Authify.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Authify.Api.Controllers;
+namespace Authify.Application.Controllers;
 
 [Route("auth")]
 public class ExternalAuthController : Controller

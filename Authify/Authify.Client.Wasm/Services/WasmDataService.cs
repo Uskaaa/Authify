@@ -1,6 +1,8 @@
+using Authify.UI.Server.Services;
+
 namespace Authify.Client.Wasm.Services;
 
-public class WasmDataService
+public class WasmDataService : IAuthifyDataService
 {
     
 }

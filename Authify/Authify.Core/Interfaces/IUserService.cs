@@ -10,4 +10,5 @@ public interface IUserService
     Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest request);
     Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest request);
     Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest request);
+    Task<OperationResult> ChangePasswordAsync(string userId, ChangePasswordRequest request);
 }
