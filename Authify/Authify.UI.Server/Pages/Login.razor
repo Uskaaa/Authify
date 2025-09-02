@@ -1,7 +1,7 @@
 @page "/login"
 @using Authify.Core.Server.Models
 @using Microsoft.AspNetCore.Components.Forms
-@inject IAuthService AuthService
+@inject IAuthServiceJwt AuthServiceJwt
 @inject NavigationManager NavigationManager
 
 <div class="login-container">
@@ -73,7 +73,7 @@
     private async Task HandleValidSubmit()
     {
         _isLoading = true;
-        var result = await AuthService.LoginAsync(_request);
+        var result = await AuthServiceJwt.LoginAsync(_request);
         _isLoading = false;
         if (result.Success)
         {

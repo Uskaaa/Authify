@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Authify.Application.Data;
 using Authify.Client.Wasm.Services;
+using Authify.Core.Interfaces;
 using Authify.UI.Server.Extensions;
 using Authify.UI.Server.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,7 +20,19 @@ public static class ServiceCollectionExtensions
         Action<HttpClient> configureClient)
     {
         services.AddAuthifyUI();
-        services.AddHttpClient<IAuthifyDataService, WasmDataService>(configureClient);
+        
+        services.AddScoped<IAuthRefreshService, AuthRefreshService>();
+        services.AddScoped<ITokenStore, TokenStore>();
+        
+        // Handler registrieren
+        services.AddScoped<AuthenticatedHttpClientHandler>();
+        
+        // HttpClient registrieren und Handler einfügen
+        services.AddHttpClient<IAuthifyDataService, WasmDataService>(client =>
+            {
+                configureClient(client);
+            })
+            .AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
         
         return services;
     }

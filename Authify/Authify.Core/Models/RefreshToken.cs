@@ -12,4 +12,5 @@ public class RefreshToken
     // Optional: IP/Device info für zusätzliche Sicherheit
     public string? DeviceInfo { get; set; }
     public string? IpAddress { get; set; }
+    public bool RememberMe { get; set; } = false;
 }

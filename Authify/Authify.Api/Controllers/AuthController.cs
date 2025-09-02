@@ -10,54 +10,64 @@ namespace Authify.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IAuthServiceJwt _authServiceJwt;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthServiceJwt authServiceJwt)
     {
-        _authService = authService;
+        _authServiceJwt = authServiceJwt;
     }
 
     [HttpPost(nameof(Login))]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        var result = await _authService.LoginAsync(loginRequest);
+        // DeviceName/IP optional aus Request oder Header
+        loginRequest.DeviceName = Request.Headers["Device-Name"].FirstOrDefault() ?? "Unknown";
+        loginRequest.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-        if (result.Success)
-            return Ok(new { token = result.Data });
+        var result = await _authServiceJwt.LoginAsync(loginRequest);
 
-        return BadRequest(new { error = result.ErrorMessage ?? "Wrong username or password." });
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        var (accessToken, refreshToken) = result.Data!.Value;
+
+        // Wenn OTP zurückkommt (kein JWT) → UI entscheidet redirect auf OTP-Seite
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return Ok(new { requiresOtp = true, accessToken });
+        }
+
+        // Kein OTP → JWT + RefreshToken zurückgeben
+        return Ok(new { accessToken, refreshToken });
     }
 
     [HttpPost(nameof(VerifyOtp))]
     public async Task<IActionResult> VerifyOtp([FromBody] OtpVerificationRequest request)
     {
-        var result = await _authService.VerifyOtpAsync(request);
+        var result = await _authServiceJwt.VerifyOtpAsync(request);
 
-        if (result.Success)
-            return Ok(new { token = result.Data });
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
 
-        return BadRequest(new { error = result.ErrorMessage ?? "Invalid OTP code." });
+        var (accessToken, refreshToken) = result.Data!.Value;
+        return Ok(new { accessToken, refreshToken });
     }
 
     [HttpPost(nameof(ResendOtp))]
     public async Task<IActionResult> ResendOtp([FromBody] ResendOtpRequest request)
     {
-        var result = await _authService.ResendOtpAsync(request);
+        var result = await _authServiceJwt.ResendOtpAsync(request);
 
-        if (result.Success)
-            return Ok();
+        if (!result.Success)
+            return BadRequest(new { error = result.ErrorMessage });
 
-        return BadRequest(new { error = result.ErrorMessage ?? "Could not resend OTP." });
+        return Ok();
     }
 
     [HttpPost(nameof(Logout))]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Logout([FromBody] string refreshToken)
     {
-        var result = await _authService.LogoutAsync();
-
-        if (result.Success)
-            return Ok();
-
-        return BadRequest(new { error = result.ErrorMessage ?? "Logout failed." });
+        await _authServiceJwt.LogoutAsync(refreshToken);
+        return Ok();
     }
 }

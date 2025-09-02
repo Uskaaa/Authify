@@ -55,7 +55,8 @@ public class JwtTokenService : IJwtTokenService
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             ExpiresAt = expiry,
             DeviceInfo = deviceName,
-            IpAddress = ipAddress
+            IpAddress = ipAddress,
+            RememberMe = rememberMe
         };
     }
 }

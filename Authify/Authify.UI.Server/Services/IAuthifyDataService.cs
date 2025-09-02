@@ -11,10 +11,13 @@ public interface IAuthifyDataService
     Task<IActionResult> ExternalLoginAsync(string provider, string? returnUrl = "/");
     
     //AuthService
-    Task<OperationResult<string>> LoginAsync(LoginRequest loginRequest);
-    Task<OperationResult<string>> VerifyOtpAsync(OtpVerificationRequest request);
+    Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtLoginAsync(LoginRequest request);
+    Task<OperationResult<string>> CookieLoginAsync(LoginRequest loginRequest);
+    Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request);
+    Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult> ResendOtpAsync(ResendOtpRequest request);
-    Task<OperationResult> LogoutAsync();
+    Task JwtLogoutAsync(string refreshToken);
+    Task<OperationResult> CookieLogoutAsync();
     
     //UserService
     Task<OperationResult> RegisterAsync(RegisterRequest registerRequest);

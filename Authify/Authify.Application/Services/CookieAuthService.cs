@@ -1,4 +1,3 @@
-﻿using Authify.Application.Data;
 using Authify.Application.Services;
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
@@ -6,34 +5,28 @@ using Authify.Core.Models;
 using Authify.Core.Models.Enums;
 using Authify.Core.Server.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
-namespace Authify.Client.Wasm.Services;
+namespace Authify.Application.Services;
 
-public class JwtAuthService<TUser> : IAuthService
+public class CookieAuthService<TUser> : IAuthServiceCookie
     where TUser : IdentityUser
 {
     private readonly IOtpService _otpService;
     private readonly SignInManager<TUser> _signInManager;
-    private readonly IJwtTokenService _jwtTokenService;
     private readonly UserManager<TUser> _userManager;
     private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
     private readonly IUserAccountService _userAccountService;
-    private readonly IAuthifyDbContext _context;
 
-    public JwtAuthService(IOtpService otpService, SignInManager<TUser> signInManager, IJwtTokenService jwtTokenService,
+    public CookieAuthService(IOtpService otpService, SignInManager<TUser> signInManager,
         TwoFactorClaimService<TUser> twoFactorClaimService,
         UserManager<TUser> userManager,
-        IUserAccountService userAccountService,
-        IAuthifyDbContext context)
+        IUserAccountService userAccountService)
     {
-        _jwtTokenService = jwtTokenService;
         _signInManager = signInManager;
         _otpService = otpService;
         _userManager = userManager;
         _twoFactorClaimService = twoFactorClaimService;
         _userAccountService = userAccountService;
-        _context = context;
     }
 
     public async Task<OperationResult<string>> LoginAsync(LoginRequest request)
@@ -48,7 +41,7 @@ public class JwtAuthService<TUser> : IAuthService
         var deactivation = await _userAccountService.GetDeactivationStatusAsync(user.Id);
         if (deactivation.Data != null && deactivation.Data.IsDeactivated)
             return OperationResult<string>.Fail("Your account is deactivated. Please contact support!");
-        
+
         var resultCheckSignIn =
             await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
 
@@ -62,16 +55,13 @@ public class JwtAuthService<TUser> : IAuthService
             // Bevorzugte Methode auswählen
             var method = preferredResult.Data.Method;
             await _otpService.GenerateAndSendOtpAsync(request.UsernameOrEmail, method);
-        }
-        else
-        {
-            var jwtToken = _jwtTokenService.GenerateToken(user);
-            return OperationResult<string>.Ok(jwtToken);
+
+            var token = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe);
+            return OperationResult<string>.Ok(token);
         }
 
-        var token = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe);
-
-        return OperationResult<string>.Ok(token);
+        await _signInManager.SignInAsync(user, isPersistent: request.RememberMe);
+        return OperationResult<string>.Ok(null!);
     }
 
     public async Task<OperationResult<string>> VerifyOtpAsync(OtpVerificationRequest request)
@@ -86,9 +76,9 @@ public class JwtAuthService<TUser> : IAuthService
         if (!isValid)
             return OperationResult<string>.Fail("Invalid OTP code.");
 
-        var jwtToken = _jwtTokenService.GenerateToken(user);
+        await _signInManager.SignInAsync(user, isPersistent: rememberMe);
 
-        return OperationResult<string>.Ok(jwtToken);
+        return OperationResult<string>.Ok(null!);
     }
 
     public async Task<OperationResult> ResendOtpAsync(ResendOtpRequest request)
@@ -104,14 +94,17 @@ public class JwtAuthService<TUser> : IAuthService
 
         return OperationResult.Ok();
     }
-    
-    public async Task LogoutAsync(string refreshToken)
+
+    public async Task<OperationResult> LogoutAsync()
     {
-        var rt = await _context.RefreshTokens.FirstOrDefaultAsync(t => t.Token == refreshToken);
-        if (rt != null)
+        try
         {
-            rt.IsRevoked = true;
-            await _context.SaveChangesAsync();
+            await _signInManager.SignOutAsync(); // beendet die Session und löscht das Auth-Cookie
+            return OperationResult.Ok();
+        }
+        catch (Exception ex)
+        {
+            return OperationResult.Fail($"Logout failed: {ex.Message}");
         }
     }
 }
