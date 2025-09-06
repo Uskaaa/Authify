@@ -23,8 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(options);
 
         services.AddScoped<IAuthifyDbContext>(provider => provider.GetRequiredService<TDbContext>());
-        
-        services.AddScoped<IExternalAuthService, ExternalAuthService<TUser>>();
+        services.AddScoped<IExternalLoginManagementService<TUser>, ExternalLoginManagementService<TUser>>();
         services.AddScoped<IEmailSender, EmailService>();
         services.AddScoped<IOtpService, OtpService>();
         services.AddScoped<IUserService, UserService<TUser>>();

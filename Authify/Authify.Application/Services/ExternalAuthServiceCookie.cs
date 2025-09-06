@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Application.Services;
 
-public class ExternalAuthService<TUser> : IExternalAuthService
+public class ExternalAuthServiceCookie<TUser> : IExternalAuthService
     where TUser : IdentityUser, new()
 {
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
 
-    public ExternalAuthService(SignInManager<TUser> signInManager, UserManager<TUser> userManager)
+    public ExternalAuthServiceCookie(SignInManager<TUser> signInManager, UserManager<TUser> userManager)
     {
         _signInManager = signInManager;
         _userManager = userManager;
@@ -26,29 +26,39 @@ public class ExternalAuthService<TUser> : IExternalAuthService
 
     public async Task<IActionResult> HandleExternalCallbackAsync(string? returnUrl, string? remoteError)
     {
-        if (remoteError != null)
+        if (!string.IsNullOrEmpty(remoteError))
             return new RedirectResult("/login?error=external_login_failed");
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
         if (info == null)
             return new RedirectResult("/login?error=external_login_info_null");
 
-        var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
-        if (result.Succeeded)
+        // Bereits verknüpfter Login?
+        var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+        if (signInResult.Succeeded)
             return new LocalRedirectResult(returnUrl ?? "/");
 
+        // Sonst neuen User anlegen/verknüpfen
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        if (email == null)
+        if (string.IsNullOrWhiteSpace(email))
             return new RedirectResult("/login?error=email_claim_missing");
 
-        var user = new TUser { UserName = email, Email = email, EmailConfirmed = true };
-        var createResult = await _userManager.CreateAsync(user);
-        if (!createResult.Succeeded)
-            return new RedirectResult("/login?error=account_creation_failed");
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            user = new TUser { UserName = email, Email = email };
+            // Achtung: EmailConfirmed nur setzen, wenn Provider verifizierte Email liefert
+            user.EmailConfirmed = true;
+            var createRes = await _userManager.CreateAsync(user);
+            if (!createRes.Succeeded)
+                return new RedirectResult("/login?error=account_creation_failed");
+        }
 
-        await _userManager.AddLoginAsync(user, info);
-        await _signInManager.SignInAsync(user, false);
+        var addLoginRes = await _userManager.AddLoginAsync(user, info);
+        if (!addLoginRes.Succeeded)
+            return new RedirectResult("/login?error=add_login_failed");
 
+        await _signInManager.SignInAsync(user, isPersistent: false);
         return new LocalRedirectResult(returnUrl ?? "/");
     }
 }

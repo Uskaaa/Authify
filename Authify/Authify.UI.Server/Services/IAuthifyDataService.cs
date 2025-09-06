@@ -1,6 +1,7 @@
 using Authify.Core.Common;
 using Authify.Core.Models;
 using Authify.Core.Server.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.UI.Server.Services;
@@ -44,4 +45,10 @@ public interface IAuthifyDataService
     Task<OperationResult> RemoveAsync(TwoFactorRequest request);
     Task<OperationResult<List<UserTwoFactor>>> GetAllAsync();
     Task<OperationResult<UserTwoFactor>> GetPreferredAsync();
+    
+    //ExternalLoginManagementService
+    Task<IList<UserLoginInfo>> GetConnectedProvidersAsync();
+    Task<bool> CanDisconnectProviderAsync(string provider);
+    Task<IdentityResult> DisconnectProviderAsync(string provider);
+    Task<IdentityResult> ConnectProviderAsync(UserLoginInfo loginInfo);
 }

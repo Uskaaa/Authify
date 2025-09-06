@@ -1,6 +1,8 @@
 using Authify.Application.Data;
 using Authify.Application.Extensions;
+using Authify.Application.Services;
 using Authify.Core.Extensions;
+using Authify.Core.Interfaces;
 using Authify.UI.Server.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -47,7 +49,9 @@ public static class ServiceCollectionExtensions
             });
             
         services.AddAuthorization();
+        services.AddControllers();
 
+        services.AddScoped<IExternalAuthService, ExternalAuthServiceCookie<TUser>>();
 
         return services;
     }

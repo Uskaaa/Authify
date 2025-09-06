@@ -1,10 +1,7 @@
-﻿using System.Security.Claims;
-using Authify.Application.Services;
 using Authify.Core.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Authify.Application.Controllers;
+namespace Authify.Client.Server.Controllers;
 
 [Route("auth")]
 public class ExternalAuthController : Controller
@@ -16,16 +13,22 @@ public class ExternalAuthController : Controller
         _externalAuthService = externalAuthService;
     }
 
-    [HttpGet("login/{provider}")]
-    public IActionResult ExternalLogin(string provider, string? returnUrl = "/")
+    // GET /auth/external-login?provider=Google&returnUrl=/
+    [HttpGet("external-login")]
+    public IActionResult ExternalLogin(string provider, string? returnUrl = null)
     {
+        if (string.IsNullOrWhiteSpace(provider))
+            return BadRequest("Provider is required.");
+
         var redirectUrl = _externalAuthService.GetRedirectUrl(provider, returnUrl);
         var props = _externalAuthService.GetAuthProperties(provider, redirectUrl);
+
         return Challenge(props, provider);
     }
 
+    // GET /auth/externallogin-callback
     [HttpGet("externallogin-callback")]
-    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = "/", string? remoteError = null)
+    public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
     {
         var result = await _externalAuthService.HandleExternalCallbackAsync(returnUrl, remoteError);
         return result;

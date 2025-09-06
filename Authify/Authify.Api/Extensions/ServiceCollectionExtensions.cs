@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using Authify.Application.Data;
 using Authify.Application.Extensions;
+using Authify.Application.Services;
 using Authify.Core.Extensions;
+using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +65,9 @@ public static class ServiceCollectionExtensions
         
         services.AddControllers()
             .AddApplicationPart(typeof(Controllers.ExternalAuthController).Assembly);
+
+        services.AddScoped<IExternalAuthService, ExternalAuthServiceJwt<TUser>>();
+        
         return services;
     }
 }
