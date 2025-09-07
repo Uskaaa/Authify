@@ -2,10 +2,10 @@
 
 namespace Authify.Core.Interfaces;
 
-public interface IOtpService
+public interface IOtpService<TUser>
 {
-    Task GenerateAndSendOtpAsync(string usernameOrDestination, TwoFactorMethod method);
-    Task<bool> ValidateOtpAsync(string usernameOrDestination, string otpCode);
-    string GenerateToken(string email, bool rememberMe);
-    (string email, bool rememberMe) ValidateToken(string token);
+    Task GenerateAndSendOtpAsync(TUser user, TwoFactorMethod method);
+    Task<bool> ValidateOtpAsync(TUser user, TwoFactorMethod method, string otpCode);
+    string GenerateToken(string email, bool rememberMe, TwoFactorMethod method);
+    (string email, bool rememberMe, TwoFactorMethod method) ValidateToken(string token);
 }

@@ -11,13 +11,13 @@ namespace Authify.Application.Services;
 public class CookieAuthService<TUser> : IAuthServiceCookie
     where TUser : IdentityUser
 {
-    private readonly IOtpService _otpService;
+    private readonly IOtpService<TUser> _otpService;
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
     private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
     private readonly IUserAccountService _userAccountService;
 
-    public CookieAuthService(IOtpService otpService, SignInManager<TUser> signInManager,
+    public CookieAuthService(IOtpService<TUser> otpService, SignInManager<TUser> signInManager,
         TwoFactorClaimService<TUser> twoFactorClaimService,
         UserManager<TUser> userManager,
         IUserAccountService userAccountService)
@@ -54,9 +54,9 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
         {
             // Bevorzugte Methode auswählen
             var method = preferredResult.Data.Method;
-            await _otpService.GenerateAndSendOtpAsync(request.UsernameOrEmail, method);
+            await _otpService.GenerateAndSendOtpAsync(user, method);
 
-            var token = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe);
+            var token = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe, preferredResult.Data.Method);
             return OperationResult<string>.Ok(token);
         }
 
@@ -66,13 +66,13 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
 
     public async Task<OperationResult<string>> VerifyOtpAsync(OtpVerificationRequest request)
     {
-        var (email, rememberMe) = _otpService.ValidateToken(request.Token);
+        var (email, rememberMe, method) = _otpService.ValidateToken(request.Token);
 
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
             return OperationResult<string>.Fail("Benutzer nicht gefunden.");
 
-        var isValid = await _otpService.ValidateOtpAsync(email, request.OtpCode);
+        var isValid = await _otpService.ValidateOtpAsync(user, method, request.OtpCode);
         if (!isValid)
             return OperationResult<string>.Fail("Invalid OTP code.");
 
@@ -84,13 +84,17 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
     public async Task<OperationResult> ResendOtpAsync(ResendOtpRequest request)
     {
         // Token validieren (optional, abhängig von deiner Logik)
-        var (email, rememberMe) = _otpService.ValidateToken(request.Token);
+        var (email, rememberMe, method) = _otpService.ValidateToken(request.Token);
 
         if (!string.Equals(email, request.UsernameOrEmail, StringComparison.OrdinalIgnoreCase))
             return OperationResult.Fail("Token does not match user.");
 
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return OperationResult.Fail("Benutzer nicht gefunden.");
+        
         // OTP senden mit gewünschter Methode
-        await _otpService.GenerateAndSendOtpAsync(request.UsernameOrEmail, request.TwoFactorMethod);
+        await _otpService.GenerateAndSendOtpAsync(user, request.TwoFactorMethod);
 
         return OperationResult.Ok();
     }

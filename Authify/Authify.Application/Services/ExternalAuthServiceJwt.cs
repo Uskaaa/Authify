@@ -13,17 +13,23 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly IOtpService<TUser> _otpService;
+    private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
     private readonly IAuthifyDbContext _context;
 
     public ExternalAuthServiceJwt(
         SignInManager<TUser> signInManager,
         UserManager<TUser> userManager,
         IJwtTokenService jwtTokenService,
+        IOtpService<TUser> otpService,
+        TwoFactorClaimService<TUser> twoFactorClaimService,
         IAuthifyDbContext context)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _jwtTokenService = jwtTokenService;
+        _otpService = otpService;
+        _twoFactorClaimService = twoFactorClaimService;
         _context = context;
     }
 
@@ -42,51 +48,56 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         if (info == null)
             return new RedirectResult("/login?error=external_login_info_null");
 
-        // Versuchen, bestehenden Login zu verwenden
-        var alreadyLinked = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-        TUser user;
+        TUser user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey)
+                     ?? await CreateOrLinkUserAsync(info);
 
-        if (alreadyLinked != null)
+        // ---- 2FA prüfen ----
+        var preferredResult = await _twoFactorClaimService.GetPreferredAsync(user.Id);
+        if (preferredResult.Success && preferredResult.Data != null)
         {
-            user = alreadyLinked;
-        }
-        else
-        {
-            // Neuen/Existierenden User anhand Email
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            if (string.IsNullOrWhiteSpace(email))
-                return new RedirectResult("/login?error=email_claim_missing");
+            var method = preferredResult.Data.Method;
+            await _otpService.GenerateAndSendOtpAsync(user, method);
 
-            user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = new TUser { UserName = email, Email = email, EmailConfirmed = true }; // ggf. EmailConfirmed nur bei verifizierter Email setzen
-                var createRes = await _userManager.CreateAsync(user);
-                if (!createRes.Succeeded)
-                    return new RedirectResult("/login?error=account_creation_failed");
-            }
-
-            var addLoginRes = await _userManager.AddLoginAsync(user, info);
-            if (!addLoginRes.Succeeded)
-                return new RedirectResult("/login?error=add_login_failed");
+            var otpToken = _otpService.GenerateToken(user.Email, rememberMe: true, method);
+            var redirectUrlOtp =
+                $"/twofactor?token={Uri.EscapeDataString(otpToken)}&returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}";
+            return new RedirectResult(redirectUrlOtp);
         }
 
-        // An dieser Stelle: KEIN Cookie-SignIn – wir liefern JWT + RefreshToken zurück
+        // ---- Kein 2FA ----
         var jwt = _jwtTokenService.GenerateToken(user);
+        var refresh =
+            _jwtTokenService.GenerateRefreshToken(user.Id, deviceName: "external", ipAddress: "unknown",
+                rememberMe: true);
 
-        // Device/IP kannst du bei Bedarf über HttpContext abgreifen (Controller ruft Service, gibt IP/Agent mit)
-        var device = "external";
-        var ip = "unknown";
-        var rememberMe = true; // optional: aus returnUrl/state lesen
-
-        var refresh = _jwtTokenService.GenerateRefreshToken(user.Id, device, ip, rememberMe);
         await _context.RefreshTokens.AddAsync(refresh);
         await _context.SaveChangesAsync();
 
-        // Redirect zur WASM-App mit Tokens im Fragment
-        // Tipp: Nutze ein dediziertes Callback-Page (z.B. /auth/external-success), die die Tokens aus dem Fragment liest
         var target = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
-        var redirectUrl = $"{target}#access={Uri.EscapeDataString(jwt)}&refresh={Uri.EscapeDataString(refresh.Token)}&remember={(rememberMe ? "true" : "false")}";
+        var redirectUrl =
+            $"{target}#access={Uri.EscapeDataString(jwt)}&refresh={Uri.EscapeDataString(refresh.Token)}&remember=true";
         return new RedirectResult(redirectUrl);
+    }
+
+    private async Task<TUser> CreateOrLinkUserAsync(ExternalLoginInfo info)
+    {
+        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        if (string.IsNullOrWhiteSpace(email))
+            throw new Exception("External login email missing.");
+
+        var existingUser = await _userManager.FindByEmailAsync(email);
+        if (existingUser == null)
+        {
+            existingUser = new TUser { UserName = email, Email = email, EmailConfirmed = true };
+            var createRes = await _userManager.CreateAsync(existingUser);
+            if (!createRes.Succeeded)
+                throw new Exception("Account creation failed.");
+        }
+
+        var addLoginRes = await _userManager.AddLoginAsync(existingUser, info);
+        if (!addLoginRes.Succeeded)
+            throw new Exception("Failed to link external login.");
+
+        return existingUser;
     }
 }

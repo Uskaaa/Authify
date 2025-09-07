@@ -14,7 +14,7 @@ namespace Authify.Application.Services;
 public class JwtAuthService<TUser> : IAuthServiceJwt
     where TUser : IdentityUser
 {
-    private readonly IOtpService _otpService;
+    private readonly IOtpService<TUser> _otpService;
     private readonly SignInManager<TUser> _signInManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly UserManager<TUser> _userManager;
@@ -22,7 +22,7 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
     private readonly IUserAccountService _userAccountService;
     private readonly IAuthifyDbContext _context;
 
-    public JwtAuthService(IOtpService otpService, SignInManager<TUser> signInManager, IJwtTokenService jwtTokenService,
+    public JwtAuthService(IOtpService<TUser> otpService, SignInManager<TUser> signInManager, IJwtTokenService jwtTokenService,
         TwoFactorClaimService<TUser> twoFactorClaimService,
         UserManager<TUser> userManager,
         IUserAccountService userAccountService,
@@ -59,9 +59,9 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
         if (preferredResult.Success && preferredResult.Data != null)
         {
             var method = preferredResult.Data.Method;
-            await _otpService.GenerateAndSendOtpAsync(request.UsernameOrEmail, method);
+            await _otpService.GenerateAndSendOtpAsync(user, method);
 
-            var otpToken = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe);
+            var otpToken = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe, preferredResult.Data.Method);
             return OperationResult<(string, string)?>.Ok((AccessToken: otpToken, RefreshToken: string.Empty));
         }
 
@@ -77,13 +77,13 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
 
     public async Task<OperationResult<(string AccessToken, string RefreshToken)?>> VerifyOtpAsync(OtpVerificationRequest request)
     {
-        var (email, rememberMe) = _otpService.ValidateToken(request.Token);
+        var (email, rememberMe, twoFactorMethod) = _otpService.ValidateToken(request.Token);
 
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
             return OperationResult<(string, string)?>.Fail("Benutzer nicht gefunden.");
 
-        var isValid = await _otpService.ValidateOtpAsync(email, request.OtpCode);
+        var isValid = await _otpService.ValidateOtpAsync(user, twoFactorMethod, request.OtpCode);
         if (!isValid)
             return OperationResult<(string, string)?>.Fail("Invalid OTP code.");
 
@@ -100,13 +100,17 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
     public async Task<OperationResult> ResendOtpAsync(ResendOtpRequest request)
     {
         // Token validieren (optional, abhängig von deiner Logik)
-        var (email, rememberMe) = _otpService.ValidateToken(request.Token);
+        var (email, rememberMe, twoFactorMethod) = _otpService.ValidateToken(request.Token);
 
         if (!string.Equals(email, request.UsernameOrEmail, StringComparison.OrdinalIgnoreCase))
             return OperationResult.Fail("Token does not match user.");
 
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return OperationResult<(string, string)?>.Fail("Benutzer nicht gefunden.");
+        
         // OTP senden mit gewünschter Methode
-        await _otpService.GenerateAndSendOtpAsync(request.UsernameOrEmail, request.TwoFactorMethod);
+        await _otpService.GenerateAndSendOtpAsync(user, request.TwoFactorMethod);
 
         return OperationResult.Ok();
     }

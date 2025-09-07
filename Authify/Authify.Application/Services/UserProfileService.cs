@@ -1,5 +1,6 @@
 ﻿using Authify.Application.Data;
 using Authify.Core.Common;
+using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +13,15 @@ public class UserProfileService<TUser> : IUserProfileService
 {
     private readonly UserManager<TUser> _userManager;
     private readonly IAuthifyDbContext _context;
+    private readonly IEmailSender _emailSender;
+    private readonly InfrastructureOptions _infrastructureOptions;
 
-    public UserProfileService(UserManager<TUser> userManager, IAuthifyDbContext context)
+    public UserProfileService(UserManager<TUser> userManager, IAuthifyDbContext context, IEmailSender emailSender, InfrastructureOptions infrastructureOptions)
     {
         _userManager = userManager;
         _context = context;
+        _emailSender = emailSender;
+        _infrastructureOptions = infrastructureOptions;
     }
 
     public async Task<OperationResult> UpdatePersonalInformationAsync(string userId,
@@ -35,6 +40,7 @@ public class UserProfileService<TUser> : IUserProfileService
 
         profile.FullName = request.FullName;
         profile.PhoneNumber = request.PhoneNumber;
+        user.PhoneNumber = request.PhoneNumber;
         profile.JobTitle = request.JobTitle;
         profile.Company = request.Company;
         profile.Bio = request.Bio;
@@ -45,6 +51,11 @@ public class UserProfileService<TUser> : IUserProfileService
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             user.Email = request.Email;
             user.EmailConfirmed = false;
+            
+            var confirmationLink =
+                $"https://{_infrastructureOptions.Domain}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
+                $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
             // ConfirmEmailAsync kann später für Bestätigung genutzt werden
         }
 

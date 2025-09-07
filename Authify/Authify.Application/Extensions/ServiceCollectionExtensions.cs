@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthifyDbContext>(provider => provider.GetRequiredService<TDbContext>());
         services.AddScoped<IExternalLoginManagementService<TUser>, ExternalLoginManagementService<TUser>>();
         services.AddScoped<IEmailSender, EmailService>();
-        services.AddScoped<IOtpService, OtpService>();
+        services.AddScoped<IOtpService<TUser>, OtpService<TUser>>();
         services.AddScoped<IUserService, UserService<TUser>>();
         services.AddScoped<ITwoFactorClaimService, TwoFactorClaimService<TUser>>();
         services.AddScoped<IUserProfileService, UserProfileService<TUser>>();

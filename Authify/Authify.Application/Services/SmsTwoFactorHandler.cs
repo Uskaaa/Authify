@@ -1,8 +1,10 @@
 ﻿using Authify.Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Application.Services;
 
-public class SmsTwoFactorHandler : ITwoFactorHandler
+public class SmsTwoFactorHandler<TUser> : ITwoFactorHandler<TUser>
+where TUser : IdentityUser
 {
     private readonly ISmsSender _smsSender;
 
@@ -11,8 +13,8 @@ public class SmsTwoFactorHandler : ITwoFactorHandler
         _smsSender = smsSender;
     }
 
-    public async Task SendOtpAsync(string destination, string otp)
+    public async Task SendOtpAsync(TUser user, string otp)
     {
-        await _smsSender.SendSmsAsync(destination, $"Your OTP code is: {otp}");
+        if (user.PhoneNumber != null) await _smsSender.SendSmsAsync(user.PhoneNumber, $"Your OTP code is: {otp}");
     }
 }
