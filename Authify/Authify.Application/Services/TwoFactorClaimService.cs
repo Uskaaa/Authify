@@ -28,6 +28,21 @@ public class TwoFactorClaimService<TUser> : ITwoFactorClaimService
         if (user == null)
             return OperationResult.Fail("User not found.");
 
+        // Prüfen, ob die Methode tatsächlich verwendet werden kann
+        switch (request.TwoFactorMethod)
+        {
+            case TwoFactorMethod.Sms:
+                if (string.IsNullOrEmpty(user.PhoneNumber) || !user.PhoneNumberConfirmed)
+                    return OperationResult.Fail("Phone number is not set or confirmed.");
+                break;
+            case TwoFactorMethod.Email:
+                if (string.IsNullOrEmpty(user.Email) || !user.EmailConfirmed)
+                    return OperationResult.Fail("Email is not set or confirmed.");
+                break;
+            default:
+                return OperationResult.Fail("Unknown two-factor method.");
+        }
+
         var existing = await _context.UserTwoFactors
             .FirstOrDefaultAsync(x => x.UserId == userId && x.Method == request.TwoFactorMethod);
 
