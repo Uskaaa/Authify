@@ -15,4 +15,8 @@ public class InfrastructureOptions
     public string GitHubClientSecret { get; set; } = string.Empty;
     public string FacebookAppId { get; set; } = string.Empty;
     public string FacebookAppSecret { get; set; } = string.Empty;
+    
+    public string AccountSid { get; set; } = string.Empty;
+    public string AuthToken { get; set; } = string.Empty;
+    public string FromNumber { get; set; } = string.Empty;
 }
