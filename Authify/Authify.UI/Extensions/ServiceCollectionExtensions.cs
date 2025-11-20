@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Authify.UI.Server.Extensions;
+namespace Authify.UI.Extensions;
 
 public static class ServiceCollectionExtensions
 {

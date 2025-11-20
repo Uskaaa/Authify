@@ -15,7 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Authify.Application\Authify.Application.csproj" />
-      <ProjectReference Include="..\Authify.UI.Server\Authify.UI.Server.csproj" />
+      <ProjectReference Include="..\Authify.UI\Authify.UI.csproj" />
     </ItemGroup>
 
 </Project>

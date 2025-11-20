@@ -1,9 +1,11 @@
 using Authify.Application.Data;
 using Authify.Application.Extensions;
 using Authify.Application.Services;
+using Authify.Client.Server.Services;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
-using Authify.UI.Server.Extensions;
+using Authify.UI.Extensions;
+using Authify.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,12 @@ public static class ServiceCollectionExtensions
         
         services.AddAuthifyApplication<TDbContext, TUser>(configureOptions);
         services.AddAuthifyUI();
+
+        // ensure HttpContextAccessor is available for ServerDataService
+        services.AddHttpContextAccessor();
+
+        // register server-side implementation of IAuthifyDataService
+        services.AddScoped<IAuthifyDataService, ServerDataService<TUser>>();
 
         services.AddAuthentication(options =>
             {

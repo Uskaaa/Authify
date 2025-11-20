@@ -2,7 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Authify.Core.Server.Models
 @using Microsoft.AspNetCore.Components.Forms
-@inject IUserService UserService
+@inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
 
 <div class="register-container">
@@ -89,7 +89,7 @@
     private async Task HandleValidSubmit()
     {
         _isLoading = true;
-        var result = await UserService.RegisterAsync(_request);
+        var result = await DataService.RegisterAsync(_request);
         _isLoading = false;
         if (result.Success)
         {
@@ -97,7 +97,7 @@
         }
         else
         {
-            Console.WriteLine($"Registration failed: {result.ErrorMessage}");
+            Console.WriteLine("Registration failed: " + (result.ErrorMessage ?? "Unknown error"));
         }
     }
 
@@ -113,11 +113,17 @@
 
     private void GoogleOAuth()
     {
-        // Platzhalter für Google OAuth
+        // External OAuth benötigt einen vollständigen Browser-Redirect
+        // forceLoad: true ist ZWINGEND erforderlich für OAuth-Flows
+        // Bei Registrierung wird der Benutzer nach erfolgreicher OAuth automatisch registriert
+        NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/", forceLoad: true);
     }
 
     private void GitHubOAuth()
     {
-        // Platzhalter für GitHub OAuth
+        // External OAuth benötigt einen vollständigen Browser-Redirect
+        // forceLoad: true ist ZWINGEND erforderlich für OAuth-Flows
+        // Bei Registrierung wird der Benutzer nach erfolgreicher OAuth automatisch registriert
+        NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/", forceLoad: true);
     }
 } 

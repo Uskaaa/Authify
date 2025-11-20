@@ -4,16 +4,19 @@ using Authify.Core.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Authify.UI.Server.Services;
+namespace Authify.UI.Services;
 
 public interface IAuthifyDataService
 {
-    //External Auth
-    Task<IActionResult> ExternalLoginAsync(string provider, string? returnUrl = "/");
-    
     //AuthService
+    [System.Obsolete("Use LoginAsync(LoginRequest) returning LoginResponseDto")]
     Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtLoginAsync(LoginRequest request);
+
+    [System.Obsolete("Use LoginAsync(LoginRequest) returning LoginResponseDto")]
     Task<OperationResult<string>> CookieLoginAsync(LoginRequest loginRequest);
+
+    Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request);
+
     Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult> ResendOtpAsync(ResendOtpRequest request);

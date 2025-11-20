@@ -2,8 +2,8 @@
 using Authify.Application.Data;
 using Authify.Client.Wasm.Services;
 using Authify.Core.Interfaces;
-using Authify.UI.Server.Extensions;
-using Authify.UI.Server.Services;
+using Authify.UI.Extensions;
+using Authify.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

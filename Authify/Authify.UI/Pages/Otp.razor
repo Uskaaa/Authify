@@ -4,7 +4,7 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 @inject NavigationManager NavigationManager
-@inject IAuthServiceJwt AuthServiceJwt
+@inject IAuthifyDataService DataService
 
 <div @ref="_containerRef" class="otp-container">
     <div class="auth-card">
@@ -75,18 +75,34 @@
     {
         _isVerifying = true;
         _request.OtpCode = OtpCode;
-        var result = await AuthServiceJwt.VerifyOtpAsync(_request);
-        Console.WriteLine($"Verifiziere Code: {OtpCode}");
-        _isVerifying = false;
-        if (result.Success)
+        
+        // Try JWT verification first
+        var jwtResult = await DataService.JwtVerifyOtpAsync(_request);
+        
+        if (jwtResult.Success)
         {
+            // JWT verification successful
             _error = false;
             NavigationManager.NavigateTo("/");
         }
         else
         {
-            _error = true;
+            // Try Cookie verification as fallback
+            var cookieResult = await DataService.CookieVerifyOtpAsync(_request);
+            
+            if (cookieResult.Success)
+            {
+                _error = false;
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                _error = true;
+                Console.WriteLine($"OTP verification failed: {cookieResult.ErrorMessage ?? jwtResult.ErrorMessage}");
+            }
         }
+        
+        _isVerifying = false;
     }
 
     public async ValueTask DisposeAsync()

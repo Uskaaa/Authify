@@ -1,8 +1,6 @@
-﻿@page "/confirm-email"
-@using System.Net.Http.Json
-@using Authify.Core.Models
+﻿﻿﻿@page "/confirm-email"
 @inject NavigationManager NavigationManager
-@inject HttpClient HttpClient
+@inject IAuthifyDataService DataService
 
 @if (_error)
 {
@@ -29,9 +27,9 @@ else
         _request.UserId = query.GetValueOrDefault("userId")!;
         _request.Token = query.GetValueOrDefault("token")!;
         
-        var result = HttpClient.GetAsync($"api/user/confirm-email?userId={_request.UserId}&token={_request.Token}");
+        var result = DataService.ConfirmEmailAsync(_request);
         
-        if (result.IsCompletedSuccessfully)
+        if (result.Result.Success)
         {
             _error = false;
             Task.Delay(1000);
