@@ -4,8 +4,6 @@ using Authify.Core.Common;
 using Authify.Core.Models;
 using Authify.Core.Server.Models;
 using Authify.UI.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Client.Wasm.Services;
 
@@ -184,18 +182,71 @@ public class WasmDataService : IAuthifyDataService
 
     public Task<OperationResult<UserTwoFactor>> GetPreferredAsync() => GetAsync<UserTwoFactor>("api/twofactor/preferred");
 
-    public Task<IList<UserLoginInfo>> GetConnectedProvidersAsync() => _httpClient.GetFromJsonAsync<IList<UserLoginInfo>>("api/externallogins")!;
-
-    public Task<bool> CanDisconnectProviderAsync(string provider) => _httpClient.GetFromJsonAsync<bool>($"api/externallogins/can-disconnect?provider={provider}");
-
-    public async Task<IdentityResult> DisconnectProviderAsync(string provider)
+    public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync()
     {
-        var response = await _httpClient.PostAsJsonAsync("api/externallogins/disconnect", new { provider });
-        return await response.Content.ReadFromJsonAsync<IdentityResult>() ?? IdentityResult.Failed();
+        try
+        {
+            var providers = await _httpClient.GetFromJsonAsync<List<ExternalLoginDto>>("api/externallogins", _jsonOptions);
+            return providers != null 
+                ? OperationResult<List<ExternalLoginDto>>.Ok(providers)
+                : OperationResult<List<ExternalLoginDto>>.Fail("Failed to retrieve connected providers.");
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<List<ExternalLoginDto>>.Fail(ex.Message);
+        }
     }
 
-    public Task<IdentityResult> ConnectProviderAsync(UserLoginInfo loginInfo)
+    public async Task<OperationResult<bool>> CanDisconnectProviderAsync(string provider)
     {
-        throw new NotImplementedException("External connect should be handled by UI navigation and server-side callbacks.");
+        try
+        {
+            var canDisconnect = await _httpClient.GetFromJsonAsync<bool>($"api/externallogins/can-disconnect?provider={Uri.EscapeDataString(provider)}");
+            return OperationResult<bool>.Ok(canDisconnect);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult<bool>.Fail(ex.Message);
+        }
+    }
+
+    public async Task<OperationResult> DisconnectProviderAsync(string provider)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/externallogins/disconnect", new { provider }, _jsonOptions);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
+                return result ?? OperationResult.Ok();
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync();
+            return OperationResult.Fail(errorContent);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult.Fail(ex.Message);
+        }
+    }
+
+    public async Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/externallogins/connect", request, _jsonOptions);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
+                return result ?? OperationResult.Ok();
+            }
+            
+            var errorContent = await response.Content.ReadAsStringAsync();
+            return OperationResult.Fail(errorContent);
+        }
+        catch (Exception ex)
+        {
+            return OperationResult.Fail(ex.Message);
+        }
     }
 }

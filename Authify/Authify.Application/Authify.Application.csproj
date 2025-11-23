@@ -5,6 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Authify.Application</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>carefreeerror20</Authors>
+        <Version>1.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

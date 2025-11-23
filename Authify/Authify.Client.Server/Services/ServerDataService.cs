@@ -5,7 +5,6 @@ using Authify.Core.Server.Models;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Authify.Client.Server.Services;
@@ -285,55 +284,85 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Identi
         return _twoFactorClaimService.GetPreferredAsync(userId);
     }
 
-    public async Task<IList<UserLoginInfo>> GetConnectedProvidersAsync()
+    public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync()
     {
         var userId = GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
-            return new List<UserLoginInfo>();
+            return OperationResult<List<ExternalLoginDto>>.Fail("User not authenticated.");
         
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return new List<UserLoginInfo>();
+            return OperationResult<List<ExternalLoginDto>>.Fail("User not found.");
         
-        return await _externalLoginManagementService.GetConnectedProvidersAsync(user);
+        var providers = await _externalLoginManagementService.GetConnectedProvidersAsync(user);
+        
+        // Convert UserLoginInfo to ExternalLoginDto
+        var dtos = providers.Select(p => new ExternalLoginDto
+        {
+            LoginProvider = p.LoginProvider,
+            ProviderKey = p.ProviderKey,
+            ProviderDisplayName = p.ProviderDisplayName
+        }).ToList();
+        
+        return OperationResult<List<ExternalLoginDto>>.Ok(dtos);
     }
 
-    public async Task<bool> CanDisconnectProviderAsync(string provider)
+    public async Task<OperationResult<bool>> CanDisconnectProviderAsync(string provider)
     {
         var userId = GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
-            return false;
+            return OperationResult<bool>.Fail("User not authenticated.");
         
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return false;
+            return OperationResult<bool>.Fail("User not found.");
         
-        return await _externalLoginManagementService.CanDisconnectProviderAsync(user, provider);
+        var canDisconnect = await _externalLoginManagementService.CanDisconnectProviderAsync(user, provider);
+        return OperationResult<bool>.Ok(canDisconnect);
     }
 
-    public async Task<IdentityResult> DisconnectProviderAsync(string provider)
+    public async Task<OperationResult> DisconnectProviderAsync(string provider)
     {
         var userId = GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
-            return IdentityResult.Failed(new IdentityError { Description = "User not authenticated." });
+            return OperationResult.Fail("User not authenticated.");
         
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            return OperationResult.Fail("User not found.");
         
-        return await _externalLoginManagementService.DisconnectProviderAsync(user, provider);
+        var result = await _externalLoginManagementService.DisconnectProviderAsync(user, provider);
+        
+        if (result.Succeeded)
+            return OperationResult.Ok();
+        
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        return OperationResult.Fail(errors);
     }
 
-    public async Task<IdentityResult> ConnectProviderAsync(UserLoginInfo loginInfo)
+    public async Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request)
     {
         var userId = GetCurrentUserId();
         if (string.IsNullOrEmpty(userId))
-            return IdentityResult.Failed(new IdentityError { Description = "User not authenticated." });
+            return OperationResult.Fail("User not authenticated.");
         
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
-            return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            return OperationResult.Fail("User not found.");
         
-        return await _externalLoginManagementService.ConnectProviderAsync(user, loginInfo);
+        // Convert ConnectExternalLoginRequest to UserLoginInfo
+        var loginInfo = new UserLoginInfo(
+            request.LoginProvider,
+            request.ProviderKey,
+            request.ProviderDisplayName
+        );
+        
+        var result = await _externalLoginManagementService.ConnectProviderAsync(user, loginInfo);
+        
+        if (result.Succeeded)
+            return OperationResult.Ok();
+        
+        var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+        return OperationResult.Fail(errors);
     }
 }

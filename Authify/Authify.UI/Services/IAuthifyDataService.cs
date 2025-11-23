@@ -1,11 +1,13 @@
 using Authify.Core.Common;
 using Authify.Core.Models;
 using Authify.Core.Server.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.UI.Services;
 
+/// <summary>
+/// Platform-independent service interface for Authify data operations.
+/// This interface uses only platform-agnostic types (no ASP.NET Core dependencies).
+/// </summary>
 public interface IAuthifyDataService
 {
     //AuthService
@@ -49,9 +51,9 @@ public interface IAuthifyDataService
     Task<OperationResult<List<UserTwoFactor>>> GetAllAsync();
     Task<OperationResult<UserTwoFactor>> GetPreferredAsync();
     
-    //ExternalLoginManagementService
-    Task<IList<UserLoginInfo>> GetConnectedProvidersAsync();
-    Task<bool> CanDisconnectProviderAsync(string provider);
-    Task<IdentityResult> DisconnectProviderAsync(string provider);
-    Task<IdentityResult> ConnectProviderAsync(UserLoginInfo loginInfo);
+    //ExternalLoginManagementService - Platform-independent
+    Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync();
+    Task<OperationResult<bool>> CanDisconnectProviderAsync(string provider);
+    Task<OperationResult> DisconnectProviderAsync(string provider);
+    Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request);
 }
