@@ -5,13 +5,13 @@ namespace Authify.Application.Data;
 
 public interface IAuthifyDbContext
 {
-    DbSet<UserTwoFactor> UserTwoFactors { get; }
-    DbSet<UserProfile> UserProfiles { get; }
-    DbSet<UserSession> UserSessions { get; }
-    DbSet<UserExportRequest> UserExportRequests { get; }
-    DbSet<UserDeactivationRequest> UserDeactivationRequests { get; }
-    DbSet<UserDeletionRequest> UserDeletionRequests { get; }
-    DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<UserTwoFactor> UserTwoFactors { get; set; }
+    DbSet<UserProfile> UserProfiles { get; set; }
+    DbSet<UserSession> UserSessions { get; set; }
+    DbSet<UserExportRequest> UserExportRequests { get; set; }
+    DbSet<UserDeactivationRequest> UserDeactivationRequests { get; set; }
+    DbSet<UserDeletionRequest> UserDeletionRequests { get; set; }
+    DbSet<RefreshToken> RefreshTokens { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
