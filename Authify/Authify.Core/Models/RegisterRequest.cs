@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Authify.Core.Server.Models;
+namespace Authify.Core.Models;
 
 public class RegisterRequest : IValidatableObject
 {

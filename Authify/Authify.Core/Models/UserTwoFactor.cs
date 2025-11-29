@@ -9,9 +9,6 @@ public class UserTwoFactor
 {
     [Key]
     public string UserId { get; set; }
-
-    [ForeignKey(nameof(UserId))]
-    public IdentityUser User { get; set; } 
     public TwoFactorMethod Method { get; set; }
     public bool IsEnabled { get; set; } = true;
     public int Priority { get; set; } = 0;

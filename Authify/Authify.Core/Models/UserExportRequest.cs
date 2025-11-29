@@ -8,7 +8,6 @@ public class UserExportRequest
 
     // Fremdschlüssel zum Benutzer
     public string UserId { get; set; }
-    public IdentityUser User { get; set; }
 
     public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
     public bool IsCompleted { get; set; } = false;

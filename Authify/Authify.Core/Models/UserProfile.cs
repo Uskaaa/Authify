@@ -9,9 +9,6 @@ public class UserProfile
     [Key]
     public string UserId { get; set; }
 
-    [ForeignKey(nameof(UserId))]
-    public IdentityUser User { get; set; } 
-
     public string? FullName { get; set; }
 
     public string? PhoneNumber { get; set; }
