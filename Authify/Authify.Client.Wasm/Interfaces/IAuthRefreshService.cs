@@ -1,9 +1,9 @@
-using Authify.Core.Common;
-using Authify.Core.Models;
+using Authify.Client.Wasm.Models;
+using Authify.UI.Common;
 
-namespace Authify.Core.Interfaces;
+namespace Authify.Client.Wasm.Interfaces;
 
 public interface IAuthRefreshService
 {
-    Task<OperationResult<(string AccessToken, RefreshTokenRequest RefreshToken)>> RefreshTokenAsync(RefreshTokenRequest request);
+    Task<OperationResult<(string AccessToken, string RefreshToken)>> RefreshTokenAsync(RefreshTokenRequest request);
 }

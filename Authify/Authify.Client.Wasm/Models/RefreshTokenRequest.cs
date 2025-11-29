@@ -1,4 +1,4 @@
-namespace Authify.Core.Models;
+namespace Authify.Client.Wasm.Models;
 
 public class RefreshTokenRequest
 {

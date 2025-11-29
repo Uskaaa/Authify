@@ -59,7 +59,7 @@ public class RefreshTokenController<TUser> : ControllerBase
             return Ok(new
             {
                 AccessToken = jwtToken,
-                RefreshToken = refreshTokenRequest
+                RefreshToken = newRefreshToken.Token
             });
         }
         return Unauthorized(new { error = "No User was found!" });

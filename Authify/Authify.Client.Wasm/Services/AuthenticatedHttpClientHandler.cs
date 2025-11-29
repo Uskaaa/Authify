@@ -1,8 +1,9 @@
 using System.Net;
 using System.Net.Http.Headers;
-using Authify.Core.Common;
-using Authify.Core.Interfaces;
+using Authify.Client.Wasm.Interfaces;
+using Authify.Client.Wasm.Models;
 using Microsoft.AspNetCore.Components;
+
 
 namespace Authify.Client.Wasm.Services;
 
@@ -19,44 +20,73 @@ public class AuthenticatedHttpClientHandler : DelegatingHandler
         _navManager = navManager;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-        CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        // JWT anhängen
         var accessToken = await _tokenStore.GetAccessTokenAsync();
         if (!string.IsNullOrEmpty(accessToken))
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var response = await base.SendAsync(request, cancellationToken);
 
-        // 401 = Token abgelaufen
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            var refreshToken = await _tokenStore.GetRefreshTokenAsync();
+            var storedTokenResult = await _tokenStore.GetRefreshTokenAsync();
 
-            // RefreshToken an AuthRefreshService übergeben
-            if (refreshToken.Data != null)
+            if (storedTokenResult.Success && storedTokenResult.Data != null)
             {
-                var refreshResult = await _authRefreshService.RefreshTokenAsync(refreshToken.Data);
+                // Refresh API aufrufen
+                var refreshResult = await _authRefreshService.RefreshTokenAsync(storedTokenResult.Data);
+
+                // Prüfen ob wir neue Tokens bekommen haben
                 if (refreshResult.Success && !string.IsNullOrEmpty(refreshResult.Data.AccessToken))
                 {
-                    // Tokens speichern
+                    // Speichern
                     await _tokenStore.SetTokensAsync(refreshResult.Data.AccessToken, refreshResult.Data.RefreshToken);
 
-                    // Ursprüngliche Anfrage erneut senden mit neuem JWT
-                    request.Headers.Authorization =
+                    // --- WICHTIG: Request Klonen ---
+                    // Man darf einen Request in Blazor oft nicht 2x senden. Wir müssen ihn klonen.
+                    var newRequest = await CloneHttpRequestMessageAsync(request);
+                    
+                    // Neuen Header setzen
+                    newRequest.Headers.Authorization = 
                         new AuthenticationHeaderValue("Bearer", refreshResult.Data.AccessToken);
-                    response = await base.SendAsync(request, cancellationToken);
+                    
+                    // Request wiederholen
+                    response = await base.SendAsync(newRequest, cancellationToken);
+                }
+                else
+                {
+                    _navManager.NavigateTo("/login", forceLoad: true);
                 }
             }
             else
             {
-                // RefreshToken ungültig → Redirect
                 _navManager.NavigateTo("/login", forceLoad: true);
-                response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
         }
 
         return response;
+    }
+
+    // Hilfsmethode zum Klonen (unverzichtbar für Retries!)
+    private async Task<HttpRequestMessage> CloneHttpRequestMessageAsync(HttpRequestMessage req)
+    {
+        var clone = new HttpRequestMessage(req.Method, req.RequestUri);
+
+        if (req.Content != null)
+        {
+            var ms = new MemoryStream();
+            await req.Content.CopyToAsync(ms);
+            ms.Position = 0;
+            clone.Content = new StreamContent(ms);
+
+            foreach (var h in req.Content.Headers)
+                clone.Content.Headers.TryAddWithoutValidation(h.Key, h.Value);
+        }
+
+        foreach (var h in req.Headers)
+            clone.Headers.TryAddWithoutValidation(h.Key, h.Value);
+
+        return clone;
     }
 }

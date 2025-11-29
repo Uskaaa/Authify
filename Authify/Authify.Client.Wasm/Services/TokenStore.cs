@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Authify.Core.Common;
-using Authify.Core.Interfaces;
-using Authify.Core.Models;
+using Authify.Client.Wasm.Interfaces;
+using Authify.Client.Wasm.Models;
+using Authify.UI.Common;
 using Microsoft.JSInterop;
 
 namespace Authify.Client.Wasm.Services;
@@ -39,11 +39,15 @@ public class TokenStore : ITokenStore
         }
     }
 
-    public async Task SetTokensAsync(string accessToken, RefreshTokenRequest refreshTokenRequest)
+    public async Task SetTokensAsync(string accessToken, string refreshToken)
     {
         await _jsRuntime.InvokeVoidAsync("localStorage.setItem", AccessTokenKey, accessToken);
-
-        var json = JsonSerializer.Serialize(refreshTokenRequest);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", RefreshTokenKey, json);
+        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", RefreshTokenKey, refreshToken);
+    }
+    
+    public async Task RemoveTokensAsync()
+    {
+        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", AccessTokenKey);
+        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", RefreshTokenKey);
     }
 }

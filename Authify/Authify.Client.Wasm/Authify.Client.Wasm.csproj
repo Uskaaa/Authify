@@ -7,11 +7,10 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.0.3</Version>
+        <Version>1.2.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Authify.Core\Authify.Core.csproj" />
       <ProjectReference Include="..\Authify.UI\Authify.UI.csproj" />
     </ItemGroup>
 

@@ -1,12 +1,13 @@
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
-using Authify.Core.Server.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Authify.Api.Controllers;
 
 [ApiController]
+[EnableRateLimiting("AuthPolicy")]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
@@ -31,6 +32,12 @@ public class AuthController : ControllerBase
 
         var (accessToken, refreshToken) = result.Data!.Value;
 
+        var loginResponse = new LoginResponseDto()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+        };
+        
         // Wenn OTP zurückkommt (kein JWT) → UI entscheidet redirect auf OTP-Seite
         if (string.IsNullOrEmpty(refreshToken))
         {
@@ -38,7 +45,7 @@ public class AuthController : ControllerBase
         }
 
         // Kein OTP → JWT + RefreshToken zurückgeben
-        return Ok(new { accessToken, refreshToken });
+        return Ok(OperationResult<LoginResponseDto>.Ok(loginResponse));;
     }
 
     [HttpPost(nameof(VerifyOtp))]
