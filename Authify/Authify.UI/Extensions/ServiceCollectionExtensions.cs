@@ -10,7 +10,6 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddAuthifyUI(this IServiceCollection services)
     {
-        
         return services;
     }
 }

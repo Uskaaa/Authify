@@ -1,81 +1,112 @@
 @page "/register"
-@using System.ComponentModel.DataAnnotations
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
 @inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<RedirectToHomeIfAuthenticated />
 
 <div class="register-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1>Create Account</h1>
-            <p>Please fill in your details to register</p>
-        </div>
-        <EditForm Model="_request" OnValidSubmit="HandleValidSubmit" class="auth-form">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <InputText id="fullName" class="form-control" @bind-Value="_request.Username" />
-                <ValidationMessage For="@(() => _request.Username)" />
+    <div class="content-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Please fill in your details to register</p>
             </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <InputText id="email" class="form-control" @bind-Value="_request.Email" />
-                <ValidationMessage For="@(() => _request.Email)" />
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="password-input">
-                    <InputText id="password" class="form-control" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" />
-                    <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
-                        <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+            
+            <EditForm Model="_request" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                
+                <!-- WICHTIG: Wrapper für Flexbox Gap -->
+                <div class="auth-stack">
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <InputText id="fullName" @bind-Value="_request.Username" placeholder="John Doe" />
+                        <div class="validation-wrapper">
+                            <ValidationMessage For="@(() => _request.Username)" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <InputText id="email" @bind-Value="_request.Email" placeholder="name@example.com" />
+                        <div class="validation-wrapper">
+                            <ValidationMessage For="@(() => _request.Email)" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-input">
+                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="Create a password" />
+                            <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
+                                <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                            </button>
+                        </div>
+                        <div class="validation-wrapper">
+                            <ValidationMessage For="@(() => _request.Password)" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="password-input">
+                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="Confirm your password" />
+                            <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
+                                <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                            </button>
+                        </div>
+                        <div class="validation-wrapper">
+                            <ValidationMessage For="@(() => _request.ConfirmPassword)" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="terms">
+                            <InputCheckbox @bind-Value="_request.TermsAccepted" />
+                            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                        </label>
+                        <div class="validation-wrapper">
+                            <ValidationMessage For="@(() => _request.TermsAccepted)" />
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
+                        @if (_isLoading)
+                        {
+                            <i class="fas fa-spinner fa-spin"></i> <span>Creating account...</span>
+                        }
+                        else
+                        {
+                            <span>Create Account</span>
+                        }
                     </button>
-                </div>
-                <ValidationMessage For="@(() => _request.Password)" />
+                    
+                </div> <!-- Ende auth-stack -->
+            </EditForm>
+            
+            <div class="divider">
+                <span>or continue with</span>
             </div>
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <div class="password-input">
-                    <InputText id="confirmPassword" class="form-control" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" />
-                    <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
-                        <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
-                    </button>
-                </div>
-                <ValidationMessage For="@(() => _request.ConfirmPassword)" />
+            
+            <div class="oauth-buttons">
+                <button class="btn btn-oauth google" @onclick="GoogleOAuth">
+                    <i class="fab fa-google"></i>
+                    <span>Sign up with Google</span>
+                </button>
+                <button class="btn btn-oauth github" @onclick="GitHubOAuth">
+                    <i class="fab fa-github"></i>
+                    <span>Sign up with GitHub</span>
+                </button>
             </div>
-            <div class="form-options">
-                <label class="terms">
-                    <InputCheckbox @bind-Value="_request.TermsAccepted" />
-                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-                </label>
-                <ValidationMessage For="@(() => _request.TermsAccepted)" />
-            </div>
-            <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
-                @if (_isLoading)
-                {
-                    <i class="fas fa-spinner fa-spin"></i>
-                }
-                else
-                {
-                    <span>Create Account</span>
-                }
-            </button>
-        </EditForm>
-        <div class="divider">
-            <span>or continue with</span>
+            
+            <p class="auth-footer">
+                Already have an account? <a href="login">Sign in</a>
+            </p>
         </div>
-        <div class="oauth-buttons">
-            <button class="btn btn-oauth google" @onclick="GoogleOAuth">
-                <i class="fab fa-google"></i>
-                <span>Sign up with Google</span>
-            </button>
-            <button class="btn btn-oauth github" @onclick="GitHubOAuth">
-                <i class="fab fa-github"></i>
-                <span>Sign up with GitHub</span>
-            </button>
-        </div>
-        <p class="auth-footer">
-            Already have an account? <a href="login">Sign in</a>
-        </p>
     </div>
 </div>
 
@@ -85,6 +116,11 @@
     private bool _showPassword = false;
     private bool _showConfirmPassword = false;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("applyTheme");
+    }
+    
     private async Task HandleValidSubmit()
     {
         _isLoading = true;
@@ -112,17 +148,11 @@
 
     private void GoogleOAuth()
     {
-        // External OAuth benötigt einen vollständigen Browser-Redirect
-        // forceLoad: true ist ZWINGEND erforderlich für OAuth-Flows
-        // Bei Registrierung wird der Benutzer nach erfolgreicher OAuth automatisch registriert
         NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/", forceLoad: true);
     }
 
     private void GitHubOAuth()
     {
-        // External OAuth benötigt einen vollständigen Browser-Redirect
-        // forceLoad: true ist ZWINGEND erforderlich für OAuth-Flows
-        // Bei Registrierung wird der Benutzer nach erfolgreicher OAuth automatisch registriert
         NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/", forceLoad: true);
     }
-} 
+}

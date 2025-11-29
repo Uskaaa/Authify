@@ -1,6 +1,9 @@
 ﻿@page "/confirm-email"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @inject NavigationManager NavigationManager
 @inject IAuthifyDataService DataService
+
+<RedirectToHomeIfAuthenticated />
 
 @if (_error)
 {

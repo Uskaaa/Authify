@@ -1,97 +1,169 @@
+/* 1. Global Reset & Base im Scope */
+.otp-container, .otp-container * {
+    box-sizing: border-box;
+}
+
+/* 2. Container Background */
 .otp-container {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 400px;
-    padding: 1rem;
-    margin: 0 auto;
+    height: 100%;
     min-height: 100vh;
+
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
+    overflow-y: auto;
+
+    background-color: var(--auth-bg);
+    color: var(--auth-text);
+    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.otp-container .auth-card {
-    background: #fff;
-    border-radius: 1rem;
+/* Wrapper für max-width */
+.content-wrapper {
     width: 100%;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
+    max-width: 400px;
+    padding: 1rem;
+    margin: auto;
 }
 
-.otp-container .auth-card:hover {
+/* 3. Card Styling */
+.auth-card {
+    background-color: var(--auth-card-bg);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--auth-shadow);
+    border: 1px solid var(--auth-border);
+    transition: transform 0.2s ease;
+    width: 100%;
+}
+
+.auth-card:hover {
     transform: translateY(-2px);
 }
 
-.otp-container .auth-header {
+/* 4. Header */
+.auth-header {
     text-align: center;
     margin-bottom: 2rem;
 }
 
-.otp-container .auth-header h1 {
+.auth-header h1 {
     font-size: 1.875rem;
     font-weight: 700;
-    color: #1f2937;
     margin-bottom: 0.5rem;
+    margin-top: 0;
+    color: var(--auth-text);
 }
 
-.otp-container .auth-header p {
-    color: #6b7280;
+.auth-header p {
     font-size: 0.875rem;
+    color: var(--auth-text-muted);
+    margin: 0;
 }
 
-.otp-container .auth-form {
+/* 5. Form Structure */
+.auth-stack {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.5rem; /* Etwas mehr Abstand bei OTP sieht oft besser aus */
 }
 
-.otp-container .otp-inputs {
+/* 6. OTP Inputs Styling */
+.otp-inputs {
     display: flex;
     gap: 0.5rem;
     justify-content: center;
-    margin-bottom: 1rem;
+    width: 100%;
 }
 
-.otp-container .otp-inputs input,
-.otp-container .otp-inputs .form-control {
+/* Styling der einzelnen Input-Boxen */
+.otp-container ::deep input.otp-input {
     width: 3rem;
     height: 3.5rem;
     text-align: center;
     font-size: 1.5rem;
     font-weight: 600;
-    border: 2px solid #e5e7eb;
+
+    border: 1px solid var(--auth-border);
     border-radius: 0.5rem;
-    background: #fff;
+    background-color: var(--auth-input-bg);
+    color: var(--auth-text);
+
     transition: all 0.2s ease;
+    /* Browser Standard-Inputs resetten */
+    appearance: none;
+    margin: 0;
 }
 
-.otp-container .otp-inputs input:focus,
-.otp-container .otp-inputs .form-control:focus {
+.otp-container ::deep input.otp-input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: var(--auth-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2); /* Nutzt Primary Opacity */
+    transform: translateY(-1px);
 }
 
-.otp-container .otp-inputs input:invalid,
-.otp-container .otp-inputs .form-control:invalid {
-    border-color: #ef4444;
-}
-
-.otp-container .otp-timer {
+/* 7. Timer & Resend Section */
+.otp-timer-section {
     text-align: center;
-    color: #6b7280;
     font-size: 0.875rem;
+    color: var(--auth-text-muted);
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 1.5rem; /* Verhindert Springen */
 }
 
-.otp-container #timer {
-    color: #4f46e5;
+.time-value {
+    color: var(--auth-primary);
     font-weight: 600;
+    font-variant-numeric: tabular-nums; /* Verhindert Wackeln der Zahlen */
 }
 
-.otp-container .btn {
+.btn-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--auth-primary);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.btn-link:hover {
+    color: var(--auth-primary-hover);
+    text-decoration: underline;
+}
+
+.btn-link:disabled {
+    color: var(--auth-text-muted);
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+/* 8. Validation Wrapper */
+.validation-wrapper {
+    min-height: 1rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-align: center;
+}
+
+.otp-container ::deep .validation-message {
+    color: var(--auth-error);
+    margin: 0;
+}
+
+/* 9. Buttons */
+.btn {
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
     font-weight: 500;
@@ -99,77 +171,65 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: none;
+
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    width: 100%;
 }
 
-.otp-container .btn-primary {
-    background-color: #4f46e5;
-    color: white;
+.btn-primary {
+    background-color: var(--auth-primary);
+    color: #ffffff;
 }
 
-.otp-container .btn-primary:hover {
-    background-color: #4338ca;
+.btn-primary:hover {
+    background-color: var(--auth-primary-hover);
 }
 
-.otp-container .success-message {
-    text-align: center;
-    padding: 2rem 0;
+.btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
-.otp-container .success-icon {
-    font-size: 3rem;
-    color: #10b981;
-    margin-bottom: 1rem;
-}
-
-.otp-container .success-message h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
-}
-
-.otp-container .success-message p {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 1.5rem;
-}
-
-.otp-container .auth-footer {
+/* 10. Footer */
+.auth-footer {
     text-align: center;
     margin-top: 1.5rem;
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--auth-text-muted);
 }
 
-.otp-container .auth-footer a {
-    color: #4f46e5;
+.auth-footer a {
+    color: var(--auth-primary);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s ease;
 }
 
-.otp-container .auth-footer a:hover {
-    color: #4338ca;
+.auth-footer a:hover {
+    color: var(--auth-primary-hover);
+    text-decoration: underline;
 }
 
+/* Responsive adjustments */
 @media (max-width: 480px) {
-    .otp-container {
+    .content-wrapper {
         padding: 0.5rem;
     }
-    .otp-container .auth-card {
+
+    .auth-card {
         padding: 1.5rem;
     }
-    .otp-container .auth-header h1 {
+
+    .auth-header h1 {
         font-size: 1.5rem;
     }
-    .otp-container .otp-inputs input,
-    .otp-container .otp-inputs .form-control {
+
+    .otp-container ::deep input.otp-input {
         width: 2.5rem;
         height: 3rem;
         font-size: 1.25rem;
     }
-} 
+}
