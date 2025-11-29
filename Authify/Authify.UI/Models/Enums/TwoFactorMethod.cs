@@ -1,4 +1,4 @@
-﻿namespace Authify.Core.Models.Enums;
+﻿namespace Authify.UI.Models.Enums;
 
 public enum TwoFactorMethod
 {

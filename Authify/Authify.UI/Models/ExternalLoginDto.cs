@@ -1,4 +1,4 @@
-namespace Authify.Core.Models;
+namespace Authify.UI.Models;
 
 /// <summary>
 /// Represents an external login provider connected to a user account.

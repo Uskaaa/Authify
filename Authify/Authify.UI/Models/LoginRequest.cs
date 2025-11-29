@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Authify.Core.Models;
+namespace Authify.UI.Models;
 
 public class LoginRequest
 {

@@ -1,4 +1,4 @@
-﻿namespace Authify.Core.Common;
+﻿namespace Authify.UI.Common;
 
 public class OperationResult
 {

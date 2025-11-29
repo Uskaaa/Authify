@@ -1,7 +1,6 @@
-using Authify.Core.Common;
+using Authify.UI.Common;
 using Authify.Core.Interfaces;
-using Authify.Core.Models;
-using Authify.Core.Server.Models;
+using Authify.UI.Models;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

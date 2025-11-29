@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Authify.Core.Models;
+﻿namespace Authify.UI.Models;
 
 public class UserExportRequest
 {
@@ -8,7 +6,6 @@ public class UserExportRequest
 
     // Fremdschlüssel zum Benutzer
     public string UserId { get; set; }
-    public IdentityUser User { get; set; }
 
     public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
     public bool IsCompleted { get; set; } = false;

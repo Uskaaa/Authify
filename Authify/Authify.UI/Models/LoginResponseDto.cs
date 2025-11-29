@@ -1,5 +1,5 @@
 // ...new file...
-namespace Authify.Core.Models;
+namespace Authify.UI.Models;
 
 public enum LoginResultKind
 {

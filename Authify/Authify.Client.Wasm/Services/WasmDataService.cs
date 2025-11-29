@@ -1,8 +1,9 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using Authify.Core.Common;
-using Authify.Core.Models;
-using Authify.Core.Server.Models;
+using Authify.Client.Wasm.Interfaces;
+using Authify.Client.Wasm.Models;
+using Authify.UI.Common;
+using Authify.UI.Models;
 using Authify.UI.Services;
 
 namespace Authify.Client.Wasm.Services;
@@ -11,10 +12,12 @@ public class WasmDataService : IAuthifyDataService
 {
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private readonly ITokenStore _tokenStore;
 
-    public WasmDataService(HttpClient httpClient)
+    public WasmDataService(HttpClient httpClient, ITokenStore tokenStore)
     {
         _httpClient = httpClient;
+        _tokenStore = tokenStore;
     }
 
     #region Helpers
@@ -114,7 +117,23 @@ public class WasmDataService : IAuthifyDataService
         return await Task.FromResult(OperationResult<string>.Fail("Cookie-based login is not supported in this client."));
     }
 
-    public Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request) => PostAsync<LoginResponseDto>("api/auth/login", request);
+    public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request)
+    {
+        // 1. Request senden
+        var result = await PostAsync<LoginResponseDto>("api/auth/login", request);
+        // 2. Prüfen ob erfolgreich
+        if (result.Success && result.Data != null)
+        {
+                await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
+                
+                // WICHTIG: Hier müsstest du idealerweise auch dem AuthenticationStateProvider Bescheid geben,
+                // dass sich der Status geändert hat (NotifyAuthenticationStateChanged).
+                // Das passiert oft implizit, wenn der AuthStateProvider den TokenStore überwacht,
+                // oder du injizierst den AuthProvider hier auch und rufst eine Methode auf.
+            
+        }
+        return result;
+    }
 
     public Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request) => PostAsync<(string AccessToken, string RefreshToken)?>("api/auth/verify-otp-jwt", request);
 
@@ -122,19 +141,35 @@ public class WasmDataService : IAuthifyDataService
 
     public Task<OperationResult> ResendOtpAsync(ResendOtpRequest request) => PostAsync("api/auth/resend-otp", request);
 
-    public async Task JwtLogoutAsync(string refreshToken) => await PostAsync("api/auth/logout-jwt", new { refreshToken });
+    public event Action? OnLoggedOut;
+    public async Task<OperationResult> JwtLogoutAsync()
+    {
+        // 1. Refresh Token holen, um ihn an die API zu senden
+        var tokenResult = await _tokenStore.GetRefreshTokenAsync();
+    
+        if (tokenResult.Success && tokenResult.Data != null)
+        {
+            await PostAsync("api/auth/logout", tokenResult.Data.RefreshToken);
+        }
+
+        await _tokenStore.RemoveTokensAsync();
+        
+        OnLoggedOut?.Invoke();
+
+        return OperationResult.Ok();
+    }
 
     public Task<OperationResult> CookieLogoutAsync() => PostAsync("api/auth/logout-cookie", new { });
 
-    public Task<OperationResult> RegisterAsync(RegisterRequest registerRequest) => PostAsync("api/users/register", registerRequest);
+    public Task<OperationResult> RegisterAsync(RegisterRequest registerRequest) => PostAsync("api/user/register", registerRequest);
 
-    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) => PostAsync("api/users/confirm-email", emailConfirmationRequest);
+    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) => PostAsync("api/user/confirm-email", emailConfirmationRequest);
 
-    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) => PostAsync("api/users/forgot-password", forgotPasswordRequest);
+    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) => PostAsync("api/user/forgot-password", forgotPasswordRequest);
 
-    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) => PostAsync("api/users/reset-password", resetPasswordRequest);
+    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) => PostAsync("api/user/reset-password", resetPasswordRequest);
 
-    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) => PostAsync("api/users/change-password", request);
+    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) => PostAsync("api/user/change-password", request);
 
     public async Task<OperationResult<byte[]>> RequestExportAsync()
     {

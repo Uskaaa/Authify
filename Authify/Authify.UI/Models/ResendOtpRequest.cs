@@ -1,6 +1,6 @@
-﻿using Authify.Core.Models.Enums;
+﻿using Authify.UI.Models.Enums;
 
-namespace Authify.Core.Models;
+namespace Authify.UI.Models;
 
 public class ResendOtpRequest
 {

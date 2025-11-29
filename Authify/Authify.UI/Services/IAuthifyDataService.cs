@@ -1,6 +1,6 @@
-using Authify.Core.Common;
-using Authify.Core.Models;
-using Authify.Core.Server.Models;
+using Authify.UI.Common;
+using Authify.UI.Models;
+
 
 namespace Authify.UI.Services;
 
@@ -10,6 +10,8 @@ namespace Authify.UI.Services;
 /// </summary>
 public interface IAuthifyDataService
 {
+    event Action? OnLoggedOut;
+    
     //AuthService
     [System.Obsolete("Use LoginAsync(LoginRequest) returning LoginResponseDto")]
     Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtLoginAsync(LoginRequest request);
@@ -22,7 +24,7 @@ public interface IAuthifyDataService
     Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult> ResendOtpAsync(ResendOtpRequest request);
-    Task JwtLogoutAsync(string refreshToken);
+    Task<OperationResult> JwtLogoutAsync();
     Task<OperationResult> CookieLogoutAsync();
     
     //UserService

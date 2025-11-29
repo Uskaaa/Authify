@@ -1,6 +1,8 @@
-﻿using Authify.Core.Models.Enums;
+﻿
 
-namespace Authify.Core.Models;
+using Authify.UI.Models.Enums;
+
+namespace Authify.UI.Models;
 
 public class TwoFactorRequest
 {

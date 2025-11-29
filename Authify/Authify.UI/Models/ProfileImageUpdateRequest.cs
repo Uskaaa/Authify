@@ -1,4 +1,4 @@
-﻿namespace Authify.Core.Models;
+﻿namespace Authify.UI.Models;
 
 public class ProfileImageUpdateRequest
 {

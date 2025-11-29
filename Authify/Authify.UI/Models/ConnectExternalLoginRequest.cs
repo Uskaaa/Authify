@@ -1,4 +1,4 @@
-namespace Authify.Core.Models;
+namespace Authify.UI.Models;
 
 /// <summary>
 /// Request to connect an external login provider to the current user account.
