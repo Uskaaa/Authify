@@ -1,8 +1,5 @@
 ﻿using System.Text.Json;
 using Authify.Application.Data;
-using Authify.Core.Common;
-using Authify.Core.Interfaces;
-using Authify.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

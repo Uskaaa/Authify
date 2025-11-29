@@ -11,13 +11,13 @@ public class ExternalAuthServiceCookie<TUser> : IExternalAuthService
 {
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
-    private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
+    private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IOtpService<TUser> _otpService;
 
     public ExternalAuthServiceCookie(
         SignInManager<TUser> signInManager,
         UserManager<TUser> userManager,
-        TwoFactorClaimService<TUser> twoFactorClaimService,
+        ITwoFactorClaimService twoFactorClaimService,
         IOtpService<TUser> otpService)
     {
         _signInManager = signInManager;

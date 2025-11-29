@@ -14,7 +14,7 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
     private readonly UserManager<TUser> _userManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IOtpService<TUser> _otpService;
-    private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
+    private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IAuthifyDbContext _context;
 
     public ExternalAuthServiceJwt(
@@ -22,7 +22,7 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         UserManager<TUser> userManager,
         IJwtTokenService jwtTokenService,
         IOtpService<TUser> otpService,
-        TwoFactorClaimService<TUser> twoFactorClaimService,
+        ITwoFactorClaimService twoFactorClaimService,
         IAuthifyDbContext context)
     {
         _signInManager = signInManager;

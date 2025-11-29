@@ -2,8 +2,6 @@ using Authify.Application.Services;
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
-using Authify.Core.Models.Enums;
-using Authify.Core.Server.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Application.Services;
@@ -14,11 +12,11 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
     private readonly IOtpService<TUser> _otpService;
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
-    private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
+    private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IUserAccountService _userAccountService;
 
     public CookieAuthService(IOtpService<TUser> otpService, SignInManager<TUser> signInManager,
-        TwoFactorClaimService<TUser> twoFactorClaimService,
+        ITwoFactorClaimService twoFactorClaimService,
         UserManager<TUser> userManager,
         IUserAccountService userAccountService)
     {

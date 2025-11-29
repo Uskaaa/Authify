@@ -32,7 +32,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserProfileService, UserProfileService<TUser>>();
         services.AddScoped<IUserAccountService, UserAccountService<TUser>>();
         services.AddScoped<IUserSessionService, UserSessionService>();
+        services.AddScoped<IUserDataExportService<TUser>, UserDataExportService<TUser>>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IAuthServiceJwt, JwtAuthService<TUser>>();
+        services.AddScoped<IAuthServiceCookie, CookieAuthService<TUser>>();
         services.AddDataProtection();
+        services.AddMemoryCache();
 
         services.AddSingleton(new SmtpClient
         {

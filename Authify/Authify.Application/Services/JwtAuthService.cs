@@ -1,11 +1,7 @@
 ﻿using Authify.Application.Data;
-using Authify.Application.Services;
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
-using Authify.Core.Models.Enums;
-using Authify.Core.Server.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,12 +14,12 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
     private readonly SignInManager<TUser> _signInManager;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly UserManager<TUser> _userManager;
-    private readonly TwoFactorClaimService<TUser> _twoFactorClaimService;
+    private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IUserAccountService _userAccountService;
     private readonly IAuthifyDbContext _context;
 
     public JwtAuthService(IOtpService<TUser> otpService, SignInManager<TUser> signInManager, IJwtTokenService jwtTokenService,
-        TwoFactorClaimService<TUser> twoFactorClaimService,
+        ITwoFactorClaimService twoFactorClaimService,
         UserManager<TUser> userManager,
         IUserAccountService userAccountService,
         IAuthifyDbContext context)
@@ -50,10 +46,16 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
         if (deactivation.Data != null && deactivation.Data.IsDeactivated)
             return OperationResult<(string, string)?>.Fail("Your account is deactivated. Please contact support!");
 
-        var resultCheckSignIn = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+        var resultCheckSignIn = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
+        if (resultCheckSignIn.IsLockedOut)
+        {
+            return OperationResult<(string, string)?>.Fail("Account ist wegen zu vieler Fehlversuche gesperrt. Bitte warten Sie 5 Minuten.");
+        }
         if (!resultCheckSignIn.Succeeded)
-            return OperationResult<(string, string)?>.Fail("Ungültige Anmeldedaten!");
-
+        {
+            return OperationResult<(string, string)?>.Fail("Ungültige Anmeldedaten.");
+        }
+        
         // ---- 2FA prüfen ----
         var preferredResult = await _twoFactorClaimService.GetPreferredAsync(user.Id);
         if (preferredResult.Success && preferredResult.Data != null)

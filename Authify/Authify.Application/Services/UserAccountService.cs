@@ -12,9 +12,9 @@ public class UserAccountService<TUser> : IUserAccountService
     {
         private readonly UserManager<TUser> _userManager;
         private readonly IAuthifyDbContext _context;
-        private readonly UserDataExportService<TUser> _userDataExportService;
+        private readonly IUserDataExportService<TUser> _userDataExportService;
 
-        public UserAccountService(UserManager<TUser> userManager, IAuthifyDbContext context, UserDataExportService<TUser> userDataExportService)
+        public UserAccountService(UserManager<TUser> userManager, IAuthifyDbContext context, IUserDataExportService<TUser> userDataExportService)
         {
             _userManager = userManager;
             _context = context;
