@@ -73,11 +73,6 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
 
-            // 4. Token global für HttpClient setzen
-            // Damit haben alle folgenden Requests automatisch den Header.
-            _httpClient.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue("Bearer", token);
-
             return new AuthenticationState(user);
         }
         catch
@@ -100,16 +95,6 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
             new AuthenticationHeaderValue("Bearer", token);
 
         // Blazor UI informieren, dass sich der Status geändert hat
-        NotifyAuthenticationStateChanged(authState);
-    }
-
-    public void NotifyUserLogout()
-    {
-        var authState = Task.FromResult(_anonymous);
-        
-        // Header entfernen
-        _httpClient.DefaultRequestHeaders.Authorization = null;
-        
         NotifyAuthenticationStateChanged(authState);
     }
 
