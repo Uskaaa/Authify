@@ -14,16 +14,22 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
     private readonly HttpClient _httpClient;
     private readonly NavigationManager _navManager;
     private readonly IAuthifyDataService _dataService;
+    private readonly IAuthRefreshService _authRefreshService;
 
-    // Standard-Zustand: Nicht eingeloggt (Anonym)
     private readonly AuthenticationState _anonymous;
 
-    public JwtAuthenticationStateProvider(ITokenStore tokenStore, HttpClient httpClient, NavigationManager navManager, IAuthifyDataService dataService)
+    public JwtAuthenticationStateProvider(
+        ITokenStore tokenStore, 
+        HttpClient httpClient, 
+        NavigationManager navManager, 
+        IAuthifyDataService dataService,
+        IAuthRefreshService authRefreshService)
     {
         _tokenStore = tokenStore;
         _httpClient = httpClient;
         _navManager = navManager;
         _dataService = dataService;
+        _authRefreshService = authRefreshService;
         _anonymous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         
         _dataService.OnLoggedOut += HandleLogoutEvent;
@@ -39,14 +45,7 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
     
     private void HandleLogoutEvent()
     {
-        // 1. Header entfernen
-        _httpClient.DefaultRequestHeaders.Authorization = null;
-
-        // 2. UI Status auf "Anonym" setzen
-        var authState = Task.FromResult(_anonymous);
-        NotifyAuthenticationStateChanged(authState);
-
-        // 3. Navigation durchführen
+        NotifyUserLogout();
         _navManager.NavigateTo("/login");
     }
     
@@ -54,58 +53,138 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
     {
         try
         {
-            // 1. Token aus LocalStorage holen
-            var token = await _tokenStore.GetAccessTokenAsync();
+            // Access Token holen
+            var accessToken = await _tokenStore.GetAccessTokenAsync();
 
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(accessToken))
             {
                 return _anonymous;
             }
 
-            // 2. Token parsen (Claims extrahieren)
-            // HINWEIS: Wir prüfen hier NICHT das Ablaufdatum (exp). 
-            // Das ist "Strategie A": Wir sind optimistisch.
-            var claims = ParseClaimsFromJwt(token);
+            // Claims parsen
+            var claims = ParseClaimsFromJwt(accessToken).ToList();
 
-            // 3. User Identität erstellen
-            // Der String "jwt" als zweiter Parameter ist extrem wichtig! 
-            // Ohne ihn ist User.Identity.IsAuthenticated = false.
+            // Prüfen ob abgelaufen
+            if (IsTokenExpired(claims))
+            {
+                Console.WriteLine("[AuthState] Token expired. Attempting silent refresh...");
+                
+                // Versuchen zu refreshen
+                var refreshResult = await TryRefreshTokenAsync();
+                
+                if (!string.IsNullOrEmpty(refreshResult))
+                {
+                    // Refresh erfolgreich -> Neuen Token nutzen
+                    accessToken = refreshResult;
+                    claims = ParseClaimsFromJwt(accessToken).ToList();
+                }
+                else
+                {
+                    Console.WriteLine("[AuthState] Silent refresh failed. Logging out.");
+                    await _tokenStore.RemoveTokensAsync();
+                    
+                    NotifyUserLogout(); 
+                    
+                    _navManager.NavigateTo("/login");
+                    
+                    return _anonymous;
+                }
+            }
+
+            // User Identität erstellen (Alles valid)
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
 
+            // Token im HttpClient setzen
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", accessToken);
+
             return new AuthenticationState(user);
         }
-        catch
+        catch (Exception ex)
         {
-            // Wenn Token korrupt ist oder Parsing fehlschlägt -> Logout
+            Console.WriteLine($"[AuthState] Error: {ex.Message}");
             return _anonymous;
         }
     }
+    
+    private async Task<string?> TryRefreshTokenAsync()
+    {
+        try 
+        {
+            var storedTokenResult = await _tokenStore.GetRefreshTokenAsync();
+            if (!storedTokenResult.Success || storedTokenResult.Data == null)
+                return null;
 
-    // --- Manuelle Methoden für Login/Logout (ruft AuthService auf) ---
+            var result = await _authRefreshService.RefreshTokenAsync(storedTokenResult.Data);
+            
+            if (result.Success && !string.IsNullOrEmpty(result.Data.AccessToken))
+            {
+                // Neue Tokens speichern
+                await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
+                return result.Data.AccessToken;
+            }
+        }
+        catch
+        {
+            // Fehler beim Refresh ignorieren -> führt zu Logout
+        }
+        
+        return null;
+    }
+
+    private bool IsTokenExpired(IEnumerable<Claim> claims)
+    {
+        var expClaim = claims.FirstOrDefault(c => c.Type == "exp");
+        if (expClaim == null) return false;
+
+        // JWT exp ist Sekunden seit Unix Epoch
+        if (long.TryParse(expClaim.Value, out long expSeconds))
+        {
+            var expDate = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+
+            if (expDate <= DateTime.UtcNow.AddSeconds(10))
+            {
+                return true; 
+            }
+        }
+        return false;
+    }
+    
     public void NotifyUserAuthentication(string token)
     {
         var authenticatedUser = new ClaimsPrincipal(
             new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt"));
             
         var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+        
+        _httpClient.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", token);
 
-        // Blazor UI informieren, dass sich der Status geändert hat
         NotifyAuthenticationStateChanged(authState);
     }
     
     public void NotifyUserLogout()
     {
         var authState = Task.FromResult(_anonymous);
-        
-        // Header entfernen
         _httpClient.DefaultRequestHeaders.Authorization = null;
+        NotifyAuthenticationStateChanged(authState);
+    }
+    
+    public void NotifyTokenUpdated(string newToken)
+    {
+        var authenticatedUser = new ClaimsPrincipal(
+            new ClaimsIdentity(ParseClaimsFromJwt(newToken), "jwt"));
+            
+        var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
         
+        _httpClient.DefaultRequestHeaders.Authorization = 
+            new AuthenticationHeaderValue("Bearer", newToken);
+
         NotifyAuthenticationStateChanged(authState);
     }
 
-    // --- Hilfsmethoden zum Parsen des JWT ---
-
+    // --- Parsing ---
     private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
         var claims = new List<Claim>();
@@ -117,8 +196,6 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
         {
             foreach (var kvp in keyValuePairs)
             {
-                // Wichtig: Rollen können als Array kommen ["Admin", "User"]
-                // Wir müssen sie in einzelne Claims aufteilen.
                 if (kvp.Value is JsonElement element && element.ValueKind == JsonValueKind.Array)
                 {
                     foreach (var item in element.EnumerateArray())
