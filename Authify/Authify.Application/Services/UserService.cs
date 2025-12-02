@@ -1,4 +1,5 @@
-﻿using Authify.Core.Common;
+﻿using Authify.Application.Data;
+using Authify.Core.Common;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Authify.Application.Services;
 
 public class UserService<TUser> : IUserService
-    where TUser : IdentityUser, new()
+    where TUser : ApplicationUser, new()
 {
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
@@ -23,21 +24,28 @@ public class UserService<TUser> : IUserService
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
     {
+        string name = request.FullName;
+        string firstName = name.Split(' ')[0];
         var user = new TUser
         {
-            UserName = request.Username,
+            FullName = request.FullName,
+            UserName = firstName,
             Email = request.Email
         };
 
+        var existingUser = await _userManager.FindByEmailAsync(user.Email);
+        if (existingUser != null)
+            return OperationResult.Fail("User already exists.");
+        
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
             return OperationResult.Fail(string.Join(", ", result.Errors.Select(e => e.Description)));
-
+        
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
         var confirmationLink =
-            $"https://{_infrastructureOptions.Domain}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            $"{_infrastructureOptions.Domain}confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
         await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
             $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
 
@@ -65,7 +73,7 @@ public class UserService<TUser> : IUserService
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var resetLink =
-            $"https://{_infrastructureOptions.Domain}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+            $"{_infrastructureOptions.Domain}reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
         await _emailSender.SendEmailAsync(user.Email!, "Reset your password",
             $"Reset your password by clicking <a href='{resetLink}'>here</a>.");
