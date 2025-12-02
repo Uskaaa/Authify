@@ -15,7 +15,10 @@ public static class ServiceCollectionExtensions
     {
         services.AddAuthifyUI();
         
-        services.AddScoped<IAuthRefreshService, AuthRefreshService>();
+        services.AddHttpClient<IAuthRefreshService, AuthRefreshService>(client => 
+        {
+            configureClient(client);
+        });
         services.AddScoped<ITokenStore, TokenStore>();
         
         // Handler registrieren

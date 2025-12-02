@@ -125,12 +125,6 @@ public class WasmDataService : IAuthifyDataService
         if (result.Success && result.Data != null)
         {
                 await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
-                
-                // WICHTIG: Hier müsstest du idealerweise auch dem AuthenticationStateProvider Bescheid geben,
-                // dass sich der Status geändert hat (NotifyAuthenticationStateChanged).
-                // Das passiert oft implizit, wenn der AuthStateProvider den TokenStore überwacht,
-                // oder du injizierst den AuthProvider hier auch und rufst eine Methode auf.
-            
         }
         return result;
     }
@@ -163,13 +157,13 @@ public class WasmDataService : IAuthifyDataService
 
     public Task<OperationResult> RegisterAsync(RegisterRequest registerRequest) => PostAsync("api/user/register", registerRequest);
 
-    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) => PostAsync("api/user/confirm-email", emailConfirmationRequest);
+    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) => PostAsync("api/user/confirmemail", emailConfirmationRequest);
 
-    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) => PostAsync("api/user/forgot-password", forgotPasswordRequest);
+    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) => PostAsync("api/user/forgotpassword", forgotPasswordRequest);
 
-    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) => PostAsync("api/user/reset-password", resetPasswordRequest);
+    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) => PostAsync("api/user/resetpassword", resetPasswordRequest);
 
-    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) => PostAsync("api/user/change-password", request);
+    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) => PostAsync("api/user/changepassword", request);
 
     public async Task<OperationResult<byte[]>> RequestExportAsync()
     {

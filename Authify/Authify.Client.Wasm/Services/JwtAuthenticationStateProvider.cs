@@ -89,12 +89,18 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
             new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt"));
             
         var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
-        
-        // Token auch sofort im HttpClient setzen
-        _httpClient.DefaultRequestHeaders.Authorization = 
-            new AuthenticationHeaderValue("Bearer", token);
 
         // Blazor UI informieren, dass sich der Status geändert hat
+        NotifyAuthenticationStateChanged(authState);
+    }
+    
+    public void NotifyUserLogout()
+    {
+        var authState = Task.FromResult(_anonymous);
+        
+        // Header entfernen
+        _httpClient.DefaultRequestHeaders.Authorization = null;
+        
         NotifyAuthenticationStateChanged(authState);
     }
 

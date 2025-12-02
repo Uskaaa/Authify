@@ -24,19 +24,19 @@ public class TokenStore : ITokenStore
 
     public async Task<OperationResult<RefreshTokenRequest>> GetRefreshTokenAsync()
     {
-        var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", RefreshTokenKey);
-        if (string.IsNullOrEmpty(json))
-            return OperationResult<RefreshTokenRequest>.Fail("No refresh token found.");
+        var tokenString = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", RefreshTokenKey);
 
-        try
+        if (string.IsNullOrEmpty(tokenString))
+            return OperationResult<RefreshTokenRequest>.Fail("No refresh token found.");
+        
+        var request = new RefreshTokenRequest
         {
-            var refreshToken = JsonSerializer.Deserialize<RefreshTokenRequest>(json);
-            return OperationResult<RefreshTokenRequest>.Ok(refreshToken!);
-        }
-        catch (Exception ex)
-        {
-            return OperationResult<RefreshTokenRequest>.Fail($"Failed to deserialize refresh token: {ex.Message}");
-        }
+            RefreshToken = tokenString,
+            DeviceName = "browser",
+            IpAddress = "unknown",
+        };
+
+        return OperationResult<RefreshTokenRequest>.Ok(request);
     }
 
     public async Task SetTokensAsync(string accessToken, string refreshToken)
