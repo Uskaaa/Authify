@@ -16,6 +16,13 @@
                 <p>Please fill in your details to register</p>
             </div>
             
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @_errorMessage
+                </div>
+            }
+            
             <EditForm Model="_request" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
                 
@@ -24,9 +31,9 @@
                     
                     <div class="form-group">
                         <label for="fullName">Full Name</label>
-                        <InputText id="fullName" @bind-Value="_request.Username" placeholder="John Doe" />
+                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="John Doe" />
                         <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.Username)" />
+                            <ValidationMessage For="@(() => _request.FullName)" />
                         </div>
                     </div>
                     
@@ -115,6 +122,7 @@
     private bool _isLoading = false;
     private bool _showPassword = false;
     private bool _showConfirmPassword = false;
+    private string? _errorMessage;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -126,13 +134,15 @@
         _isLoading = true;
         var result = await DataService.RegisterAsync(_request);
         _isLoading = false;
+        _errorMessage = null;
         if (result.Success)
         {
-            NavigationManager.NavigateTo("/confirm-email");
+            NavigationManager.NavigateTo($"/confirm-email?email={Uri.EscapeDataString(_request.Email)}");
         }
         else
         {
             Console.WriteLine("Registration failed: " + (result.ErrorMessage ?? "Unknown error"));
+            _errorMessage = result.ErrorMessage ?? "Register failed.";
         }
     }
 

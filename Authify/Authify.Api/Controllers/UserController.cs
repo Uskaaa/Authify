@@ -22,22 +22,17 @@ public class UserController : ControllerBase
     {
         var result = await _userService.RegisterAsync(registerRequest);
 
-        if (result.Success) return Ok(); 
+        if (result.Success) return Ok(result);
         
-        return BadRequest("Something went wrong.");
+        return BadRequest(result);
     }
 
-    [HttpGet(nameof(ConfirmEmail))]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+    [HttpPost(nameof(ConfirmEmail))]
+    public async Task<IActionResult> ConfirmEmail([FromBody] EmailConfirmationRequest emailConfirmationRequest)
     {
-        EmailConfirmationRequest emailConfirmationRequest = new()
-        {
-            UserId = userId,
-            Token = token
-        };
         var result = await _userService.ConfirmEmailAsync(emailConfirmationRequest);
         
-        if (result.Success) return Ok();
+        if (result.Success) return Ok(result);
         
         return BadRequest("Something went wrong.");
     }
@@ -47,7 +42,7 @@ public class UserController : ControllerBase
     {
         var result = await _userService.ForgotPasswordAsync(forgotPasswordRequest);
         
-        if (result.Success) return Ok();
+        if (result.Success) return Ok(result);
         
         return BadRequest("Something went wrong.");
     }
@@ -57,7 +52,7 @@ public class UserController : ControllerBase
     {
         var result = await _userService.ResetPasswordAsync(resetPasswordRequest);
         
-        if (result.Success) return Ok();
+        if (result.Success) return Ok(result);
         
         return BadRequest("Something went wrong.");
     }

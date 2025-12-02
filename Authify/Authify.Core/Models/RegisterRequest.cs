@@ -6,7 +6,7 @@ public class RegisterRequest : IValidatableObject
 {
     [Required(ErrorMessage = "Please enter your full name")]
     [MinLength(2, ErrorMessage = "Please enter your full name")]
-    public string Username { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "Please enter your email address")]
     [EmailAddress(ErrorMessage = "Please enter a valid email address")]
