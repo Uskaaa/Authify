@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthifyServerUI<TDbContext, TUser>(this IServiceCollection services,
         Action<InfrastructureOptions> configureOptions)
         where TDbContext : DbContext, IAuthifyDbContext
-        where TUser : IdentityUser, new()
+        where TUser : ApplicationUser, new()
     {
         var options = new InfrastructureOptions();
         configureOptions(options);

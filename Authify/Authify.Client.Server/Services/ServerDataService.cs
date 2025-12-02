@@ -5,10 +5,11 @@ using Authify.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Authify.Application.Data;
 
 namespace Authify.Client.Server.Services;
 
-public class ServerDataService<TUser> : IAuthifyDataService where TUser : IdentityUser, new()
+public class ServerDataService<TUser> : IAuthifyDataService where TUser : ApplicationUser, new()
 {
     private readonly IAuthServiceCookie _authServiceCookie;
     private readonly IAuthServiceJwt _authServiceJwt;
