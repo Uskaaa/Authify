@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
         var result = await _authServiceJwt.LoginAsync(loginRequest);
 
         if (!result.Success)
-            return BadRequest(new { error = result.ErrorMessage });
+            return BadRequest(result);
 
         var (accessToken, refreshToken) = result.Data!.Value;
 
@@ -36,6 +36,7 @@ public class AuthController : ControllerBase
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
+            ResultKind = LoginResultKind.Jwt
         };
         
         // Wenn OTP zurückkommt (kein JWT) → UI entscheidet redirect auf OTP-Seite

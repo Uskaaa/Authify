@@ -9,18 +9,15 @@ namespace Authify.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RefreshTokenController<TUser> : ControllerBase
-    where TUser : IdentityUser
+public class RefreshTokenController : ControllerBase
 {
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IAuthifyDbContext _context;
-    private readonly UserManager<TUser> _userManager;
 
-    public RefreshTokenController(IJwtTokenService jwtTokenService, IAuthifyDbContext context, UserManager<TUser> userManager)
+    public RefreshTokenController(IJwtTokenService jwtTokenService, IAuthifyDbContext context)
     {
         _jwtTokenService = jwtTokenService;
         _context = context;
-        _userManager = userManager;
     }
 
     [HttpPost("renew")]
@@ -33,35 +30,29 @@ public class RefreshTokenController<TUser> : ControllerBase
         if (storedToken == null)
             return Unauthorized(new { error = "Invalid or expired refresh token." });
 
-        // UserId aus dem RefreshToken
-        var user = await _userManager.FindByIdAsync(storedToken.UserId);
-
         // Neuen JWT generieren
-        if (user != null)
+        var jwtToken = await _jwtTokenService.GenerateTokenAsync(storedToken.UserId);
+
+        // Optional: neuen RefreshToken erstellen
+        storedToken.IsRevoked = true; // alten token ungültig machen
+        var newRefreshToken =
+            _jwtTokenService.GenerateRefreshToken(storedToken.UserId, request.DeviceName, request.IpAddress,
+                storedToken.RememberMe);
+        await _context.RefreshTokens.AddAsync(newRefreshToken);
+        await _context.SaveChangesAsync();
+
+        var refreshTokenRequest = new RefreshTokenRequest
         {
-            var jwtToken = _jwtTokenService.GenerateToken(user);
+            RefreshToken = newRefreshToken.Token,
+            DeviceName = newRefreshToken.DeviceInfo,
+            IpAddress = newRefreshToken.IpAddress,
+            RememberMe = newRefreshToken.RememberMe
+        };
 
-            // Optional: neuen RefreshToken erstellen
-            storedToken.IsRevoked = true; // alten token ungültig machen
-            var newRefreshToken =
-                _jwtTokenService.GenerateRefreshToken(storedToken.UserId, request.DeviceName, request.IpAddress, request.RememberMe);
-            await _context.RefreshTokens.AddAsync(newRefreshToken);
-            await _context.SaveChangesAsync();
-
-            var refreshTokenRequest = new RefreshTokenRequest
-            {
-                RefreshToken = newRefreshToken.Token,
-                DeviceName = newRefreshToken.DeviceInfo,
-                IpAddress = newRefreshToken.IpAddress,
-                RememberMe = newRefreshToken.RememberMe
-            };
-            
-            return Ok(new
-            {
-                AccessToken = jwtToken,
-                RefreshToken = newRefreshToken.Token
-            });
-        }
-        return Unauthorized(new { error = "No User was found!" });
+        return Ok(new
+        {
+            AccessToken = jwtToken,
+            RefreshToken = newRefreshToken.Token
+        });
     }
 }
