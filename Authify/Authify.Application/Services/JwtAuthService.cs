@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Authify.Application.Services;
 
 public class JwtAuthService<TUser> : IAuthServiceJwt
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly IOtpService<TUser> _otpService;
     private readonly SignInManager<TUser> _signInManager;
@@ -68,7 +68,7 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
         }
 
         // ---- Kein 2FA, JWT + RefreshToken generieren ----
-        var jwtToken = _jwtTokenService.GenerateToken(user);
+        var jwtToken = await _jwtTokenService.GenerateTokenAsync(user.Id);
         var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id, request.DeviceName, request.IpAddress, request.RememberMe);
 
         await _context.RefreshTokens.AddAsync(refreshToken);
@@ -90,7 +90,7 @@ public class JwtAuthService<TUser> : IAuthServiceJwt
             return OperationResult<(string, string)?>.Fail("Invalid OTP code.");
 
         // JWT + RefreshToken erstellen
-        var jwtToken = _jwtTokenService.GenerateToken(user);
+        var jwtToken = await _jwtTokenService.GenerateTokenAsync(user.Id);
         var refreshToken = _jwtTokenService.GenerateRefreshToken(user.Id, request.DeviceName, request.IpAddress ?? "Unknown", rememberMe);
 
         await _context.RefreshTokens.AddAsync(refreshToken);

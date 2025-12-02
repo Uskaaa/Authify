@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Authify.Application.Services;
 
 public class TwoFactorClaimService<TUser> : ITwoFactorClaimService
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly UserManager<TUser> _userManager;
     private readonly IAuthifyDbContext _context;

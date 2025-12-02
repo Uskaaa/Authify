@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Authify.Application.Data;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Authify.Application.Services;
 
 public class ExternalAuthServiceCookie<TUser> : IExternalAuthService
-    where TUser : IdentityUser, new()
+    where TUser : ApplicationUser, new()
 {
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;

@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 namespace Authify.Application.Services;
 
 public interface IUserDataExportService<TUser>
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     Task<byte[]> ExportUserDataAsync(TUser user);
 }
 
 public class UserDataExportService<TUser> : IUserDataExportService<TUser>
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly IAuthifyDbContext _context;
 

@@ -1,3 +1,4 @@
+using Authify.Application.Data;
 using Authify.Application.Services;
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Authify.Application.Services;
 
 public class CookieAuthService<TUser> : IAuthServiceCookie
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly IOtpService<TUser> _otpService;
     private readonly SignInManager<TUser> _signInManager;

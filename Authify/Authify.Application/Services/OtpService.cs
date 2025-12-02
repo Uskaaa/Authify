@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Authify.Application.Data;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Authify.Core.Models.Enums;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Authify.Application.Services;
 
 public class OtpService<TUser> : IOtpService<TUser>
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly IMemoryCache _memoryCache;
     private readonly IDictionary<TwoFactorMethod, ITwoFactorHandler<TUser>> _handlers;

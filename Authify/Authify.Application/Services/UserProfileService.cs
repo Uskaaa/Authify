@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Authify.Application.Services;
 
 public class UserProfileService<TUser> : IUserProfileService
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly UserManager<TUser> _userManager;
     private readonly IAuthifyDbContext _context;

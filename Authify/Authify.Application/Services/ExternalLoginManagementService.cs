@@ -1,10 +1,11 @@
+using Authify.Application.Data;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Application.Services;
 
 public class ExternalLoginManagementService<TUser> : IExternalLoginManagementService<TUser>
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly UserManager<TUser> _userManager;
 

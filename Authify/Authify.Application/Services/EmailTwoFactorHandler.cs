@@ -1,10 +1,11 @@
-﻿using Authify.Core.Interfaces;
+﻿using Authify.Application.Data;
+using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Application.Services;
 
 public class EmailTwoFactorHandler<TUser> : ITwoFactorHandler<TUser>
-    where TUser : IdentityUser
+    where TUser : ApplicationUser
 {
     private readonly IEmailSender _emailSender;
 

@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthifyApplication<TDbContext, TUser>(this IServiceCollection services,
         Action<InfrastructureOptions> configureOptions)
         where TDbContext : DbContext, IAuthifyDbContext
-        where TUser : IdentityUser, new()
+        where TUser : ApplicationUser, new()
     {
         var options = new InfrastructureOptions();
         configureOptions(options);
@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserAccountService, UserAccountService<TUser>>();
         services.AddScoped<IUserSessionService, UserSessionService>();
         services.AddScoped<IUserDataExportService<TUser>, UserDataExportService<TUser>>();
-        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService<TUser>>();
         services.AddScoped<IAuthServiceJwt, JwtAuthService<TUser>>();
         services.AddScoped<IAuthServiceCookie, CookieAuthService<TUser>>();
         services.AddDataProtection();

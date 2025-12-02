@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Authify.Application.Services;
 
 public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
-    where TUser : IdentityUser, new()
+    where TUser : ApplicationUser, new()
 {
     private readonly SignInManager<TUser> _signInManager;
     private readonly UserManager<TUser> _userManager;
@@ -65,7 +65,7 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         }
 
         // ---- Kein 2FA ----
-        var jwt = _jwtTokenService.GenerateToken(user);
+        var jwt = await _jwtTokenService.GenerateTokenAsync(user.Id);
         var refresh =
             _jwtTokenService.GenerateRefreshToken(user.Id, deviceName: "external", ipAddress: "unknown",
                 rememberMe: true);
