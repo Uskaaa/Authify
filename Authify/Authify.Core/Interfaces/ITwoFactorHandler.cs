@@ -1,4 +1,6 @@
-﻿namespace Authify.Core.Interfaces;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Authify.Core.Interfaces;
 
 public interface ITwoFactorHandler<TUser>
 {

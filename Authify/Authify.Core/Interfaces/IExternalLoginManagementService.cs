@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Core.Interfaces;
 
-public interface IExternalLoginManagementService<TUser> where TUser : IdentityUser
+public interface IExternalLoginManagementService<TUser>
 {
     Task<IList<UserLoginInfo>> GetConnectedProvidersAsync(TUser user);
     Task<bool> CanDisconnectProviderAsync(TUser user, string provider);
