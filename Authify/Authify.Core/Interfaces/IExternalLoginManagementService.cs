@@ -1,11 +1,12 @@
+using Authify.Core.Common;
+using Authify.Core.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Authify.Core.Interfaces;
 
-public interface IExternalLoginManagementService<TUser>
+public interface IExternalLoginManagementService
 {
-    Task<IList<UserLoginInfo>> GetConnectedProvidersAsync(TUser user);
-    Task<bool> CanDisconnectProviderAsync(TUser user, string provider);
-    Task<IdentityResult> DisconnectProviderAsync(TUser user, string provider);
-    Task<IdentityResult> ConnectProviderAsync(TUser user, UserLoginInfo loginInfo);
+    Task<OperationResult<IList<ExternalLoginDto>>> GetConnectedProvidersAsync(string userId);
+    Task<OperationResult> DisconnectProviderAsync(string userId, string provider);
+    Task<OperationResult> ConnectProviderAsync(string userId, ConnectExternalLoginRequest loginRequest);
 }

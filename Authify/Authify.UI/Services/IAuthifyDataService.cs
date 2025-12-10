@@ -10,8 +10,6 @@ namespace Authify.UI.Services;
 /// </summary>
 public interface IAuthifyDataService
 {
-    event Action? OnLoggedOut;
-    
     //AuthService
     [System.Obsolete("Use LoginAsync(LoginRequest) returning LoginResponseDto")]
     Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtLoginAsync(LoginRequest request);
@@ -21,19 +19,22 @@ public interface IAuthifyDataService
 
     Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request);
 
-    Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request);
+    Task<OperationResult<OtpResponseDto>> JwtVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request);
     Task<OperationResult> ResendOtpAsync(ResendOtpRequest request);
     Task<OperationResult> JwtLogoutAsync();
     Task<OperationResult> CookieLogoutAsync();
-    
+
+    //ExternalAuth
+    Task<OperationResult> StoreTokensFromExternalAuth(string accessToken, string refreshToken);
+
     //UserService
     Task<OperationResult> RegisterAsync(RegisterRequest registerRequest);
-    Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest  emailConfirmationRequest);
+    Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest);
     Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest);
     Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request);
-    
+
     //UserAccountService
     Task<OperationResult<byte[]>> RequestExportAsync();
     Task<OperationResult<UserExportRequest>> GetExportStatusAsync();
@@ -41,21 +42,20 @@ public interface IAuthifyDataService
     Task<OperationResult<UserDeactivationRequest>> GetDeactivationStatusAsync();
     Task<OperationResult> DeleteAccountAsync();
     Task<OperationResult<UserDeletionRequest>> GetDeletionStatusAsync();
-    
+
     //UserProfileService
     Task<OperationResult> UpdatePersonalInformationAsync(PersonalInformationUpdateRequest request);
     Task<OperationResult> UpdateProfileImageAsync(ProfileImageUpdateRequest request);
     Task<OperationResult<UserProfileDto>> GetProfileAsync();
-    
+
     //TwoFactorClaimService
     Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request);
     Task<OperationResult> RemoveAsync(TwoFactorRequest request);
     Task<OperationResult<List<UserTwoFactor>>> GetAllAsync();
     Task<OperationResult<UserTwoFactor>> GetPreferredAsync();
-    
+
     //ExternalLoginManagementService - Platform-independent
     Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync();
-    Task<OperationResult<bool>> CanDisconnectProviderAsync(string provider);
     Task<OperationResult> DisconnectProviderAsync(string provider);
     Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request);
 }

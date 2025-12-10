@@ -67,8 +67,8 @@ public class UserController : ControllerBase
         
         var result = await _userService.ChangePasswordAsync(userId, changePasswordRequest);
         
-        if (result.Success) return Ok();
+        if (result.Success) return Ok(result);
         
-        return BadRequest("Something went wrong.");
+        return BadRequest(result);
     }
 }

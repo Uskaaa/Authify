@@ -38,14 +38,7 @@ public class AuthController : ControllerBase
             RefreshToken = refreshToken,
             ResultKind = LoginResultKind.Jwt
         };
-        
-        // Wenn OTP zurückkommt (kein JWT) → UI entscheidet redirect auf OTP-Seite
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            return Ok(new { requiresOtp = true, accessToken });
-        }
 
-        // Kein OTP → JWT + RefreshToken zurückgeben
         return Ok(OperationResult<LoginResponseDto>.Ok(loginResponse));;
     }
 
@@ -55,10 +48,17 @@ public class AuthController : ControllerBase
         var result = await _authServiceJwt.VerifyOtpAsync(request);
 
         if (!result.Success)
-            return BadRequest(new { error = result.ErrorMessage });
+            return BadRequest(result);
 
         var (accessToken, refreshToken) = result.Data!.Value;
-        return Ok(new { accessToken, refreshToken });
+        
+        var otpResponse = new OtpResponseDto()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+        
+        return Ok(OperationResult<OtpResponseDto>.Ok(otpResponse));
     }
 
     [HttpPost(nameof(ResendOtp))]
@@ -67,9 +67,9 @@ public class AuthController : ControllerBase
         var result = await _authServiceJwt.ResendOtpAsync(request);
 
         if (!result.Success)
-            return BadRequest(new { error = result.ErrorMessage });
+            return BadRequest(result);
 
-        return Ok();
+        return Ok(result);
     }
 
     [HttpPost(nameof(Logout))]

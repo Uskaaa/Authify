@@ -1,4 +1,9 @@
+using System.Security.Claims;
+using Authify.Application.Data;
+using Authify.Core.Common;
 using Authify.Core.Interfaces;
+using Authify.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,49 +11,64 @@ namespace Authify.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ExternalLoginController<TUser> : ControllerBase
-    where TUser : IdentityUser
+[Authorize]
+public class ExternalLoginController : ControllerBase
 {
-    private readonly IExternalLoginManagementService<TUser> _externalLoginService;
-    private readonly UserManager<TUser> _userManager;
+    private readonly IExternalLoginManagementService _externalLoginService;
 
-    public ExternalLoginController(IExternalLoginManagementService<TUser> externalLoginService, UserManager<TUser> userManager)
+    public ExternalLoginController(
+        IExternalLoginManagementService externalLoginService)
     {
         _externalLoginService = externalLoginService;
-        _userManager = userManager;
     }
 
+    private string? GetUserId()
+    {
+        return User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    }
+    
     [HttpGet("connected")]
     public async Task<IActionResult> GetConnectedProviders()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+        
+        var result = await _externalLoginService.GetConnectedProvidersAsync(userId);
+        
+        if (!result.Success)
+            return BadRequest(result);
 
-        var logins = await _externalLoginService.GetConnectedProvidersAsync(user);
-        return Ok(logins);
+        return Ok(result);
     }
 
     [HttpPost("disconnect/{provider}")]
     public async Task<IActionResult> DisconnectProvider(string provider)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
 
-        var result = await _externalLoginService.DisconnectProviderAsync(user, provider);
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        var result = await _externalLoginService.DisconnectProviderAsync(userId, provider);
 
-        return Ok();
+        if (!result.Success)
+            return BadRequest(result);
+
+        return Ok(result);
     }
 
     [HttpPost("connect")]
-    public async Task<IActionResult> ConnectProvider([FromBody] UserLoginInfo loginInfo)
+    public async Task<IActionResult> ConnectProvider([FromBody] ConnectExternalLoginRequest externalLoginRequest)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return Unauthorized();
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+        
+        var result = await _externalLoginService.ConnectProviderAsync(userId, externalLoginRequest);
 
-        var result = await _externalLoginService.ConnectProviderAsync(user, loginInfo);
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        if (!result.Success)
+            return BadRequest(result);
 
-        return Ok();
+        return Ok(result);
     }
 }

@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
 
         const string JwtAuthScheme = "JwtAuth";
 
-        services.AddAuthentication(options =>
+        var authBuilder =  services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtAuthScheme;
                 options.DefaultScheme = JwtAuthScheme;
@@ -78,6 +78,18 @@ public static class ServiceCollectionExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
+        
+        if (!string.IsNullOrEmpty(options.GoogleClientId) && !string.IsNullOrEmpty(options.GoogleClientSecret))
+        {
+            authBuilder.AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = options.GoogleClientId;
+                googleOptions.ClientSecret = options.GoogleClientSecret;
+                
+                // External Scheme
+                googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+            });
+        }
 
         services.AddControllers()
             .AddApplicationPart(typeof(Controllers.ExternalAuthController).Assembly);

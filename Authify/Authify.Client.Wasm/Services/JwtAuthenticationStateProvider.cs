@@ -31,22 +31,11 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
         _dataService = dataService;
         _authRefreshService = authRefreshService;
         _anonymous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        
-        _dataService.OnLoggedOut += HandleLogoutEvent;
     }
 
     public void Dispose()
     {
-        if (_dataService != null)
-        {
-            _dataService.OnLoggedOut -= HandleLogoutEvent;
-        }
-    }
-    
-    private void HandleLogoutEvent()
-    {
-        NotifyUserLogout();
-        _navManager.NavigateTo("/login");
+        
     }
     
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()

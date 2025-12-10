@@ -124,6 +124,32 @@
     private bool _showConfirmPassword = false;
     private string? _errorMessage;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        
+        if (uri.Fragment.Length > 1)
+        {
+            var fragmentString = uri.Fragment.Substring(1); 
+            var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(fragmentString);
+
+            var accessToken = query.GetValueOrDefault("access").ToString();
+            var refreshToken = query.GetValueOrDefault("refresh").ToString();
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                NavigationManager.NavigateTo("/otp?token=" + (accessToken ?? ""));
+            }
+            
+            if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
+            {
+                await DataService.StoreTokensFromExternalAuth(accessToken, refreshToken);
+                
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+        }
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JS.InvokeVoidAsync("applyTheme");
@@ -158,11 +184,11 @@
 
     private void GoogleOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/", forceLoad: true);
+        NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/register&mode=register", forceLoad: true);
     }
 
     private void GitHubOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/", forceLoad: true);
+        NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/register&mode=register", forceLoad: true);
     }
 }

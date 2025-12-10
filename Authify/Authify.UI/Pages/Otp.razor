@@ -188,7 +188,7 @@
         if (jwtResult.Success)
         {
             _error = false;
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
         else
         {

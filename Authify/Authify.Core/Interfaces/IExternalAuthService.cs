@@ -6,6 +6,6 @@ namespace Authify.Core.Interfaces;
 public interface IExternalAuthService
 {
     AuthenticationProperties GetAuthProperties(string provider, string redirectUrl);
-    string GetRedirectUrl(string provider, string? returnUrl);
-    Task<IActionResult> HandleExternalCallbackAsync(string? returnUrl, string? remoteError);
+    string GetRedirectUrl(string provider, string? returnUrl, string mode);
+    Task<IActionResult> HandleExternalCallbackAsync(string? returnUrl, string mode, string? remoteError);
 }

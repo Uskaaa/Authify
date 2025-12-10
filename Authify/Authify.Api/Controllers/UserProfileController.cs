@@ -34,7 +34,7 @@ public class UserProfileController : ControllerBase
         var userId = GetUserId();
         var result = await _userProfileService.UpdatePersonalInformationAsync(userId, request);
 
-        return result.Success ? Ok(result) : BadRequest(result.ErrorMessage);
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 
     // ---- Profilbild aktualisieren ----
@@ -44,7 +44,7 @@ public class UserProfileController : ControllerBase
         var userId = GetUserId();
         var result = await _userProfileService.UpdateProfileImageAsync(userId, request);
 
-        return result.Success ? Ok(result) : BadRequest(result.ErrorMessage);
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 
     // ---- Profilinformationen abrufen ----
@@ -54,6 +54,6 @@ public class UserProfileController : ControllerBase
         var userId = GetUserId();
         var result = await _userProfileService.GetProfileAsync(userId);
 
-        return result.Success ? Ok(result.Data) : NotFound(result.ErrorMessage);
+        return result.Success ? Ok(result) : NotFound(result);
     }
 }

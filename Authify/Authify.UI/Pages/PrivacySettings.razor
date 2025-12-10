@@ -1,0 +1,403 @@
+@page "/privacy-settings"
+@using Microsoft.AspNetCore.Components.Web
+@using Authify.UI.Common
+@using Microsoft.JSInterop
+@layout ProfileLayout
+@inject IJSRuntime JS
+@inject IAuthifyDataService DataService
+@inject NavigationManager NavigationManager
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+<!-- Header -->
+<header class="bg-white dark:bg-dark-card border-b border-gray-200 dark:border-dark-border pt-16 lg:pt-0 transition-colors duration-300">
+    <div class="px-4 py-6 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold leading-tight text-gray-900 dark:text-dark-text">Privacy Settings</h1>
+                <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Manage your data privacy, account deactivation, and deletion options</p>
+            </div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mt-4 lg:mt-0">
+                <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card border border-gray-300 dark:border-dark-border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none transition-all duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Privacy Policy
+                </button>
+                <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none transition-all duration-200">
+                    Contact Support
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Notification Toast -->
+@if (_showNotification)
+{
+    <div class="fixed top-4 right-4 z-[10000] px-4 py-3 rounded-md shadow-lg max-w-sm transform transition-all duration-300 @_notificationClass animate-fade-in-down">
+        <div class="flex items-center">
+            @if (_notificationClass.Contains("bg-green")) { <i class="fa-solid fa-check-circle mr-2"></i> }
+            else if (_notificationClass.Contains("bg-red")) { <i class="fa-solid fa-circle-xmark mr-2"></i> }
+            else { <i class="fa-solid fa-info-circle mr-2"></i> }
+            @_notificationMessage
+        </div>
+    </div>
+}
+
+<!-- Content -->
+<div class="px-4 py-6 sm:px-6 lg:px-8 bg-gray-50 dark:bg-dark-bg min-h-screen">
+    <div class="max-w-4xl mx-auto">
+        <!-- Privacy Settings Card -->
+        <div class="mb-8 bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden transition-colors duration-300">
+            <!-- Card Header -->
+            <div class="px-8 py-6 border-b border-gray-100 dark:border-dark-border bg-gray-50/50 dark:bg-gray-800/50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-dark-text">Data Privacy & Account Management</h3>
+                        <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Control your personal data and manage your account status.</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Content -->
+            <div class="px-8 py-8 space-y-8">
+                <!-- Data Export Section -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Export Your Data</h4>
+                            <p class="text-sm text-gray-600 dark:text-dark-muted">Download a copy of all your personal data stored with us.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <h6 class="text-sm font-medium text-blue-800 dark:text-blue-300">What's included in your data export?</h6>
+                                <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                                    <li>• Profile information and settings</li>
+                                    <li>• Account activity and login history</li>
+                                    <li>• All uploaded files and documents</li>
+                                    <li>• Payment and billing information</li>
+                                    <li>• Support conversations and tickets</li>
+                                </ul>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-3">The export process may take up to 24 hours to complete. You'll receive an email when your data is ready for download.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Button -->
+                    <button @onclick="ExportData" disabled="@_isExporting" class="w-full flex items-center justify-center px-6 py-4 text-sm font-semibold text-blue-700 bg-white border-2 border-blue-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 dark:text-blue-400 dark:bg-gray-800 dark:border-blue-600 dark:hover:bg-gray-700 dark:hover:border-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-60 disabled:cursor-not-allowed">
+                        @if (_isExporting)
+                        {
+                            <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> <span>Generating Export...</span>
+                        }
+                        else
+                        {
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span>Export My Data</span>
+                        }
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-gray-100 dark:border-dark-border"></div>
+
+                <!-- Account Deactivation Section -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Deactivate Account</h4>
+                            <p class="text-sm text-gray-600 dark:text-dark-muted">Temporarily disable your account while preserving your data.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-yellow-500 dark:text-yellow-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <h6 class="text-sm font-medium text-yellow-800 dark:text-yellow-300">What happens when you deactivate?</h6>
+                                <ul class="text-sm text-yellow-700 dark:text-yellow-300 mt-2 space-y-1">
+                                    <li>• Your profile will be hidden from other users</li>
+                                    <li>• You won't be able to log in or access your account</li>
+                                    <li>• Your data will be preserved and can be restored</li>
+                                    <li>• Active subscriptions will be paused</li>
+                                    <li>• You can reactivate anytime by contacting support</li>
+                                </ul>
+                                <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-3">Deactivation is reversible. Your account and data will be restored when you reactivate.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deactivate Button -->
+                    <button @onclick="OpenDeactivateModal" class="w-full flex items-center justify-center px-6 py-4 text-sm font-semibold text-yellow-700 bg-yellow-50 border-2 border-yellow-300 rounded-xl hover:bg-yellow-100 hover:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200 dark:text-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-600 dark:hover:bg-yellow-900/30 dark:hover:border-yellow-500 dark:focus:ring-offset-gray-800">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        Deactivate Account
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-gray-100 dark:border-dark-border"></div>
+
+                <!-- Account Deletion Section -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-dark-text">Delete Account</h4>
+                            <p class="text-sm text-gray-600 dark:text-dark-muted">Permanently delete your account and all associated data.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-red-500 dark:text-red-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <h6 class="text-sm font-medium text-red-800 dark:text-red-300">⚠️ Warning: This action cannot be undone!</h6>
+                                <ul class="text-sm text-red-700 dark:text-red-300 mt-2 space-y-1">
+                                    <li>• All your personal data will be permanently deleted</li>
+                                    <li>• Your profile, files, and settings will be removed</li>
+                                    <li>• Active subscriptions will be immediately cancelled</li>
+                                    <li>• You will lose access to all features and services</li>
+                                    <li>• This action is irreversible and cannot be undone</li>
+                                </ul>
+                                <p class="text-xs text-red-600 dark:text-red-400 mt-3 font-medium">Before proceeding, please export your data if you want to keep a copy of your information.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Button -->
+                    <button id="delete-account-btn" @onclick="OpenDeleteModal" class="w-full flex items-center justify-center px-6 py-4 text-sm font-bold text-white bg-red-600 border-2 border-red-600 rounded-xl hover:bg-red-700 hover:border-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl dark:focus:ring-offset-gray-800">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete Account Permanently
+                    </button>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="pt-8 border-t border-gray-100 dark:border-dark-border">
+                    <div class="bg-gray-50 dark:bg-gray-800 dark:border dark:border-dark-border rounded-xl p-6">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-3 dark:text-dark-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <h5 class="text-sm font-semibold text-gray-900 dark:text-dark-text">Need Help?</h5>
+                                <p class="text-xs text-gray-600 mt-1 dark:text-dark-muted">
+                                    If you have questions about data privacy or account management, our support team is here to help. 
+                                    <a href="#" class="text-primary-600 hover:text-primary-700 font-medium dark:text-primary-400 dark:hover:text-primary-300">Contact Support</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deactivate Modal -->
+@if (_showDeactivateModal)
+{
+    <div class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-black dark:bg-opacity-80" @onclick="CloseDeactivateModal"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white dark:bg-dark-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white dark:bg-dark-card px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text">Deactivate Account</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-dark-muted">
+                                    Are you sure you want to deactivate your account? Your profile will be hidden and you won't be able to login until you reactivate it.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @onclick="ConfirmDeactivate" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm dark:focus:ring-offset-gray-800">
+                        Deactivate
+                    </button>
+                    <button type="button" @onclick="CloseDeactivateModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 dark:focus:ring-offset-gray-800 dark:focus:ring-indigo-400">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Delete Modal -->
+@if (_showDeleteModal)
+{
+    <div class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-black dark:bg-opacity-80" @onclick="CloseDeleteModal"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white dark:bg-dark-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white dark:bg-dark-card px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text">Delete Account</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-dark-muted">
+                                    Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost forever.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @onclick="ConfirmDelete" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm dark:focus:ring-offset-gray-800">
+                        Delete Account
+                    </button>
+                    <button type="button" @onclick="CloseDeleteModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500 dark:focus:ring-offset-gray-800 dark:focus:ring-indigo-400">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _showDeactivateModal = false;
+    private bool _showDeleteModal = false;
+    private bool _isExporting = false;
+    
+    private bool _showNotification = false;
+    private string _notificationMessage = "";
+    private string _notificationClass = "bg-green-500 text-white";
+
+    private IJSObjectReference? _downloadModule;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try {
+                await JS.InvokeVoidAsync("applyTheme");
+                _downloadModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Authify.UI/js/downloadHelper.js");
+            } catch { }
+        }
+    }
+
+    private async Task ExportData()
+    {
+        _isExporting = true;
+        var result = await DataService.RequestExportAsync();
+        
+        if (result.Success && result.Data != null)
+        {
+            // Convert bytes to base64 string
+            var base64 = Convert.ToBase64String(result.Data);
+            
+            if (_downloadModule != null)
+            {
+                await _downloadModule.InvokeVoidAsync("downloadFileFromBase64", "user_export.json", base64);
+            }
+            
+            ShowNotification("Data export started successfully!", "bg-green-500");
+        }
+        else
+        {
+            ShowNotification(result.ErrorMessage ?? "Export failed.", "bg-red-500");
+        }
+        _isExporting = false;
+    }
+
+    private void OpenDeactivateModal() => _showDeactivateModal = true;
+    private void CloseDeactivateModal() => _showDeactivateModal = false;
+
+    private async Task ConfirmDeactivate()
+    {
+        var result = await DataService.DeactivateAccountAsync();
+        if (result.Success)
+        {
+            // Force Logout
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+        else
+        {
+             CloseDeactivateModal();
+             ShowNotification(result.ErrorMessage ?? "Deactivation failed.", "bg-red-500");
+        }
+    }
+
+    private void OpenDeleteModal() => _showDeleteModal = true;
+    private void CloseDeleteModal() => _showDeleteModal = false;
+
+    private async Task ConfirmDelete()
+    {
+        var result = await DataService.DeleteAccountAsync();
+        if (result.Success)
+        {
+            // Force Logout
+            NavigationManager.NavigateTo("/login", forceLoad: true);
+        }
+        else
+        {
+             CloseDeleteModal();
+             ShowNotification(result.ErrorMessage ?? "Deletion failed.", "bg-red-500");
+        }
+    }
+    
+    private void ShowNotification(string message, string cssClass)
+    {
+        _notificationMessage = message;
+        _notificationClass = cssClass + " text-white";
+        _showNotification = true;
+        StateHasChanged();
+        
+        var timer = new System.Threading.Timer((_) =>
+        {
+            _showNotification = false;
+            InvokeAsync(StateHasChanged);
+        }, null, 3000, System.Threading.Timeout.Infinite);
+    }
+}

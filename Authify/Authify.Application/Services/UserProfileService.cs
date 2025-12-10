@@ -94,7 +94,7 @@ public class UserProfileService<TUser> : IUserProfileService
         {
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            FullName = profile?.FullName,
+            FullName = user.FullName,
             JobTitle = profile?.JobTitle,
             Company = profile?.Company,
             Bio = profile?.Bio,

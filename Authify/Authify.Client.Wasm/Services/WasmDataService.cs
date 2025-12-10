@@ -32,6 +32,7 @@ public class WasmDataService : IAuthifyDataService
                 var result = await response.Content.ReadFromJsonAsync<OperationResult<T>>(_jsonOptions);
                 return result ?? OperationResult<T>.Fail("Failed to deserialize successful response.");
             }
+
             // Try to read OperationResult from error response
             var errorResult = await response.Content.ReadFromJsonAsync<OperationResult<T>>(_jsonOptions);
             return errorResult ?? OperationResult<T>.Fail(await response.Content.ReadAsStringAsync());
@@ -41,7 +42,7 @@ public class WasmDataService : IAuthifyDataService
             return OperationResult<T>.Fail(ex.Message);
         }
     }
-    
+
     private async Task<OperationResult> PostAsync(string url, object payload)
     {
         try
@@ -52,6 +53,7 @@ public class WasmDataService : IAuthifyDataService
                 var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
                 return result ?? OperationResult.Fail("Failed to deserialize successful response.");
             }
+
             var errorResult = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
             return errorResult ?? OperationResult.Fail(await response.Content.ReadAsStringAsync());
         }
@@ -71,6 +73,7 @@ public class WasmDataService : IAuthifyDataService
                 var result = await response.Content.ReadFromJsonAsync<OperationResult<T>>(_jsonOptions);
                 return result ?? OperationResult<T>.Fail("Failed to deserialize successful response.");
             }
+
             var errorResult = await response.Content.ReadFromJsonAsync<OperationResult<T>>(_jsonOptions);
             return errorResult ?? OperationResult<T>.Fail(await response.Content.ReadAsStringAsync());
         }
@@ -79,7 +82,7 @@ public class WasmDataService : IAuthifyDataService
             return OperationResult<T>.Fail(ex.Message);
         }
     }
-    
+
     private async Task<OperationResult> GetAsync(string url)
     {
         try
@@ -90,6 +93,7 @@ public class WasmDataService : IAuthifyDataService
                 var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
                 return result ?? OperationResult.Fail("Failed to deserialize successful response.");
             }
+
             var errorResult = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
             return errorResult ?? OperationResult.Fail(await response.Content.ReadAsStringAsync());
         }
@@ -106,15 +110,18 @@ public class WasmDataService : IAuthifyDataService
     {
         var loginResult = await LoginAsync(request);
         if (!loginResult.Success || loginResult.Data?.ResultKind != LoginResultKind.Jwt)
-            return OperationResult<(string AccessToken, string RefreshToken)?>.Fail(loginResult.ErrorMessage ?? "JWT login failed.");
-        return OperationResult<(string AccessToken, string RefreshToken)?>.Ok((loginResult.Data.AccessToken!, loginResult.Data.RefreshToken!));
+            return OperationResult<(string AccessToken, string RefreshToken)?>.Fail(loginResult.ErrorMessage ??
+                "JWT login failed.");
+        return OperationResult<(string AccessToken, string RefreshToken)?>.Ok((loginResult.Data.AccessToken!,
+            loginResult.Data.RefreshToken!));
     }
 
     [System.Obsolete("Use LoginAsync(LoginRequest) returning LoginResponseDto")]
     public async Task<OperationResult<string>> CookieLoginAsync(LoginRequest loginRequest)
     {
         // Cookie-based login is not recommended for WASM clients.
-        return await Task.FromResult(OperationResult<string>.Fail("Cookie-based login is not supported in this client."));
+        return await Task.FromResult(
+            OperationResult<string>.Fail("Cookie-based login is not supported in this client."));
     }
 
     public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request)
@@ -122,59 +129,77 @@ public class WasmDataService : IAuthifyDataService
         // 1. Request senden
         var result = await PostAsync<LoginResponseDto>("api/auth/login", request);
         // 2. Prüfen ob erfolgreich
-        if (result.Success && result.Data != null)
-        {
-                await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
-        }
+        if (result.Success && result.Data != null && !string.IsNullOrEmpty(result.Data.RefreshToken))
+            await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
+
         return result;
     }
 
-    public Task<OperationResult<(string AccessToken, string RefreshToken)?>> JwtVerifyOtpAsync(OtpVerificationRequest request) => PostAsync<(string AccessToken, string RefreshToken)?>("api/auth/verify-otp-jwt", request);
+    public async Task<OperationResult<OtpResponseDto>> JwtVerifyOtpAsync(
+        OtpVerificationRequest request)
+    {
+        var result = await PostAsync<OtpResponseDto>("api/auth/verifyotp", request);
 
-    public Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request) => PostAsync<string>("api/auth/verify-otp-cookie", request);
+        if (result.Success && result.Data != null && !string.IsNullOrEmpty(result.Data.RefreshToken))
+            await _tokenStore.SetTokensAsync(result.Data.AccessToken, result.Data.RefreshToken);
 
-    public Task<OperationResult> ResendOtpAsync(ResendOtpRequest request) => PostAsync("api/auth/resend-otp", request);
+        return result;
+    }
 
-    public event Action? OnLoggedOut;
+    public Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request) =>
+        PostAsync<string>("api/auth/verify-otp-cookie", request);
+
+    public Task<OperationResult> ResendOtpAsync(ResendOtpRequest request) => PostAsync("api/auth/resendotp", request);
+
     public async Task<OperationResult> JwtLogoutAsync()
     {
         // 1. Refresh Token holen, um ihn an die API zu senden
         var tokenResult = await _tokenStore.GetRefreshTokenAsync();
-    
+
         if (tokenResult.Success && tokenResult.Data != null)
         {
             await PostAsync("api/auth/logout", tokenResult.Data.RefreshToken);
         }
 
         await _tokenStore.RemoveTokensAsync();
-        
-        OnLoggedOut?.Invoke();
 
         return OperationResult.Ok();
     }
 
     public Task<OperationResult> CookieLogoutAsync() => PostAsync("api/auth/logout-cookie", new { });
 
-    public Task<OperationResult> RegisterAsync(RegisterRequest registerRequest) => PostAsync("api/user/register", registerRequest);
+    public async Task<OperationResult> StoreTokensFromExternalAuth(string accessToken, string refreshToken)
+    {
+        await _tokenStore.SetTokensAsync(accessToken, refreshToken);
+        return OperationResult.Ok();
+    }
 
-    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) => PostAsync("api/user/confirmemail", emailConfirmationRequest);
+    public Task<OperationResult> RegisterAsync(RegisterRequest registerRequest) =>
+        PostAsync("api/user/register", registerRequest);
 
-    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) => PostAsync("api/user/forgotpassword", forgotPasswordRequest);
+    public Task<OperationResult> ConfirmEmailAsync(EmailConfirmationRequest emailConfirmationRequest) =>
+        PostAsync("api/user/confirmemail", emailConfirmationRequest);
 
-    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) => PostAsync("api/user/resetpassword", resetPasswordRequest);
+    public Task<OperationResult> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest) =>
+        PostAsync("api/user/forgotpassword", forgotPasswordRequest);
 
-    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) => PostAsync("api/user/changepassword", request);
+    public Task<OperationResult> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest) =>
+        PostAsync("api/user/resetpassword", resetPasswordRequest);
+
+    public Task<OperationResult> ChangePasswordAsync(ChangePasswordRequest request) =>
+        PostAsync("api/user/changepassword", request);
 
     public async Task<OperationResult<byte[]>> RequestExportAsync()
     {
         try
         {
-            var response = await _httpClient.GetAsync("api/account/export");
+            var response = await _httpClient.PostAsJsonAsync("api/useraccount/export", new { });
             if (response.IsSuccessStatusCode)
             {
                 var bytes = await response.Content.ReadAsByteArrayAsync();
                 return OperationResult<byte[]>.Ok(bytes);
             }
+
             return OperationResult<byte[]>.Fail(await response.Content.ReadAsStringAsync());
         }
         catch (Exception ex)
@@ -183,73 +208,54 @@ public class WasmDataService : IAuthifyDataService
         }
     }
 
-    public Task<OperationResult<UserExportRequest>> GetExportStatusAsync() => GetAsync<UserExportRequest>("api/account/export-status");
+    public Task<OperationResult<UserExportRequest>> GetExportStatusAsync() =>
+        GetAsync<UserExportRequest>("api/useraccount/export/status");
 
-    public Task<OperationResult> DeactivateAccountAsync() => PostAsync("api/account/deactivate", new {});
+    public Task<OperationResult> DeactivateAccountAsync() => PostAsync("api/useraccount/deactivate", new { });
 
-    public Task<OperationResult<UserDeactivationRequest>> GetDeactivationStatusAsync() => GetAsync<UserDeactivationRequest>("api/account/deactivation-status");
+    public Task<OperationResult<UserDeactivationRequest>> GetDeactivationStatusAsync() =>
+        GetAsync<UserDeactivationRequest>("api/useraccount/deactivate/status");
 
-    public Task<OperationResult> DeleteAccountAsync() => PostAsync("api/account/delete", new {});
+    public Task<OperationResult> DeleteAccountAsync() => PostAsync("api/useraccount/delete", new { });
 
-    public Task<OperationResult<UserDeletionRequest>> GetDeletionStatusAsync() => GetAsync<UserDeletionRequest>("api/account/deletion-status");
+    public Task<OperationResult<UserDeletionRequest>> GetDeletionStatusAsync() =>
+        GetAsync<UserDeletionRequest>("api/useraccount/delete/status");
 
-    public Task<OperationResult> UpdatePersonalInformationAsync(PersonalInformationUpdateRequest request) => PostAsync("api/profile/personal-information", request);
+    public Task<OperationResult> UpdatePersonalInformationAsync(PersonalInformationUpdateRequest request) =>
+        PostAsync("api/userprofile/update-personal-information", request);
 
-    public Task<OperationResult> UpdateProfileImageAsync(ProfileImageUpdateRequest request)
-    {
-        // This requires multipart form data, which is more complex than PostAsJsonAsync
-        return Task.FromResult(OperationResult.Fail("Not implemented. Requires multipart form data."));
-    }
+    public Task<OperationResult> UpdateProfileImageAsync(ProfileImageUpdateRequest request) =>
+        PostAsync("api/userprofile/update-profile-image", request);
 
-    public Task<OperationResult<UserProfileDto>> GetProfileAsync() => GetAsync<UserProfileDto>("api/profile");
+    public Task<OperationResult<UserProfileDto>> GetProfileAsync() => GetAsync<UserProfileDto>("api/userprofile/me");
 
-    public Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request) => PostAsync("api/twofactor", request);
+    public Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request) =>
+        PostAsync("api/twofactorclaim/add-or-update", request);
 
-    public Task<OperationResult> RemoveAsync(TwoFactorRequest request) => PostAsync("api/twofactor/remove", request);
+    public Task<OperationResult> RemoveAsync(TwoFactorRequest request) =>
+        PostAsync("api/twofactorclaim/remove", request);
 
-    public Task<OperationResult<List<UserTwoFactor>>> GetAllAsync() => GetAsync<List<UserTwoFactor>>("api/twofactor/all");
+    public Task<OperationResult<List<UserTwoFactor>>> GetAllAsync() =>
+        GetAsync<List<UserTwoFactor>>("api/twofactorclaim/all");
 
-    public Task<OperationResult<UserTwoFactor>> GetPreferredAsync() => GetAsync<UserTwoFactor>("api/twofactor/preferred");
+    public Task<OperationResult<UserTwoFactor>> GetPreferredAsync() =>
+        GetAsync<UserTwoFactor>("api/twofactorclaim/preferred");
 
-    public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync()
-    {
-        try
-        {
-            var providers = await _httpClient.GetFromJsonAsync<List<ExternalLoginDto>>("api/externallogins", _jsonOptions);
-            return providers != null 
-                ? OperationResult<List<ExternalLoginDto>>.Ok(providers)
-                : OperationResult<List<ExternalLoginDto>>.Fail("Failed to retrieve connected providers.");
-        }
-        catch (Exception ex)
-        {
-            return OperationResult<List<ExternalLoginDto>>.Fail(ex.Message);
-        }
-    }
-
-    public async Task<OperationResult<bool>> CanDisconnectProviderAsync(string provider)
-    {
-        try
-        {
-            var canDisconnect = await _httpClient.GetFromJsonAsync<bool>($"api/externallogins/can-disconnect?provider={Uri.EscapeDataString(provider)}");
-            return OperationResult<bool>.Ok(canDisconnect);
-        }
-        catch (Exception ex)
-        {
-            return OperationResult<bool>.Fail(ex.Message);
-        }
-    }
+    public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync() =>
+        await GetAsync<List<ExternalLoginDto>>("api/externallogin/connected");
 
     public async Task<OperationResult> DisconnectProviderAsync(string provider)
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/externallogins/disconnect", new { provider }, _jsonOptions);
+            var response =
+                await _httpClient.PostAsJsonAsync($"api/externallogin/disconnect/{provider}", new { }, _jsonOptions);
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
                 return result ?? OperationResult.Ok();
             }
-            
+
             var errorContent = await response.Content.ReadAsStringAsync();
             return OperationResult.Fail(errorContent);
         }
@@ -259,23 +265,6 @@ public class WasmDataService : IAuthifyDataService
         }
     }
 
-    public async Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync("api/externallogins/connect", request, _jsonOptions);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<OperationResult>(_jsonOptions);
-                return result ?? OperationResult.Ok();
-            }
-            
-            var errorContent = await response.Content.ReadAsStringAsync();
-            return OperationResult.Fail(errorContent);
-        }
-        catch (Exception ex)
-        {
-            return OperationResult.Fail(ex.Message);
-        }
-    }
+    public async Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request) =>
+        await PostAsync("api/externallogin/connect", request);
 }

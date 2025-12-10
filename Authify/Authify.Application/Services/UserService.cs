@@ -24,12 +24,10 @@ public class UserService<TUser> : IUserService
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
     {
-        string name = request.FullName;
-        string firstName = name.Split(' ')[0];
         var user = new TUser
         {
             FullName = request.FullName,
-            UserName = firstName,
+            UserName = request.Email,
             Email = request.Email
         };
 

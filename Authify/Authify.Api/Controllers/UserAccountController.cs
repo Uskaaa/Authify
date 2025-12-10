@@ -32,7 +32,7 @@ public class UserAccountController : ControllerBase
 
         var result = await _userAccountService.RequestExportAsync(userId);
         if (!result.Success)
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(result);
 
         return File(result.Data!, "application/json", "user_export.json");
     }
@@ -45,7 +45,7 @@ public class UserAccountController : ControllerBase
             return Unauthorized();
 
         var result = await _userAccountService.GetExportStatusAsync(userId);
-        return result.Success ? Ok(result.Data) : NotFound(result.ErrorMessage);
+        return result.Success ? Ok(result) : NotFound(result);
     }
 
     // ---- Deactivate ----
@@ -57,7 +57,7 @@ public class UserAccountController : ControllerBase
             return Unauthorized();
 
         var result = await _userAccountService.DeactivateAccountAsync(userId);
-        return result.Success ? Ok() : BadRequest(result.ErrorMessage);
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpGet("deactivate/status")]
@@ -68,7 +68,7 @@ public class UserAccountController : ControllerBase
             return Unauthorized();
 
         var result = await _userAccountService.GetDeactivationStatusAsync(userId);
-        return result.Success ? Ok(result.Data) : NotFound(result.ErrorMessage);
+        return result.Success ? Ok(result) : NotFound(result);
     }
 
     // ---- Delete ----
@@ -80,7 +80,7 @@ public class UserAccountController : ControllerBase
             return Unauthorized();
 
         var result = await _userAccountService.DeleteAccountAsync(userId);
-        return result.Success ? Ok() : BadRequest(result.ErrorMessage);
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 
     [HttpGet("delete/status")]
@@ -91,6 +91,6 @@ public class UserAccountController : ControllerBase
             return Unauthorized();
 
         var result = await _userAccountService.GetDeletionStatusAsync(userId);
-        return result.Success ? Ok(result.Data) : NotFound(result.ErrorMessage);
+        return result.Success ? Ok(result) : NotFound(result);
     }
 }
