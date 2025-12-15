@@ -250,70 +250,70 @@
             </div>
         </div>
 
-        <!-- Active Sessions Card -->
-        <div class="mb-8 bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden transition-colors duration-300">
-            <div class="px-8 py-6 border-b border-gray-100 dark:border-dark-border bg-gray-50/50 dark:bg-gray-800/50">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-dark-text">Active Sessions</h3>
-                        <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Monitor and manage your active login sessions across all devices.</p>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="px-8 py-8 space-y-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center text-sm text-gray-600 dark:text-dark-muted">
-                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        @_sessions.Count active sessions found
-                    </div>
-                    <button class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 px-3 py-2 rounded-lg transition-all duration-200">
-                        Logout All Devices
-                    </button>
-                </div>
-                
-                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-dark-border rounded-xl overflow-hidden shadow-inner">
-                    <div class="max-h-96 overflow-y-auto custom-scrollbar">
-                        <div class="divide-y divide-gray-100 dark:divide-gray-600">
-                            @foreach(var session in _sessions)
-                            {
-                                <div class="p-4 sm:p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600/50 transition-colors duration-150">
-                                    <div class="flex items-center space-x-4 flex-1 min-w-0">
-                                        <div class="w-10 h-10 @session.BgColor rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-                                            <i class="@session.Icon @session.IconColor"></i>
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <div class="flex items-center space-x-2">
-                                                <h5 class="text-sm font-semibold text-gray-900 dark:text-dark-text truncate">@session.DeviceName</h5>
-                                                @if(session.IsCurrent) {
-                                                    <span class="px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/50 rounded-full whitespace-nowrap border border-green-200 dark:border-green-800">Current</span>
-                                                }
-                                            </div>
-                                            <p class="text-sm text-gray-500 dark:text-dark-muted mt-1 truncate">@session.IpAddress • @session.Location</p>
-                                            <p class="text-xs text-gray-400 dark:text-dark-muted mt-1">@session.LastActive</p>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4 flex-shrink-0">
-                                        @if(session.IsCurrent) {
-                                            <button disabled class="px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-not-allowed border border-gray-200 dark:border-gray-600">This Device</button>
-                                        } else {
-                                            <button class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-200 dark:border-red-900/50 rounded-lg transition-all duration-200">Revoke</button>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @* <!-- Active Sessions Card --> *@
+        @* <div class="mb-8 bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden transition-colors duration-300"> *@
+        @*     <div class="px-8 py-6 border-b border-gray-100 dark:border-dark-border bg-gray-50/50 dark:bg-gray-800/50"> *@
+        @*         <div class="flex items-center justify-between"> *@
+        @*             <div> *@
+        @*                 <h3 class="text-xl font-semibold text-gray-900 dark:text-dark-text">Active Sessions</h3> *@
+        @*                 <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Monitor and manage your active login sessions across all devices.</p> *@
+        @*             </div> *@
+        @*             <div class="flex-shrink-0"> *@
+        @*                 <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center"> *@
+        @*                     <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"> *@
+        @*                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path> *@
+        @*                     </svg> *@
+        @*                 </div> *@
+        @*             </div> *@
+        @*         </div> *@
+        @*     </div> *@
+        @*      *@
+        @*     <div class="px-8 py-8 space-y-6"> *@
+        @*         <div class="flex items-center justify-between"> *@
+        @*             <div class="flex items-center text-sm text-gray-600 dark:text-dark-muted"> *@
+        @*                 <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> *@
+        @*                 @_sessions.Count active sessions found *@
+        @*             </div> *@
+        @*             <button class="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 px-3 py-2 rounded-lg transition-all duration-200"> *@
+        @*                 Logout All Devices *@
+        @*             </button> *@
+        @*         </div> *@
+        @*          *@
+        @*         <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-dark-border rounded-xl overflow-hidden shadow-inner"> *@
+        @*             <div class="max-h-96 overflow-y-auto custom-scrollbar"> *@
+        @*                 <div class="divide-y divide-gray-100 dark:divide-gray-600"> *@
+        @*                     @foreach(var session in _sessions) *@
+        @*                     { *@
+        @*                         <div class="p-4 sm:p-6 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-600/50 transition-colors duration-150"> *@
+        @*                             <div class="flex items-center space-x-4 flex-1 min-w-0"> *@
+        @*                                 <div class="w-10 h-10 @session.BgColor rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"> *@
+        @*                                     <i class="@session.Icon @session.IconColor"></i> *@
+        @*                                 </div> *@
+        @*                                 <div class="min-w-0 flex-1"> *@
+        @*                                     <div class="flex items-center space-x-2"> *@
+        @*                                         <h5 class="text-sm font-semibold text-gray-900 dark:text-dark-text truncate">@session.DeviceName</h5> *@
+        @*                                         @if(session.IsCurrent) { *@
+        @*                                             <span class="px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/50 rounded-full whitespace-nowrap border border-green-200 dark:border-green-800">Current</span> *@
+        @*                                         } *@
+        @*                                     </div> *@
+        @*                                     <p class="text-sm text-gray-500 dark:text-dark-muted mt-1 truncate">@session.IpAddress • @session.Location</p> *@
+        @*                                     <p class="text-xs text-gray-400 dark:text-dark-muted mt-1">@session.LastActive</p> *@
+        @*                                 </div> *@
+        @*                             </div> *@
+        @*                             <div class="ml-4 flex-shrink-0"> *@
+        @*                                 @if(session.IsCurrent) { *@
+        @*                                     <button disabled class="px-3 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-not-allowed border border-gray-200 dark:border-gray-600">This Device</button> *@
+        @*                                 } else { *@
+        @*                                     <button class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-200 dark:border-red-900/50 rounded-lg transition-all duration-200">Revoke</button> *@
+        @*                                 } *@
+        @*                             </div> *@
+        @*                         </div> *@
+        @*                     } *@
+        @*                 </div> *@
+        @*             </div> *@
+        @*         </div> *@
+        @*     </div> *@
+        @* </div> *@
     </div>
 </div>
 
@@ -444,8 +444,7 @@
     {
         var uri = new Uri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-
-        // 1. Parameter auslesen (OAuth Callback)
+        
         var provider = query.GetValueOrDefault("provider").ToString();
         var key = query.GetValueOrDefault("key").ToString();
         var displayName = query.GetValueOrDefault("display").ToString();
@@ -463,7 +462,7 @@
             var result = await DataService.ConnectProviderAsync(externalProvider);
             
             if (result.Success)
-                StateHasChanged();
+                NavigationManager.NavigateTo("/security-settings", replace: true);
         }
         else if (!string.IsNullOrEmpty(error))
         {
@@ -471,10 +470,10 @@
         }
         
         // MOCK SESSIONS
-        _sessions.Add(new SessionModel { Id = 1, DeviceName = "MacBook Pro M2", IpAddress = "192.168.1.100", Location = "Munich, DE", LastActive = "Active now", IsCurrent = true, Icon = "fa-brands fa-apple", BgColor = "bg-gray-100 dark:bg-gray-600", IconColor = "text-gray-700 dark:text-gray-200" });
-        for(int i = 2; i <= 15; i++) {
-            _sessions.Add(new SessionModel { Id = i, DeviceName = $"iPhone 1{i}", IpAddress = $"10.0.0.{i}", Location = "Berlin, DE", LastActive = $"{i}h ago", IsCurrent = false, Icon = "fa-solid fa-mobile-screen", BgColor = "bg-blue-100 dark:bg-blue-900/50", IconColor = "text-blue-600 dark:text-blue-400" });
-        }
+        // _sessions.Add(new SessionModel { Id = 1, DeviceName = "MacBook Pro M2", IpAddress = "192.168.1.100", Location = "Munich, DE", LastActive = "Active now", IsCurrent = true, Icon = "fa-brands fa-apple", BgColor = "bg-gray-100 dark:bg-gray-600", IconColor = "text-gray-700 dark:text-gray-200" });
+        // for(int i = 2; i <= 15; i++) {
+        //     _sessions.Add(new SessionModel { Id = i, DeviceName = $"iPhone 1{i}", IpAddress = $"10.0.0.{i}", Location = "Berlin, DE", LastActive = $"{i}h ago", IsCurrent = false, Icon = "fa-solid fa-mobile-screen", BgColor = "bg-blue-100 dark:bg-blue-900/50", IconColor = "text-blue-600 dark:text-blue-400" });
+        // }
 
         // Definition der unterstützten UI Modelle
         _allSupportedMethods = new List<TwoFaUiModel>
@@ -544,7 +543,8 @@
         }
         else
         {
-            NavigationManager.NavigateTo($"/auth/external-login?provider={provider.LoginProvider}&returnUrl=/security-settings", forceLoad: true);
+            var accessToken = await DataService.GetAccessTokenAsync();
+            NavigationManager.NavigateTo($"/auth/external-login?provider={provider.LoginProvider}&returnUrl=/security-settings&mode=connect&access_token={accessToken}", forceLoad: true);
         }
     }
 

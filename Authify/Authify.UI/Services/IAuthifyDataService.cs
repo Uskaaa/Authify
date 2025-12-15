@@ -24,8 +24,9 @@ public interface IAuthifyDataService
     Task<OperationResult> ResendOtpAsync(ResendOtpRequest request);
     Task<OperationResult> JwtLogoutAsync();
     Task<OperationResult> CookieLogoutAsync();
-
+    
     //ExternalAuth
+    Task<string?> GetAccessTokenAsync();
     Task<OperationResult> StoreTokensFromExternalAuth(string accessToken, string refreshToken);
 
     //UserService

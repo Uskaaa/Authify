@@ -33,7 +33,6 @@ public static class ServiceCollectionExtensions
                 configureClient(client);
             })
             .AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
-        
         return services;
     }
 }

@@ -56,7 +56,8 @@ public static class ServiceCollectionExtensions
             {
                 options.ForwardDefaultSelector = context =>
                 {
-                    if (context.Request.Path.StartsWithSegments("/api"))
+                    if (context.Request.Path.StartsWithSegments("/api") || 
+                        context.Request.Path.StartsWithSegments("/auth"))
                     {
                         return JwtBearerDefaults.AuthenticationScheme;
                     }
@@ -76,6 +77,22 @@ public static class ServiceCollectionExtensions
                     ValidAudience = jwtAudience,
                     ClockSkew = TimeSpan.Zero,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+                
+                jwt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        
+                        if (!string.IsNullOrEmpty(accessToken) && 
+                            path.StartsWithSegments("/auth/external-login"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         

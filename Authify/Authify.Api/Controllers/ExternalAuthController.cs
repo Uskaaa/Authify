@@ -23,8 +23,22 @@ public class ExternalAuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(provider))
             return BadRequest(new { error = "Provider is required." });
 
+        string? userId = null;
+        
+        if (mode == "connect")
+        {
+            // HIER lesen wir die Claims aus, die durch den Token in der URL wiederhergestellt wurden.
+            userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                // Falls kein Token in der URL war oder er ungültig ist
+                return Unauthorized(new { error = "You must be logged in to connect accounts." });
+            }
+        }
+
         var redirectUrl = _externalAuthService.GetRedirectUrl(provider, returnUrl, mode);
-        var props = _externalAuthService.GetAuthProperties(provider, redirectUrl);
+        var props = _externalAuthService.GetAuthProperties(provider, redirectUrl, userId);
 
         return Challenge(props, provider);
     }

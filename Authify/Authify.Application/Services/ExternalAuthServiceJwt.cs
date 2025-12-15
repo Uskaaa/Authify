@@ -33,8 +33,17 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         _context = context;
     }
 
-    public AuthenticationProperties GetAuthProperties(string provider, string redirectUrl)
-        => _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+    public AuthenticationProperties GetAuthProperties(string provider, string redirectUrl, string? userId = null)
+    {
+        var props = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        
+        if (!string.IsNullOrEmpty(userId))
+        {
+            props.Items["LoginProviderUserId"] = userId;
+        }
+        
+        return props;
+    }
 
     public string GetRedirectUrl(string provider, string? returnUrl, string mode)
         => $"/auth/externallogin-callback?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}&mode={mode}";
@@ -42,11 +51,11 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
     public async Task<IActionResult> HandleExternalCallbackAsync(string? returnUrl, string mode, string? remoteError)
     {
         if (!string.IsNullOrEmpty(remoteError))
-            return new RedirectResult($"/{Uri.EscapeDataString(returnUrl ?? "/")}?error=external_login_failed");
+            return new RedirectResult($"{returnUrl}?error=external_login_failed");
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
         if (info == null)
-            return new RedirectResult($"/{Uri.EscapeDataString(returnUrl ?? "/")}?error=external_login_info_null");
+            return new RedirectResult($"{returnUrl}?error=external_login_info_null");
 
 
 
@@ -55,25 +64,39 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         // ================================================
         if (mode == "connect")
         {
-            var currentUser = await _userManager.GetUserAsync(_signInManager.Context.User);
+            string? userId = null;
+            if (info.AuthenticationProperties?.Items.TryGetValue("LoginProviderUserId", out var id) == true)
+            {
+                userId = id;
+            }
+
+            if (string.IsNullOrEmpty(userId))
+                return new RedirectResult($"{returnUrl}?error=user_context_lost");
+
+            var currentUser = await _userManager.FindByIdAsync(userId);
             if (currentUser == null)
-                return new RedirectResult($"/{Uri.EscapeDataString(returnUrl ?? "/")}?error=user_not_logged_in");
+                return new RedirectResult($"{returnUrl}?error=user_not_found");
+            
+            var externalEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
 
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrWhiteSpace(externalEmail))
+                return new RedirectResult($"{returnUrl}?error=external_email_missing");
 
-            // Optionaler Schutz: Nicht erlauben, wenn E-Mail nicht übereinstimmt
-            if (!string.Equals(currentUser.Email, email, StringComparison.OrdinalIgnoreCase))
-                return new RedirectResult($"/{Uri.EscapeDataString(returnUrl ?? "/")}?error=email_mismatch");
+            if (!string.Equals(currentUser.Email, externalEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                return new RedirectResult($"{returnUrl}?error=email_mismatch");
+            }
 
-            // Provider mit aktuellem User verknüpfen
             var addLoginRes = await _userManager.AddLoginAsync(currentUser, info);
             if (!addLoginRes.Succeeded)
-                return new RedirectResult($"/{Uri.EscapeDataString(returnUrl ?? "/")}?error=provider_link_failed");
+            {
+                if (addLoginRes.Errors.Any(e => e.Code == "LoginAlreadyAssociated"))
+                    return new RedirectResult($"{returnUrl}?error=provider_already_linked");
+                
+                return new RedirectResult($"{returnUrl}?error=provider_link_failed");
+            }
 
-            // Data zurück ans Frontend
-            var redirectUrl =
-                $"{returnUrl}?provider={info.LoginProvider}&key={info.ProviderKey}&display={info.ProviderDisplayName}";
-
+            var redirectUrl = $"{returnUrl}?provider={info.LoginProvider}&key={info.ProviderKey}&display={info.ProviderDisplayName}";
             return new RedirectResult(redirectUrl);
         }
 
@@ -99,7 +122,7 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
             var otpToken = _otpService.GenerateToken(user.Email, rememberMe: true, method);
 
             var redirectUrlOtp =
-                $"/otp?token={Uri.EscapeDataString(otpToken)}";
+                $"/otp?token={otpToken}";
             return new RedirectResult(redirectUrlOtp);
         }
 

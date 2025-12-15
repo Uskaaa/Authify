@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using Authify.Client.Wasm.Extensions;
 using Authify.Client.Wasm.Interfaces;
 using Authify.Client.Wasm.Models;
 using Authify.UI.Common;
@@ -19,7 +20,7 @@ public class WasmDataService : IAuthifyDataService
         _httpClient = httpClient;
         _tokenStore = tokenStore;
     }
-
+    
     #region Helpers
 
     private async Task<OperationResult<T>> PostAsync<T>(string url, object payload)
@@ -168,6 +169,12 @@ public class WasmDataService : IAuthifyDataService
 
     public Task<OperationResult> CookieLogoutAsync() => PostAsync("api/auth/logout-cookie", new { });
 
+    public async Task<string?> GetAccessTokenAsync()
+    {
+        var result = await _tokenStore.GetAccessTokenAsync();
+        return result;
+    }
+    
     public async Task<OperationResult> StoreTokensFromExternalAuth(string accessToken, string refreshToken)
     {
         await _tokenStore.SetTokensAsync(accessToken, refreshToken);

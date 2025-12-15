@@ -27,8 +27,17 @@ public class ExternalAuthServiceCookie<TUser> : IExternalAuthService
         _otpService = otpService;
     }
 
-    public AuthenticationProperties GetAuthProperties(string provider, string redirectUrl)
-        => _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+    public AuthenticationProperties GetAuthProperties(string provider, string redirectUrl, string? userId = null)
+    {
+        var props = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        
+        if (!string.IsNullOrEmpty(userId))
+        {
+            props.Items["LoginProviderUserId"] = userId;
+        }
+        
+        return props;
+    }
 
     public string GetRedirectUrl(string provider, string? returnUrl, string mode)
         => $"/auth/externallogin-callback?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}&mode={mode}";
