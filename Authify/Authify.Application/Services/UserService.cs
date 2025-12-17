@@ -13,13 +13,15 @@ public class UserService<TUser> : IUserService
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _infrastructureOptions;
+    private readonly IEnumerable<IUserRegistrationHook> _registrationHooks;
 
     public UserService(UserManager<TUser> userManager, IEmailSender emailSender,
-        InfrastructureOptions infrastructureOptions)
+        InfrastructureOptions infrastructureOptions, IEnumerable<IUserRegistrationHook> registrationHooks)
     {
         _userManager = userManager;
         _emailSender = emailSender;
         _infrastructureOptions = infrastructureOptions;
+        _registrationHooks = registrationHooks
     }
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
@@ -39,6 +41,18 @@ public class UserService<TUser> : IUserService
 
         if (!result.Succeeded)
             return OperationResult.Fail(string.Join(", ", result.Errors.Select(e => e.Description)));
+        
+        foreach (var hook in _registrationHooks)
+        {
+            try
+            {
+                await hook.OnUserRegisteredAsync(user.Id, user.Email!);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Hook Error: {ex.Message}");
+            }
+        }
         
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
