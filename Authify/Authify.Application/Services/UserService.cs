@@ -21,7 +21,7 @@ public class UserService<TUser> : IUserService
         _userManager = userManager;
         _emailSender = emailSender;
         _infrastructureOptions = infrastructureOptions;
-        _registrationHooks = registrationHooks
+        _registrationHooks = registrationHooks;
     }
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
