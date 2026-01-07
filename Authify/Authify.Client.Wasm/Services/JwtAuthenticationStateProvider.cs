@@ -97,6 +97,19 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider, IDisp
         }
     }
     
+    public async Task<bool> ForceRefreshTokenAsync()
+    {
+        var newToken = await TryRefreshTokenAsync();
+    
+        if (!string.IsNullOrEmpty(newToken))
+        {
+            NotifyTokenUpdated(newToken);
+            return true;
+        }
+    
+        return false;
+    }
+    
     private async Task<string?> TryRefreshTokenAsync()
     {
         try 
