@@ -136,7 +136,7 @@ public class ExternalAuthServiceJwt<TUser> : IExternalAuthService
         var refresh =
             _jwtTokenService.GenerateRefreshToken(
                 user.Id,
-                deviceName: "external",
+                deviceName: "WebApp",
                 ipAddress: "unknown",
                 rememberMe: true);
 

@@ -33,8 +33,13 @@ public class RefreshTokenController : ControllerBase
         // Neuen JWT generieren
         var jwtToken = await _jwtTokenService.GenerateTokenAsync(storedToken.UserId);
 
-        // Optional: neuen RefreshToken erstellen
-        storedToken.IsRevoked = true; // alten token ungültig machen
+        bool isNewDevice = storedToken.DeviceInfo != request.DeviceName;
+
+        if (!isNewDevice)
+        {
+            storedToken.IsRevoked = true; 
+        }
+
         var newRefreshToken =
             _jwtTokenService.GenerateRefreshToken(storedToken.UserId, request.DeviceName, request.IpAddress,
                 storedToken.RememberMe);

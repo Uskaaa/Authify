@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
             ResultKind = LoginResultKind.Jwt
         };
 
-        return Ok(OperationResult<LoginResponseDto>.Ok(loginResponse));;
+        return Ok(OperationResult<LoginResponseDto>.Ok(loginResponse));
     }
 
     [HttpPost(nameof(VerifyOtp))]

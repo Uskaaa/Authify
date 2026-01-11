@@ -9,18 +9,20 @@ namespace Authify.Client.Wasm.Services;
 
 public class AuthenticatedHttpClientHandler : DelegatingHandler
 {
-    private readonly IAuthRefreshService _authRefreshService;
-    private readonly ITokenStore _tokenStore; // Interface für Access + Refresh Token Speicherung
+    private readonly TokenRefreshManager _refreshManager;
+    private readonly ITokenStore _tokenStore;
     private readonly NavigationManager _navManager;
 
-    public AuthenticatedHttpClientHandler(IAuthRefreshService authRefreshService, ITokenStore tokenStore, NavigationManager navManager)
+    public AuthenticatedHttpClientHandler(TokenRefreshManager refreshManager,
+        ITokenStore tokenStore, NavigationManager navManager)
     {
-        _authRefreshService = authRefreshService;
+        _refreshManager = refreshManager;
         _tokenStore = tokenStore;
         _navManager = navManager;
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
         var accessToken = await _tokenStore.GetAccessTokenAsync();
         if (!string.IsNullOrEmpty(accessToken))
@@ -30,34 +32,18 @@ public class AuthenticatedHttpClientHandler : DelegatingHandler
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            var storedTokenResult = await _tokenStore.GetRefreshTokenAsync();
+            var newAccessToken = await _refreshManager.TryRefreshTokenAsync();
 
-            if (storedTokenResult.Success && storedTokenResult.Data != null)
+            if (!string.IsNullOrEmpty(newAccessToken))
             {
-                // Refresh API aufrufen
-                var refreshResult = await _authRefreshService.RefreshTokenAsync(storedTokenResult.Data);
+                var newRequest = await CloneHttpRequestMessageAsync(request);
 
-                // Prüfen ob wir neue Tokens bekommen haben
-                if (refreshResult.Success && !string.IsNullOrEmpty(refreshResult.Data.AccessToken))
-                {
-                    // Speichern
-                    await _tokenStore.SetTokensAsync(refreshResult.Data.AccessToken, refreshResult.Data.RefreshToken);
+                // Neuen Header setzen
+                newRequest.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", newAccessToken);
 
-                    // --- WICHTIG: Request Klonen ---
-                    // Man darf einen Request in Blazor oft nicht 2x senden. Wir müssen ihn klonen.
-                    var newRequest = await CloneHttpRequestMessageAsync(request);
-                    
-                    // Neuen Header setzen
-                    newRequest.Headers.Authorization = 
-                        new AuthenticationHeaderValue("Bearer", refreshResult.Data.AccessToken);
-                    
-                    // Request wiederholen
-                    response = await base.SendAsync(newRequest, cancellationToken);
-                }
-                else
-                {
-                    _navManager.NavigateTo("/login", forceLoad: true);
-                }
+                // Request wiederholen
+                response = await base.SendAsync(newRequest, cancellationToken);
             }
             else
             {

@@ -32,8 +32,8 @@ public class TokenStore : ITokenStore
         var request = new RefreshTokenRequest
         {
             RefreshToken = tokenString,
-            DeviceName = "browser",
-            IpAddress = "unknown",
+            DeviceName = "WebApp",
+            IpAddress = "Unknown",
         };
 
         return OperationResult<RefreshTokenRequest>.Ok(request);

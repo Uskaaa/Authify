@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         
         services.AddAuthorizationCore();
         services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+        services.AddScoped<TokenRefreshManager>();
         
         // HttpClient registrieren und Handler einfügen
         services.AddHttpClient<IAuthifyDataService, WasmDataService>(client =>

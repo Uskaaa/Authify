@@ -12,6 +12,6 @@ public class LoginRequest
     [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
     public string Password { get; set; } = string.Empty;
     public bool RememberMe { get; set; } = false;
-    public string? DeviceName { get; set; } = string.Empty;
+    public string? DeviceName { get; set; } = "WebApp";
     public string? IpAddress { get; set; } = string.Empty;
 }
