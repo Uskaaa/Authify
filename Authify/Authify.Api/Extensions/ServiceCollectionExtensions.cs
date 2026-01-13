@@ -102,9 +102,32 @@ public static class ServiceCollectionExtensions
             {
                 googleOptions.ClientId = options.GoogleClientId;
                 googleOptions.ClientSecret = options.GoogleClientSecret;
-                
-                // External Scheme
+
                 googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+            });
+        }
+        
+        if (!string.IsNullOrEmpty(options.GitHubClientId) && !string.IsNullOrEmpty(options.GitHubClientSecret))
+        {
+            authBuilder.AddGitHub(githubOptions =>
+            {
+                githubOptions.ClientId = options.GitHubClientId;
+                githubOptions.ClientSecret = options.GitHubClientSecret;
+
+                githubOptions.SignInScheme = IdentityConstants.ExternalScheme;
+
+                githubOptions.Scope.Add("user:email");
+            });
+        }
+
+        if (!string.IsNullOrEmpty(options.FacebookAppId) && !string.IsNullOrEmpty(options.FacebookAppSecret))
+        {
+            authBuilder.AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = options.FacebookAppId;
+                facebookOptions.AppSecret = options.FacebookAppSecret;
+
+                facebookOptions.SignInScheme = IdentityConstants.ExternalScheme;
             });
         }
 

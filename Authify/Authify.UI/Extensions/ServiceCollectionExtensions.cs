@@ -1,3 +1,4 @@
+using Authify.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Authify.UI.Extensions;
