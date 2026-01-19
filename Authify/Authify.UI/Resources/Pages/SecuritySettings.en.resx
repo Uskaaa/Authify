@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="Title_Page" xml:space="preserve"><value>Security Settings</value></data>
+    <data name="Subtitle_Page" xml:space="preserve"><value>Manage your password, two-factor authentication, and connected accounts</value></data>
+    <data name="Btn_ExportReport" xml:space="preserve"><value>Export Security Report</value></data>
+    <data name="Btn_SaveChanges" xml:space="preserve"><value>Save Changes</value></data>
+
+    <data name="Title_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+    <data name="Text_ChangePasswordDesc" xml:space="preserve"><value>Update your account password to keep your account secure.</value></data>
+    <data name="Label_CurrentPassword" xml:space="preserve"><value>Current Password</value></data>
+    <data name="Placeholder_CurrentPassword" xml:space="preserve"><value>Enter current password</value></data>
+    <data name="Label_NewPassword" xml:space="preserve"><value>New Password</value></data>
+    <data name="Placeholder_NewPassword" xml:space="preserve"><value>Enter new password</value></data>
+
+    <data name="Label_Strength" xml:space="preserve"><value>Password Strength</value></data>
+    <data name="Check_Length" xml:space="preserve"><value>At least 8 characters</value></data>
+    <data name="Check_Uppercase" xml:space="preserve"><value>Contains uppercase letter</value></data>
+    <data name="Check_Special" xml:space="preserve"><value>Contains special character</value></data>
+    <data name="Text_UpdateInfo" xml:space="preserve"><value>Password will be updated immediately</value></data>
+    <data name="Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+    <data name="Btn_Updating" xml:space="preserve"><value>Updating...</value></data>
+    <data name="Btn_UpdatePassword" xml:space="preserve"><value>Update Password</value></data>
+
+    <data name="Title_2FA" xml:space="preserve"><value>Two-Factor Authentication</value></data>
+    <data name="Text_2FADesc" xml:space="preserve"><value>Add an extra layer of security to your account.</value></data>
+    <data name="Title_Enable2FA" xml:space="preserve"><value>Enable 2FA</value></data>
+    <data name="Text_Enable2FADesc" xml:space="preserve"><value>Protect your account with an additional verification step.</value></data>
+    <data name="Btn_Manage2FA" xml:space="preserve"><value>Manage 2Factor</value></data>
+    <data name="Status_2FA_Enabled" xml:space="preserve"><value>2FA is currently enabled</value></data>
+    <data name="Status_2FA_Enabled_Desc" xml:space="preserve"><value>Your account is protected with {0} method(s).</value></data>
+    <data name="Status_2FA_Disabled" xml:space="preserve"><value>2FA is currently disabled</value></data>
+    <data name="Status_2FA_Disabled_Desc" xml:space="preserve"><value>We recommend enabling at least one method.</value></data>
+
+    <data name="Title_Connected" xml:space="preserve"><value>Connected Accounts</value></data>
+    <data name="Text_ConnectedDesc" xml:space="preserve"><value>Manage your external login providers.</value></data>
+    <data name="Status_Connected" xml:space="preserve"><value>Connected</value></data>
+    <data name="Status_NotConnected" xml:space="preserve"><value>Not connected</value></data>
+    <data name="Btn_Disconnect" xml:space="preserve"><value>Disconnect</value></data>
+    <data name="Btn_Connect" xml:space="preserve"><value>Connect</value></data>
+
+    <data name="Dialog_2FA_Title" xml:space="preserve"><value>Two-Factor Authentication Management</value></data>
+    <data name="Section_ActiveMethods" xml:space="preserve"><value>Active Methods</value></data>
+    <data name="Badge_Default" xml:space="preserve"><value>Default</value></data>
+    <data name="Btn_SetDefault" xml:space="preserve"><value>Set Default</value></data>
+    <data name="Btn_Remove" xml:space="preserve"><value>Remove</value></data>
+    <data name="Section_AvailableMethods" xml:space="preserve"><value>Available Methods</value></data>
+    <data name="Btn_Add" xml:space="preserve"><value>Add</value></data>
+
+    <data name="Method_Email_Name" xml:space="preserve"><value>Email Verification</value></data>
+    <data name="Method_Email_Desc" xml:space="preserve"><value>Get codes via email</value></data>
+    <data name="Method_SMS_Name" xml:space="preserve"><value>SMS Verification</value></data>
+    <data name="Method_SMS_Desc" xml:space="preserve"><value>Get codes via SMS</value></data>
+
+    <data name="Msg_ConnectFailed" xml:space="preserve"><value>Failed to connect external provider</value></data>
+    <data name="Msg_ProviderDisconnected" xml:space="preserve"><value>{0} disconnected.</value></data>
+    <data name="Msg_DisconnectFailed" xml:space="preserve"><value>Failed to disconnect.</value></data>
+    <data name="Msg_MethodAdded" xml:space="preserve"><value>2FA Method added.</value></data>
+    <data name="Msg_AddFailed" xml:space="preserve"><value>Failed to add.</value></data>
+    <data name="Msg_MethodRemoved" xml:space="preserve"><value>2FA Method removed.</value></data>
+    <data name="Msg_RemoveFailed" xml:space="preserve"><value>Failed to remove.</value></data>
+    <data name="Msg_DefaultUpdated" xml:space="preserve"><value>Default method updated.</value></data>
+    <data name="Msg_DefaultFailed" xml:space="preserve"><value>Failed.</value></data>
+    <data name="Msg_PasswordUpdated" xml:space="preserve"><value>Password updated successfully!</value></data>
+    <data name="Msg_PasswordUpdateFailed" xml:space="preserve"><value>Failed to update password.</value></data>
+
+</root>

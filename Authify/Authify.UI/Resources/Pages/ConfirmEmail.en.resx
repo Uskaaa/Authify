@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="Title_VerifyEmail" xml:space="preserve">
+    <value>Verify your email</value>
+  </data>
+    <data name="Text_SentTo" xml:space="preserve">
+    <value>We've sent a verification email to</value>
+  </data>
+    <data name="Text_Instruction" xml:space="preserve">
+    <value>Click the link in the email to confirm your account. If you can't find it, check your spam folder.</value>
+  </data>
+    <data name="Btn_BackToLogin" xml:space="preserve">
+    <value>Back to Login</value>
+  </data>
+    <data name="Title_Verifying" xml:space="preserve">
+    <value>Verifying...</value>
+  </data>
+    <data name="Text_Verifying" xml:space="preserve">
+    <value>Please wait while we verify your email address.</value>
+  </data>
+    <data name="Title_Success" xml:space="preserve">
+    <value>Email Verified!</value>
+  </data>
+    <data name="Text_Success" xml:space="preserve">
+    <value>Your email has been successfully verified. You can now login.</value>
+  </data>
+    <data name="Btn_GoToLogin" xml:space="preserve">
+    <value>Go to Login</value>
+  </data>
+    <data name="Title_Error" xml:space="preserve">
+    <value>Verification Failed</value>
+  </data>
+    <data name="Text_Error" xml:space="preserve">
+    <value>We couldn't verify your email. The link might be invalid or expired.</value>
+  </data>
+    <data name="Btn_RetryRegister" xml:space="preserve">
+    <value>Try Registering Again</value>
+  </data>
+</root>

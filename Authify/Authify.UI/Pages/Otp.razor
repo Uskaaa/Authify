@@ -2,10 +2,13 @@
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+
 @implements IAsyncDisposable
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 @inject IAuthifyDataService DataService
+@inject IStringLocalizer<Otp> Loc
 
 <RedirectToHomeIfAuthenticated />
 
@@ -13,18 +16,15 @@
     <div class="content-wrapper">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>Verify Your Email</h1>
-                <p>Enter the 6-digit code sent to your email</p>
+                <h1>@Loc["Title_VerifyEmail"]</h1>
+                <p>@Loc["Subtitle_EnterCode"]</p>
             </div>
             
             <EditForm Model="this" OnValidSubmit="HandleValidSubmit">
-                <!-- Wrapper für Flexbox Gap (Abstände) -->
                 <div class="auth-stack">
                     
-                    <!-- Hidden Input für Blazor Binding -->
                     <input type="hidden" @bind="OtpCode" />
 
-                    <!-- OTP Inputs -->
                     <div class="otp-inputs">
                         @for (int i = 0; i < 6; i++)
                         {
@@ -36,27 +36,26 @@
                         <ValidationMessage For="@(() => OtpCode)" />
                         @if (_error)
                         {
-                            <div class="validation-message">Verification failed. Please try again.</div>
+                            <div class="validation-message">@Loc["Error_VerificationFailed"]</div>
                         }
                     </div>
 
-                    <!-- Timer / Resend Section -->
                     <div class="otp-timer-section">
                         @if (_timeLeft > 0)
                         {
-                            <span class="timer-text">Resend code in <span class="time-value">@FormatTime(_timeLeft)</span></span>
+                            <span class="timer-text">@Loc["Text_ResendCodeIn"] <span class="time-value">@FormatTime(_timeLeft)</span></span>
                         }
                         else
                         {
-                            <span class="timer-text">Didn't receive code?</span>
+                            <span class="timer-text">@Loc["Text_NoCode"]</span>
                             <button type="button" class="btn-link" @onclick="ResendOtp" disabled="@_isResending">
                                 @if (_isResending)
                                 {
-                                    <span>Sending...</span>
+                                    <span>@Loc["Btn_Sending"]</span>
                                 }
                                 else
                                 {
-                                    <span>Resend</span>
+                                    <span>@Loc["Btn_Resend"]</span>
                                 }
                             </button>
                         }
@@ -65,19 +64,18 @@
                     <button type="submit" class="btn btn-primary" disabled="@(_isVerifying || OtpCode?.Length != 6)">
                         @if (_isVerifying) 
                         { 
-                            <i class="fas fa-spinner fa-spin"></i> <span>Verifying...</span>
+                            <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Verifying"]</span>
                         } 
                         else 
                         { 
-                            <span>Verify</span> 
+                            <span>@Loc["Btn_Verify"]</span> 
                         }
                     </button>
                     
-                </div> <!-- End auth-stack -->
-            </EditForm>
+                </div> </EditForm>
             
             <p class="auth-footer">
-                <a href="login">Back to Login</a>
+                <a href="login">@Loc["Link_BackToLogin"]</a>
             </p>
         </div>
     </div>
@@ -89,8 +87,10 @@
     private DotNetObjectReference<Otp>? _objRef;
     private System.Threading.Timer? _timer;
 
-    [Required(ErrorMessage = "The code is required.")]
-    [StringLength(6, MinimumLength = 6, ErrorMessage = "Please enter the full 6-digit code.")]
+    // DataAnnotations Attribute benötigen Konstanten, daher hier fest auf Deutsch (Default) gesetzt.
+    // Für volle dynamische Lokalisierung der ValidationAttributes wäre ein komplexerer DataAnnotationsLocalizerProvider nötig.
+    [Required(ErrorMessage = "Der Code ist erforderlich.")]
+    [StringLength(6, MinimumLength = 6, ErrorMessage = "Bitte geben Sie den vollständigen 6-stelligen Code ein.")]
     private string OtpCode { get; set; } = string.Empty;
 
     private OtpVerificationRequest _request = new OtpVerificationRequest();

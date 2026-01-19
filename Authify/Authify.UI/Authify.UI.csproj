@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.6.8</Version>
+        <Version>1.6.9</Version>
     </PropertyGroup>
 
 
@@ -18,10 +18,86 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.2" />
     </ItemGroup>
 
     <ItemGroup>
       <None Include="wwwroot\js\otp.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\Pages\Login.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Login.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\Login.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Login.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\Register.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Register.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\Register.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Register.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\Otp.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Otp.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\Otp.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.Otp.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ConfirmEmail.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ConfirmEmail.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ConfirmEmail.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ConfirmEmail.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ForgotPassword.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ForgotPassword.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ForgotPassword.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ForgotPassword.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ResetPassword.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ResetPassword.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ResetPassword.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ResetPassword.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ProfileSettings.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ProfileSettings.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\ProfileSettings.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.ProfileSettings.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\PrivacySettings.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.PrivacySettings.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\PrivacySettings.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.PrivacySettings.en.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\SecuritySettings.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.SecuritySettings.resources</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Pages\SecuritySettings.en.resx">
+            <Generator></Generator>
+            <LogicalName>Authify.UI.Pages.SecuritySettings.en.resources</LogicalName>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

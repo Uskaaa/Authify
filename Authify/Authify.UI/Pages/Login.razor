@@ -2,9 +2,12 @@
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+
 @inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@inject IStringLocalizer<Login> Loc
 
 <RedirectToHomeIfAuthenticated />
 
@@ -12,8 +15,8 @@
     <div class="content-wrapper">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>Welcome Back</h1>
-                <p>Please enter your credentials to login</p>
+                <h1>@Loc["Title_Welcome"]</h1>
+                <p>@Loc["Subtitle_Credentials"]</p>
             </div>
             
             @if (!string.IsNullOrEmpty(_errorMessage))
@@ -29,7 +32,7 @@
                 <div class="auth-stack">
                     
                     <div class="form-group">
-                        <label for="email">Email</label>
+                        <label for="email">@Loc["Label_Email"]</label>
                         <InputText id="email" @bind-Value="_request.UsernameOrEmail" />
                         <div class="validation-wrapper">
                             <ValidationMessage For="@(() => _request.UsernameOrEmail)" />
@@ -37,7 +40,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">@Loc["Label_Password"]</label>
                         <div class="password-input">
                             <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" />
                             <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
@@ -52,41 +55,41 @@
                     <div class="form-options">
                         <label class="remember-me">
                             <InputCheckbox @bind-Value="_request.RememberMe" />
-                            <span>Remember me</span>
+                            <span>@Loc["Label_RememberMe"]</span>
                         </label>
-                        <a href="forgot-password" class="forgot-password">Forgot password?</a>
+                        <a href="forgot-password" class="forgot-password">@Loc["Link_ForgotPassword"]</a>
                     </div>
                     
                     <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
                         @if (_isLoading)
                         {
-                            <i class="fas fa-spinner fa-spin"></i> <span>Logging in...</span>
+                            <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Login_Loading"]</span>
                         }
                         else
                         {
-                            <span>Login</span>
+                            <span>@Loc["Btn_Login"]</span>
                         }
                     </button>
                     
                 </div> </EditForm>
             
             <div class="divider">
-                <span>or continue with</span>
+                <span>@Loc["Divider_Or"]</span>
             </div>
             
             <div class="oauth-buttons">
                 <button class="btn btn-oauth google" @onclick="GoogleOAuth">
                     <i class="fab fa-google"></i>
-                    <span>Sign in with Google</span>
+                    <span>@Loc["Btn_Google"]</span>
                 </button>
                 <button class="btn btn-oauth github" @onclick="GitHubOAuth">
                     <i class="fab fa-github"></i>
-                    <span>Sign in with GitHub</span>
+                    <span>@Loc["Btn_GitHub"]</span>
                 </button>
             </div>
             
             <p class="auth-footer">
-                Don't have an account? <a href="register">Sign up</a>
+                @Loc["Footer_NoAccount"] <a href="register">@Loc["Link_Register"]</a>
             </p>
         </div>
     </div>
@@ -165,7 +168,8 @@
         }
         else
         {
-            _errorMessage = result.ErrorMessage ?? "Login failed.";
+            // Hier nutzen wir den Localizer Key für "Login failed", falls keine spezifische API-Meldung kommt
+            _errorMessage = result.ErrorMessage ?? Loc["Error_LoginFailed"];
         }
     }
 

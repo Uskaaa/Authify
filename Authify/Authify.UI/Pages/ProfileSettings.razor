@@ -2,35 +2,37 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+
 @layout ProfileLayout
 @inject IJSRuntime JS
 @inject IAuthifyDataService DataService
+@inject IStringLocalizer<ProfileSettings> Loc
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 
-<!-- Header -->
 <header class="bg-white dark:bg-dark-card border-b border-gray-200 dark:border-dark-border pt-16 lg:pt-0 transition-colors duration-300">
     <div class="px-4 py-6 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <h1 class="text-3xl font-bold leading-tight text-gray-900 dark:text-dark-text">Profile Settings</h1>
-                <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Verwalten Sie Ihre Kontoinformationen und Einstellungen</p>
+                <h1 class="text-3xl font-bold leading-tight text-gray-900 dark:text-dark-text">@Loc["Title_Page"]</h1>
+                <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">@Loc["Subtitle_Page"]</p>
             </div>
             <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mt-4 lg:mt-0">
                 <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card border border-gray-300 dark:border-dark-border rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none transition-all duration-200">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                     </svg>
-                    Export Data
+                    @Loc["Btn_ExportData"]
                 </button>
                 <button @onclick="SaveProfile" disabled="@_isSaving" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 focus:outline-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                     @if (_isSaving)
                     {
                         <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>
-                        <span>Saving...</span>
+                        <span>@Loc["Btn_Saving"]</span>
                     }
                     else
                     {
-                        <span>Save Changes</span>
+                        <span>@Loc["Btn_SaveChanges"]</span>
                     }
                 </button>
             </div>
@@ -38,7 +40,6 @@
     </div>
 </header>
 
-<!-- Notification Toast -->
 @if (_showNotification)
 {
     <div class="fixed top-4 right-4 z-[10000] px-4 py-3 rounded-md shadow-lg max-w-sm transform transition-all duration-300 @_notificationClass animate-fade-in-down">
@@ -56,12 +57,9 @@
     </div>
 }
 
-<!-- Content Grid -->
 <div class="px-4 py-6 sm:px-6 lg:px-8 bg-gray-50 dark:bg-dark-bg min-h-screen">
-    <!-- HIER WAR DER FEHLER: Das _rootElement muss den GESAMTEN Inhalt umschließen -->
     <div class="max-w-4xl mx-auto" @ref="_rootElement">
         
-        <!-- Loading State -->
         @if (_isLoading)
         {
             <div class="flex justify-center items-center h-64">
@@ -70,14 +68,12 @@
         }
         else
         {
-            <!-- Profile Information Card -->
             <div class="mb-8 bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden transition-colors duration-300">
-                <!-- Card Header -->
                 <div class="px-8 py-6 border-b border-gray-100 dark:border-dark-border bg-gray-50/50 dark:bg-gray-800/50">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-dark-text">Personal Information</h3>
-                            <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">Update your personal details and contact information to keep your profile current.</p>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-dark-text">@Loc["Title_PersonalInfo"]</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-dark-muted">@Loc["Text_PersonalInfoDesc"]</p>
                         </div>
                         <div class="flex-shrink-0">
                             <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center">
@@ -89,27 +85,24 @@
                     </div>
                 </div>
 
-                <!-- Card Content -->
                 <div class="px-8 py-8">
                     <EditForm Model="@_profileModel" OnValidSubmit="SaveProfile">
                         <DataAnnotationsValidator/>
 
                         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                            <!-- Full Name -->
                             <div class="lg:col-span-2">
                                 <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">
-                                    Full Name <span class="text-red-500 ml-1">*</span>
+                                    @Loc["Label_FullName"] <span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <InputText @bind-Value="_profileModel.FullName"
                                            class="block w-full px-4 py-3 text-gray-900 dark:text-dark-text placeholder-gray-500 dark:placeholder-dark-muted border border-gray-200 dark:border-dark-border bg-white dark:bg-gray-700 rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 dark:hover:border-gray-500"
-                                           placeholder="Enter your full name"/>
+                                           placeholder="@Loc["Placeholder_FullName"]"/>
                                 <ValidationMessage For="@(() => _profileModel.FullName)" class="text-red-500 text-xs mt-1"/>
                             </div>
 
-                            <!-- Email -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">
-                                    Email Address <span class="text-red-500 ml-1">*</span>
+                                    @Loc["Label_Email"] <span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -119,14 +112,13 @@
                                     </div>
                                     <InputText @bind-Value="_profileModel.Email"
                                                class="block w-full pl-12 pr-4 py-3 text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-dark-border rounded-xl shadow-sm cursor-not-allowed"
-                                               disabled placeholder="your@email.com"/>
+                                               disabled placeholder="@Loc["Placeholder_Email"]"/>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-1">To change your email, please contact support.</p>
+                                <p class="text-xs text-gray-400 mt-1">@Loc["Text_EmailChange"]</p>
                             </div>
 
-                            <!-- Phone -->
                             <div>
-                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">Phone Number</label>
+                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">@Loc["Label_Phone"]</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400 dark:text-dark-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,56 +127,52 @@
                                     </div>
                                     <InputText @bind-Value="_profileModel.PhoneNumber"
                                                class="block w-full pl-12 pr-4 py-3 text-gray-900 dark:text-dark-text placeholder-gray-500 dark:placeholder-dark-muted border border-gray-200 dark:border-dark-border bg-white dark:bg-gray-700 rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 dark:hover:border-gray-500"
-                                               placeholder="+1 (555) 000-0000"/>
+                                               placeholder="@Loc["Placeholder_Phone"]"/>
                                 </div>
                             </div>
 
-                            <!-- Job Title -->
                             <div>
-                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">Job Title</label>
+                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">@Loc["Label_JobTitle"]</label>
                                 <InputText @bind-Value="_profileModel.JobTitle"
                                            class="block w-full px-4 py-3 text-gray-900 dark:text-dark-text placeholder-gray-500 dark:placeholder-dark-muted border border-gray-200 dark:border-dark-border bg-white dark:bg-gray-700 rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 dark:hover:border-gray-500"
-                                           placeholder="Your job title"/>
+                                           placeholder="@Loc["Placeholder_JobTitle"]"/>
                             </div>
 
-                            <!-- Company -->
                             <div>
-                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">Company</label>
+                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">@Loc["Label_Company"]</label>
                                 <InputText @bind-Value="_profileModel.Company"
                                            class="block w-full px-4 py-3 text-gray-900 dark:text-dark-text placeholder-gray-500 dark:placeholder-dark-muted border border-gray-200 dark:border-dark-border bg-white dark:bg-gray-700 rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 dark:hover:border-gray-500"
-                                           placeholder="Your company name"/>
+                                           placeholder="@Loc["Placeholder_Company"]"/>
                             </div>
 
-                            <!-- Bio -->
                             <div class="lg:col-span-2">
-                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">Bio</label>
+                                <label class="block text-sm font-semibold text-gray-900 dark:text-dark-text mb-3">@Loc["Label_Bio"]</label>
                                 <InputTextArea @bind-Value="_profileModel.Bio" rows="4"
                                                class="block w-full px-4 py-3 text-gray-900 dark:text-dark-text placeholder-gray-500 dark:placeholder-dark-muted border border-gray-200 dark:border-dark-border bg-white dark:bg-gray-700 rounded-xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 dark:hover:border-gray-500 resize-none"
-                                               placeholder="Tell us a little about yourself..."/>
-                                <p class="mt-2 text-xs text-gray-500 dark:text-dark-muted">Maximum 500 characters</p>
+                                               placeholder="@Loc["Placeholder_Bio"]"/>
+                                <p class="mt-2 text-xs text-gray-500 dark:text-dark-muted">@Loc["Text_BioLimit"]</p>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-6 border-t border-gray-100 dark:border-dark-border mt-8">
                             <div class="flex items-center text-sm text-gray-500 dark:text-dark-muted mb-4 sm:mb-0">
                                 <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                 </svg>
-                                All changes are automatically saved
+                                @Loc["Text_AutoSave"]
                             </div>
                             <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
                                 <button type="button" @onclick="ReloadProfile" class="w-full sm:w-auto px-6 py-3 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
-                                    Reset
+                                    @Loc["Btn_Reset"]
                                 </button>
                                 <button type="submit" disabled="@_isSaving" class="w-full sm:w-auto px-8 py-3 text-sm font-semibold text-white bg-primary-600 border border-transparent rounded-xl hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transform hover:scale-105 transition-all duration-200 shadow-lg disabled:opacity-50">
                                     @if (_isSaving)
                                     {
-                                        <span>Saving...</span>
+                                        <span>@Loc["Btn_Saving"]</span>
                                     }
                                     else
                                     {
-                                        <span>Save Changes</span>
+                                        <span>@Loc["Btn_SaveChanges"]</span>
                                     }
                                 </button>
                             </div>
@@ -193,62 +181,57 @@
                 </div>
             </div>
 
-            <!-- Profile Picture Card -->
             <div class="mb-8 overflow-hidden bg-white dark:bg-dark-card rounded-lg shadow border border-gray-100 dark:border-dark-border transition-colors duration-300">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-dark-border">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-dark-text">Profilbild</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-dark-muted">Laden Sie ein neues Profilbild hoch oder ändern Sie Ihr aktuelles.</p>
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-dark-text">@Loc["Title_ProfilePic"]</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-dark-muted">@Loc["Text_ProfilePicDesc"]</p>
                 </div>
                 <div class="px-6 py-6">
                     <div class="flex items-center space-x-6">
                         <div class="flex-shrink-0">
-                            <!-- Image with ID for JS -->
                             <img id="profile-image" class="w-20 h-20 rounded-full object-cover" src="@_currentProfileImage" alt="Current profile photo">
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center space-x-3">
-                                <!-- Standard HTML Input für JS Zugriff, versteckt -->
                                 <input type="file" id="profile-file-input" accept="image/jpeg,image/png,image/gif" class="hidden"/>
 
-                                <!-- Buttons mit IDs für JS EventListener -->
                                 <button id="change-profile-btn" type="button" class="px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white dark:bg-gray-700 border border-primary-300 dark:border-primary-500 rounded-md hover:bg-primary-50 dark:hover:bg-gray-600 transition-colors duration-200">
-                                    Ändern
+                                    @Loc["Btn_Change"]
                                 </button>
                                 <button id="remove-profile-btn" type="button" class="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-700 border border-red-300 dark:border-red-600 rounded-md hover:bg-red-50 dark:hover:bg-gray-600 transition-colors duration-200">
-                                    Entfernen
+                                    @Loc["Btn_Remove"]
                                 </button>
                             </div>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-dark-muted">JPG, GIF oder PNG. Max. 1MB.</p>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-dark-muted">@Loc["Text_FileSpecs"]</p>
                         </div>
                     </div>
                 </div>
             </div>
         }
         
-        <!-- Image Cropping Dialog (JS Controlled) -->
         <div id="crop-dialog" class="fixed inset-0 z-[9999] overflow-y-auto hidden" role="dialog" aria-modal="true">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="fixed inset-0 bg-gray-900 bg-opacity-75 dark:bg-black dark:bg-opacity-85 transition-opacity" aria-hidden="true"></div>
                 <div class="relative bg-white dark:bg-dark-card rounded-lg shadow-xl max-w-lg w-full border border-gray-200 dark:border-dark-border">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-dark-text mb-4" id="crop-dialog-title">
-                            Profilbild zuschneiden
+                            @Loc["Title_Crop"]
                         </h3>
                         <div class="flex flex-col items-center space-y-4">
                             <div class="relative bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <canvas id="crop-canvas" width="350" height="350" class="border border-gray-300 dark:border-gray-600 rounded cursor-crosshair"></canvas>
                             </div>
                             <div class="text-xs text-gray-500 dark:text-dark-muted text-center">
-                                Verschieben Sie den Kreis und ziehen Sie am Rand, um die Größe zu ändern
+                                @Loc["Text_CropInstruction"]
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 flex justify-end space-x-3 border-t border-gray-200 dark:border-dark-border">
                         <button id="crop-cancel-btn" type="button" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-dark-text bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors duration-200">
-                            Abbrechen
+                            @Loc["Btn_Cancel"]
                         </button>
                         <button id="crop-apply-btn" type="button" class="px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-md hover:bg-primary-700 transition-colors duration-200">
-                            Anwenden
+                            @Loc["Btn_Apply"]
                         </button>
                     </div>
                 </div>
@@ -326,8 +309,8 @@
     {
         _isSaving = true;
         var result = await DataService.UpdatePersonalInformationAsync(_profileModel);
-        if (result.Success) ShowNotification("Profile updated successfully!", "bg-green-500");
-        else ShowNotification(result.ErrorMessage ?? "Update failed.", "bg-red-500");
+        if (result.Success) ShowNotification(Loc["Msg_ProfileUpdated"], "bg-green-500");
+        else ShowNotification(result.ErrorMessage ?? Loc["Msg_UpdateFailed"], "bg-red-500");
         _isSaving = false;
     }
     
@@ -336,7 +319,7 @@
         _isLoading = true;
         await LoadProfileData();
         _isLoading = false;
-        ShowNotification("Reset changes.", "bg-gray-500");
+        ShowNotification(Loc["Msg_Reset"], "bg-gray-500");
     }
 
     [JSInvokable]
@@ -350,8 +333,8 @@
         var request = new ProfileImageUpdateRequest { Image = bytes };
         var result = await DataService.UpdateProfileImageAsync(request);
         
-        if (result.Success) ShowNotification("Profile picture updated!", "bg-green-500");
-        else ShowNotification("Failed to upload image.", "bg-red-500");
+        if (result.Success) ShowNotification(Loc["Msg_PicUpdated"], "bg-green-500");
+        else ShowNotification(Loc["Msg_PicUploadFailed"], "bg-red-500");
     }
 
     [JSInvokable]
@@ -363,8 +346,8 @@
         var request = new ProfileImageUpdateRequest { Image = null };
         var result = await DataService.UpdateProfileImageAsync(request);
         
-        if (result.Success) ShowNotification("Profile picture removed.", "bg-blue-500");
-        else ShowNotification("Failed to remove image.", "bg-red-500");
+        if (result.Success) ShowNotification(Loc["Msg_PicRemoved"], "bg-blue-500");
+        else ShowNotification(Loc["Msg_PicRemoveFailed"], "bg-red-500");
     }
 
     private void ShowNotification(string message, string cssClass)

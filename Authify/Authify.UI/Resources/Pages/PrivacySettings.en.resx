@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="Title_Page" xml:space="preserve"><value>Privacy Settings</value></data>
+    <data name="Subtitle_Page" xml:space="preserve"><value>Manage your data privacy, account deactivation, and deletion options</value></data>
+    <data name="Btn_PrivacyPolicy" xml:space="preserve"><value>Privacy Policy</value></data>
+    <data name="Btn_ContactSupport" xml:space="preserve"><value>Contact Support</value></data>
+
+    <data name="Title_MainCard" xml:space="preserve"><value>Data Privacy &amp; Account Management</value></data>
+    <data name="Text_MainCardDesc" xml:space="preserve"><value>Control your personal data and manage your account status.</value></data>
+
+    <data name="Title_Export" xml:space="preserve"><value>Export Your Data</value></data>
+    <data name="Text_ExportDesc" xml:space="preserve"><value>Download a copy of all your personal data stored with us.</value></data>
+    <data name="Title_ExportInfo" xml:space="preserve"><value>What's included in your data export?</value></data>
+    <data name="List_Export_1" xml:space="preserve"><value>• Profile information and settings</value></data>
+    <data name="List_Export_2" xml:space="preserve"><value>• Account activity and login history</value></data>
+    <data name="List_Export_3" xml:space="preserve"><value>• All uploaded files and documents</value></data>
+    <data name="List_Export_4" xml:space="preserve"><value>• Payment and billing information</value></data>
+    <data name="List_Export_5" xml:space="preserve"><value>• Support conversations and tickets</value></data>
+    <data name="Text_ExportNote" xml:space="preserve"><value>The export process may take up to 24 hours to complete. You'll receive an email when your data is ready for download.</value></data>
+    <data name="Btn_Exporting" xml:space="preserve"><value>Generating Export...</value></data>
+    <data name="Btn_Export" xml:space="preserve"><value>Export My Data</value></data>
+
+    <data name="Title_Deactivate" xml:space="preserve"><value>Deactivate Account</value></data>
+    <data name="Text_DeactivateDesc" xml:space="preserve"><value>Temporarily disable your account while preserving your data.</value></data>
+    <data name="Title_DeactivateInfo" xml:space="preserve"><value>What happens when you deactivate?</value></data>
+    <data name="List_Deactivate_1" xml:space="preserve"><value>• Your profile will be hidden from other users</value></data>
+    <data name="List_Deactivate_2" xml:space="preserve"><value>• You won't be able to log in or access your account</value></data>
+    <data name="List_Deactivate_3" xml:space="preserve"><value>• Your data will be preserved and can be restored</value></data>
+    <data name="List_Deactivate_4" xml:space="preserve"><value>• Active subscriptions will be paused</value></data>
+    <data name="List_Deactivate_5" xml:space="preserve"><value>• You can reactivate anytime by contacting support</value></data>
+    <data name="Text_DeactivateNote" xml:space="preserve"><value>Deactivation is reversible. Your account and data will be restored when you reactivate.</value></data>
+    <data name="Btn_Deactivate" xml:space="preserve"><value>Deactivate Account</value></data>
+
+    <data name="Title_Delete" xml:space="preserve"><value>Delete Account</value></data>
+    <data name="Text_DeleteDesc" xml:space="preserve"><value>Permanently delete your account and all associated data.</value></data>
+    <data name="Title_DeleteInfo" xml:space="preserve"><value>⚠️ Warning: This action cannot be undone!</value></data>
+    <data name="List_Delete_1" xml:space="preserve"><value>• All your personal data will be permanently deleted</value></data>
+    <data name="List_Delete_2" xml:space="preserve"><value>• Your profile, files, and settings will be removed</value></data>
+    <data name="List_Delete_3" xml:space="preserve"><value>• Active subscriptions will be immediately cancelled</value></data>
+    <data name="List_Delete_4" xml:space="preserve"><value>• You will lose access to all features and services</value></data>
+    <data name="List_Delete_5" xml:space="preserve"><value>• This action is irreversible and cannot be undone</value></data>
+    <data name="Text_DeleteNote" xml:space="preserve"><value>Before proceeding, please export your data if you want to keep a copy of your information.</value></data>
+    <data name="Btn_DeletePermanently" xml:space="preserve"><value>Delete Account Permanently</value></data>
+
+    <data name="Title_NeedHelp" xml:space="preserve"><value>Need Help?</value></data>
+    <data name="Text_HelpDesc" xml:space="preserve"><value>If you have questions about data privacy or account management, our support team is here to help.</value></data>
+    <data name="Link_ContactSupport" xml:space="preserve"><value>Contact Support</value></data>
+
+    <data name="Modal_Deactivate_Title" xml:space="preserve"><value>Deactivate Account</value></data>
+    <data name="Modal_Deactivate_Text" xml:space="preserve"><value>Are you sure you want to deactivate your account? Your profile will be hidden and you won't be able to login until you reactivate it.</value></data>
+    <data name="Modal_Btn_Deactivate" xml:space="preserve"><value>Deactivate</value></data>
+    <data name="Modal_Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+
+    <data name="Modal_Delete_Title" xml:space="preserve"><value>Delete Account</value></data>
+    <data name="Modal_Delete_Text" xml:space="preserve"><value>Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost forever.</value></data>
+    <data name="Modal_Btn_Delete" xml:space="preserve"><value>Delete Account</value></data>
+
+    <data name="Msg_ExportStarted" xml:space="preserve"><value>Data export started successfully!</value></data>
+    <data name="Msg_ExportFailed" xml:space="preserve"><value>Export failed.</value></data>
+    <data name="Msg_DeactivateFailed" xml:space="preserve"><value>Deactivation failed.</value></data>
+    <data name="Msg_DeleteFailed" xml:space="preserve"><value>Deletion failed.</value></data>
+
+</root>

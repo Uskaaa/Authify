@@ -2,9 +2,12 @@
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Localization
+
 @inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@inject IStringLocalizer<Register> Loc
 
 <RedirectToHomeIfAuthenticated />
 
@@ -12,8 +15,8 @@
     <div class="content-wrapper">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>Create Account</h1>
-                <p>Please fill in your details to register</p>
+                <h1>@Loc["Title_CreateAccount"]</h1>
+                <p>@Loc["Subtitle_FillDetails"]</p>
             </div>
             
             @if (!string.IsNullOrEmpty(_errorMessage))
@@ -26,29 +29,28 @@
             <EditForm Model="_request" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
                 
-                <!-- WICHTIG: Wrapper für Flexbox Gap -->
                 <div class="auth-stack">
                     
                     <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="John Doe" />
+                        <label for="fullName">@Loc["Label_FullName"]</label>
+                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="@Loc["Placeholder_FullName"]" />
                         <div class="validation-wrapper">
                             <ValidationMessage For="@(() => _request.FullName)" />
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <InputText id="email" @bind-Value="_request.Email" placeholder="name@example.com" />
+                        <label for="email">@Loc["Label_Email"]</label>
+                        <InputText id="email" @bind-Value="_request.Email" placeholder="@Loc["Placeholder_Email"]" />
                         <div class="validation-wrapper">
                             <ValidationMessage For="@(() => _request.Email)" />
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">@Loc["Label_Password"]</label>
                         <div class="password-input">
-                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="Create a password" />
+                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="@Loc["Placeholder_Password"]" />
                             <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
                                 <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
@@ -59,9 +61,9 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
+                        <label for="confirmPassword">@Loc["Label_ConfirmPassword"]</label>
                         <div class="password-input">
-                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="Confirm your password" />
+                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="@Loc["Placeholder_ConfirmPassword"]" />
                             <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
                                 <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
@@ -74,7 +76,7 @@
                     <div class="form-group">
                         <label class="terms">
                             <InputCheckbox @bind-Value="_request.TermsAccepted" />
-                            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                            <span>@Loc["Text_AgreeTo"] <a href="#">@Loc["Link_Terms"]</a> @Loc["Text_And"] <a href="#">@Loc["Link_Privacy"]</a></span>
                         </label>
                         <div class="validation-wrapper">
                             <ValidationMessage For="@(() => _request.TermsAccepted)" />
@@ -84,34 +86,33 @@
                     <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
                         @if (_isLoading)
                         {
-                            <i class="fas fa-spinner fa-spin"></i> <span>Creating account...</span>
+                            <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Register_Loading"]</span>
                         }
                         else
                         {
-                            <span>Create Account</span>
+                            <span>@Loc["Btn_Register"]</span>
                         }
                     </button>
                     
-                </div> <!-- Ende auth-stack -->
-            </EditForm>
+                </div> </EditForm>
             
             <div class="divider">
-                <span>or continue with</span>
+                <span>@Loc["Divider_Or"]</span>
             </div>
             
             <div class="oauth-buttons">
                 <button class="btn btn-oauth google" @onclick="GoogleOAuth">
                     <i class="fab fa-google"></i>
-                    <span>Sign up with Google</span>
+                    <span>@Loc["Btn_Google"]</span>
                 </button>
                 <button class="btn btn-oauth github" @onclick="GitHubOAuth">
                     <i class="fab fa-github"></i>
-                    <span>Sign up with GitHub</span>
+                    <span>@Loc["Btn_GitHub"]</span>
                 </button>
             </div>
             
             <p class="auth-footer">
-                Already have an account? <a href="login">Sign in</a>
+                @Loc["Footer_HaveAccount"] <a href="login">@Loc["Link_Login"]</a>
             </p>
         </div>
     </div>
@@ -168,7 +169,7 @@
         else
         {
             Console.WriteLine("Registration failed: " + (result.ErrorMessage ?? "Unknown error"));
-            _errorMessage = result.ErrorMessage ?? "Register failed.";
+            _errorMessage = result.ErrorMessage ?? Loc["Error_RegisterFailed"];
         }
     }
 

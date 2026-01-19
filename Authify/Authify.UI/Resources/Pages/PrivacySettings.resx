@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+                            <xsd:attribute ref="xml:space" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+
+    <data name="Title_Page" xml:space="preserve"><value>Datenschutz-Einstellungen</value></data>
+    <data name="Subtitle_Page" xml:space="preserve"><value>Verwalten Sie Ihren Datenschutz sowie Konto-Deaktivierung und Löschung</value></data>
+    <data name="Btn_PrivacyPolicy" xml:space="preserve"><value>Datenschutzerklärung</value></data>
+    <data name="Btn_ContactSupport" xml:space="preserve"><value>Support kontaktieren</value></data>
+
+    <data name="Title_MainCard" xml:space="preserve"><value>Datenschutz &amp; Kontoverwaltung</value></data>
+    <data name="Text_MainCardDesc" xml:space="preserve"><value>Kontrollieren Sie Ihre persönlichen Daten und verwalten Sie Ihren Kontostatus.</value></data>
+
+    <data name="Title_Export" xml:space="preserve"><value>Ihre Daten exportieren</value></data>
+    <data name="Text_ExportDesc" xml:space="preserve"><value>Laden Sie eine Kopie aller bei uns gespeicherten persönlichen Daten herunter.</value></data>
+    <data name="Title_ExportInfo" xml:space="preserve"><value>Was ist im Datenexport enthalten?</value></data>
+    <data name="List_Export_1" xml:space="preserve"><value>• Profilinformationen und Einstellungen</value></data>
+    <data name="List_Export_2" xml:space="preserve"><value>• Kontoaktivität und Login-Verlauf</value></data>
+    <data name="List_Export_3" xml:space="preserve"><value>• Alle hochgeladenen Dateien und Dokumente</value></data>
+    <data name="List_Export_4" xml:space="preserve"><value>• Zahlungs- und Abrechnungsinformationen</value></data>
+    <data name="List_Export_5" xml:space="preserve"><value>• Support-Konversationen und Tickets</value></data>
+    <data name="Text_ExportNote" xml:space="preserve"><value>Der Exportvorgang kann bis zu 24 Stunden dauern. Sie erhalten eine E-Mail, wenn Ihre Daten zum Download bereitstehen.</value></data>
+    <data name="Btn_Exporting" xml:space="preserve"><value>Erstelle Export...</value></data>
+    <data name="Btn_Export" xml:space="preserve"><value>Meine Daten exportieren</value></data>
+
+    <data name="Title_Deactivate" xml:space="preserve"><value>Konto deaktivieren</value></data>
+    <data name="Text_DeactivateDesc" xml:space="preserve"><value>Deaktivieren Sie Ihr Konto vorübergehend, während Ihre Daten erhalten bleiben.</value></data>
+    <data name="Title_DeactivateInfo" xml:space="preserve"><value>Was passiert bei der Deaktivierung?</value></data>
+    <data name="List_Deactivate_1" xml:space="preserve"><value>• Ihr Profil wird für andere Benutzer ausgeblendet</value></data>
+    <data name="List_Deactivate_2" xml:space="preserve"><value>• Sie können sich nicht einloggen oder auf Ihr Konto zugreifen</value></data>
+    <data name="List_Deactivate_3" xml:space="preserve"><value>• Ihre Daten bleiben erhalten und können wiederhergestellt werden</value></data>
+    <data name="List_Deactivate_4" xml:space="preserve"><value>• Aktive Abonnements werden pausiert</value></data>
+    <data name="List_Deactivate_5" xml:space="preserve"><value>• Sie können jederzeit durch Kontaktieren des Supports reaktivieren</value></data>
+    <data name="Text_DeactivateNote" xml:space="preserve"><value>Die Deaktivierung ist reversibel. Ihr Konto und Ihre Daten werden bei Reaktivierung wiederhergestellt.</value></data>
+    <data name="Btn_Deactivate" xml:space="preserve"><value>Konto deaktivieren</value></data>
+
+    <data name="Title_Delete" xml:space="preserve"><value>Konto löschen</value></data>
+    <data name="Text_DeleteDesc" xml:space="preserve"><value>Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft.</value></data>
+    <data name="Title_DeleteInfo" xml:space="preserve"><value>⚠️ Warnung: Diese Aktion kann nicht rückgängig gemacht werden!</value></data>
+    <data name="List_Delete_1" xml:space="preserve"><value>• Alle Ihre persönlichen Daten werden dauerhaft gelöscht</value></data>
+    <data name="List_Delete_2" xml:space="preserve"><value>• Ihr Profil, Dateien und Einstellungen werden entfernt</value></data>
+    <data name="List_Delete_3" xml:space="preserve"><value>• Aktive Abonnements werden sofort gekündigt</value></data>
+    <data name="List_Delete_4" xml:space="preserve"><value>• Sie verlieren den Zugriff auf alle Funktionen und Dienste</value></data>
+    <data name="List_Delete_5" xml:space="preserve"><value>• Diese Aktion ist irreversibel</value></data>
+    <data name="Text_DeleteNote" xml:space="preserve"><value>Bevor Sie fortfahren, exportieren Sie bitte Ihre Daten, wenn Sie eine Kopie behalten möchten.</value></data>
+    <data name="Btn_DeletePermanently" xml:space="preserve"><value>Konto dauerhaft löschen</value></data>
+
+    <data name="Title_NeedHelp" xml:space="preserve"><value>Brauchen Sie Hilfe?</value></data>
+    <data name="Text_HelpDesc" xml:space="preserve"><value>Wenn Sie Fragen zum Datenschutz oder zur Kontoverwaltung haben, hilft Ihnen unser Support-Team gerne weiter.</value></data>
+    <data name="Link_ContactSupport" xml:space="preserve"><value>Support kontaktieren</value></data>
+
+    <data name="Modal_Deactivate_Title" xml:space="preserve"><value>Konto deaktivieren</value></data>
+    <data name="Modal_Deactivate_Text" xml:space="preserve"><value>Sind Sie sicher, dass Sie Ihr Konto deaktivieren möchten? Ihr Profil wird ausgeblendet und Sie können sich nicht einloggen, bis Sie es reaktivieren.</value></data>
+    <data name="Modal_Btn_Deactivate" xml:space="preserve"><value>Deaktivieren</value></data>
+    <data name="Modal_Btn_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+
+    <data name="Modal_Delete_Title" xml:space="preserve"><value>Konto löschen</value></data>
+    <data name="Modal_Delete_Text" xml:space="preserve"><value>Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und alle Ihre Daten gehen unwiderruflich verloren.</value></data>
+    <data name="Modal_Btn_Delete" xml:space="preserve"><value>Konto löschen</value></data>
+
+    <data name="Msg_ExportStarted" xml:space="preserve"><value>Datenexport erfolgreich gestartet!</value></data>
+    <data name="Msg_ExportFailed" xml:space="preserve"><value>Export fehlgeschlagen.</value></data>
+    <data name="Msg_DeactivateFailed" xml:space="preserve"><value>Deaktivierung fehlgeschlagen.</value></data>
+    <data name="Msg_DeleteFailed" xml:space="preserve"><value>Löschung fehlgeschlagen.</value></data>
+
+</root>
