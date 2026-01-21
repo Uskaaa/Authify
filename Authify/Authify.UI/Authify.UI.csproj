@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.6.9</Version>
+        <Version>1.7.0</Version>
     </PropertyGroup>
 
 
@@ -19,6 +19,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.2" />
     </ItemGroup>
 
     <ItemGroup>

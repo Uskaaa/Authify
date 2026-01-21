@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Authify.Client.Wasm.Interfaces;
 
 namespace Authify.Client.Wasm.Services;
@@ -6,7 +7,6 @@ public class TokenRefreshManager
 {
     private readonly IAuthRefreshService _refreshService;
     private readonly ITokenStore _tokenStore;
-
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     public TokenRefreshManager(IAuthRefreshService refreshService, ITokenStore tokenStore)
@@ -21,7 +21,14 @@ public class TokenRefreshManager
         
         try
         {
-            var currentAccessToken = await _tokenStore.GetAccessTokenAsync();
+            var currentToken = await _tokenStore.GetAccessTokenAsync();
+
+            if (!string.IsNullOrEmpty(currentToken) && !IsTokenExpired(currentToken))
+            {
+                return currentToken;
+            }
+
+            // --- Refresh durchführen ---
 
             var storedRefreshTokenResult = await _tokenStore.GetRefreshTokenAsync();
             
@@ -47,6 +54,39 @@ public class TokenRefreshManager
         finally
         {
             _semaphore.Release();
+        }
+    }
+
+    private bool IsTokenExpired(string token)
+    {
+        try
+        {
+            var payload = token.Split('.')[1];
+            // Base64 Fix (Padding)
+            switch (payload.Length % 4)
+            {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+            }
+            var jsonBytes = Convert.FromBase64String(payload);
+            var claims = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+
+            if (claims != null && claims.TryGetValue("exp", out var expObj))
+            {
+                if (long.TryParse(expObj.ToString(), out long expSeconds))
+                {
+                    var expDate = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+                    if (expDate > DateTime.UtcNow.AddSeconds(10))
+                    {
+                        return false; 
+                    }
+                }
+            }
+            return true;
+        }
+        catch
+        {
+            return true;
         }
     }
 }
