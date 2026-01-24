@@ -3,73 +3,65 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
-<!-- Wrapper ohne overflow-hidden für Bounce-Effekt -->
 <div
-    class="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 font-sans text-gray-900 dark:text-dark-text flex flex-col lg:flex-row">
+    class="auth-min-h-screen auth-bg-gray-50 dark:auth-bg-dark-bg auth-transition-colors auth-duration-300 auth-font-sans auth-text-gray-900 dark:auth-text-dark-text auth-flex auth-flex-col lg:auth-flex-row">
 
-    <!-- Mobile Header -->
     <div
-        class="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-dark-card border-b border-gray-200 dark:border-dark-border h-16 px-4 flex items-center justify-between shadow-sm transition-colors duration-300">
-        <div class="flex items-center gap-2 cursor-pointer">
+        class="lg:auth-hidden auth-fixed auth-top-0 auth-left-0 auth-right-0 auth-z-30 auth-bg-white dark:auth-bg-dark-card auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-h-16 auth-px-4 auth-flex auth-items-center auth-justify-between auth-shadow-sm auth-transition-colors auth-duration-300">
+        <div class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
             <div
-                class="w-8 h-8 bg-gradient-to-tr from-primary-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-md">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="auth-w-8 auth-h-8 auth-bg-gradient-to-tr auth-from-primary-500 auth-to-blue-600 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md">
+                <svg class="auth-w-5 auth-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                 </svg>
             </div>
-            <span class="font-bold text-lg tracking-tight text-gray-900 dark:text-white">Authify</span>
+            <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-gray-900 dark:auth-text-white">Authify</span>
         </div>
         <button id="mobile-menu-btn"
-                class="text-gray-600 dark:text-dark-muted hover:text-gray-900 dark:hover:text-white focus:outline-none p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="auth-text-gray-600 dark:auth-text-dark-muted hover:auth-text-gray-900 dark:hover:auth-text-white focus:auth-outline-none auth-p-2 auth-rounded-md hover:auth-bg-gray-100 dark:hover:auth-bg-gray-700 auth-transition-colors">
+            <svg class="auth-w-6 auth-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
     </div>
 
-    <!-- Backdrop -->
     <div id="mobile-backdrop"
-         class="fixed inset-0 bg-gray-900/50 dark:bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity hidden"></div>
+         class="auth-fixed auth-inset-0 auth-bg-gray-900/50 dark:auth-bg-black/60 auth-z-40 lg:auth-hidden auth-backdrop-blur-sm auth-transition-opacity auth-hidden"></div>
 
-    <!-- Sidebar -->
     <aside id="mobile-sidebar"
-           class="-translate-x-full lg:translate-x-0 fixed lg:sticky top-0 inset-y-0 left-0 z-50 w-64 bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border h-screen transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none">
+           class="-auth-translate-x-full lg:auth-translate-x-0 auth-fixed lg:auth-sticky auth-top-0 auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-dark-card auth-border-r auth-border-gray-200 dark:auth-border-dark-border auth-h-screen auth-transition-transform auth-duration-300 auth-ease-in-out auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none">
 
-        <!-- Desktop Logo -->
         <div
-            class="hidden lg:flex items-center justify-center h-16 px-4 border-b border-gray-200 dark:border-dark-border flex-shrink-0">
-            <div class="flex items-center gap-2 cursor-pointer">
+            class="auth-hidden lg:auth-flex auth-items-center auth-justify-center auth-h-16 auth-px-4 auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-flex-shrink-0">
+            <div class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
                 <div
-                    class="w-8 h-8 bg-gradient-to-tr from-primary-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-md">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="auth-w-8 auth-h-8 auth-bg-gradient-to-tr auth-from-primary-500 auth-to-blue-600 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md">
+                    <svg class="auth-w-5 auth-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                 </div>
-                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Authify</h1>
+                <h1 class="auth-text-xl auth-font-bold auth-text-gray-900 dark:auth-text-white">Authify</h1>
             </div>
         </div>
 
-        <!-- Mobile Menu Header -->
         <div
-            class="lg:hidden flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-dark-border flex-shrink-0 bg-white dark:bg-dark-card">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Menü</h2>
+            class="lg:auth-hidden auth-flex auth-items-center auth-justify-between auth-h-16 auth-px-4 auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-flex-shrink-0 auth-bg-white dark:auth-bg-dark-card">
+            <h2 class="auth-text-lg auth-font-semibold auth-text-gray-900 dark:auth-text-white">Menü</h2>
             <button id="mobile-menu-close"
-                    class="text-gray-500 hover:text-gray-700 dark:text-dark-muted dark:hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="auth-text-gray-500 hover:auth-text-gray-700 dark:auth-text-dark-muted dark:hover:auth-text-white">
+                <svg class="auth-w-6 auth-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
 
-        <!-- Links -->
-        <nav class="flex-1 mt-4 lg:mt-8 px-2 space-y-1 overflow-y-auto custom-scrollbar">
-            <!-- NavLink mit Helper für Klasse -->
+        <nav class="auth-flex-1 auth-mt-4 lg:auth-mt-8 auth-px-2 auth-space-y-1 auth-overflow-y-auto custom-scrollbar">
             <a href="profile-settings" class="@GetNavLinkClass("profile-settings") mobile-nav-link">
-                <svg class="w-5 h-5 mr-3 @GetIconClass("profile-settings")" fill="none" stroke="currentColor"
+                <svg class="auth-w-5 auth-h-5 auth-mr-3 @GetIconClass("profile-settings")" fill="none" stroke="currentColor"
                      viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -77,7 +69,7 @@
                 Profile
             </a>
             <a href="security-settings" class="@GetNavLinkClass("security-settings") mobile-nav-link">
-                <svg class="w-5 h-5 mr-3 @GetIconClass("security-settings")" fill="none" stroke="currentColor"
+                <svg class="auth-w-5 auth-h-5 auth-mr-3 @GetIconClass("security-settings")" fill="none" stroke="currentColor"
                      viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
@@ -85,7 +77,7 @@
                 Security
             </a>
             <a href="billing-overview" class="@GetNavLinkClass("billing-overview") mobile-nav-link">
-                <svg class="w-5 h-5 mr-3 @GetIconClass("billing-overview")" fill="none" stroke="currentColor"
+                <svg class="auth-w-5 auth-h-5 auth-mr-3 @GetIconClass("billing-overview")" fill="none" stroke="currentColor"
                      viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
@@ -93,7 +85,7 @@
                 Billing
             </a>
             <a href="privacy-settings" class="@GetNavLinkClass("privacy-settings") mobile-nav-link">
-                <svg class="w-5 h-5 mr-3 @GetIconClass("privacy-settings")" fill="none" stroke="currentColor"
+                <svg class="auth-w-5 auth-h-5 auth-mr-3 @GetIconClass("privacy-settings")" fill="none" stroke="currentColor"
                      viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -102,12 +94,11 @@
             </a>
         </nav>
 
-        <!-- Back to Dashboard (Unten) -->
-        <div class="flex-shrink-0 p-4 border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card">
+        <div class="auth-flex-shrink-0 auth-p-4 auth-border-t auth-border-gray-200 dark:auth-border-dark-border auth-bg-white dark:auth-bg-dark-card">
             <a href="/dashboard"
-               class="flex items-center w-full px-2 py-2 text-sm font-medium text-gray-600 dark:text-dark-muted rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 group">
+               class="auth-flex auth-items-center auth-w-full auth-px-2 auth-py-2 auth-text-sm auth-font-medium auth-text-gray-600 dark:auth-text-dark-muted auth-rounded-md hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 hover:auth-text-gray-900 dark:hover:auth-text-white auth-transition-colors auth-duration-200 auth-group">
                 <svg
-                    class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-500 dark:text-dark-muted dark:group-hover:text-gray-300"
+                    class="auth-w-5 auth-h-5 auth-mr-3 auth-text-gray-400 group-hover:auth-text-gray-500 dark:auth-text-dark-muted dark:group-hover:auth-text-gray-300"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -117,15 +108,13 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 min-w-0 flex flex-col pt-16 lg:pt-0">
-        <main class="flex-1 w-full">
+    <div class="auth-flex-1 auth-min-w-0 auth-flex auth-flex-col auth-pt-16 lg:auth-pt-0">
+        <main class="auth-flex-1 auth-w-full">
             @Body
         </main>
     </div>
 </div>
 
-<!-- Vanilla JS für Sidebar Toggle -->
 <script>
     (function () {
         const btn = document.getElementById('mobile-menu-btn');
@@ -136,17 +125,18 @@
 
         function toggleMenu() {
             if (!sidebar) return;
-            const isClosed = sidebar.classList.contains('-translate-x-full');
+            // Wir prüfen auf die Tailwind-Klassen mit Prefix
+            const isClosed = sidebar.classList.contains('-auth-translate-x-full');
 
             if (isClosed) {
-                sidebar.classList.remove('-translate-x-full');
-                sidebar.classList.add('translate-x-0');
-                if (backdrop) backdrop.classList.remove('hidden');
+                sidebar.classList.remove('-auth-translate-x-full');
+                sidebar.classList.add('auth-translate-x-0');
+                if (backdrop) backdrop.classList.remove('auth-hidden');
                 document.body.style.overflow = 'hidden';
             } else {
-                sidebar.classList.remove('translate-x-0');
-                sidebar.classList.add('-translate-x-full');
-                if (backdrop) backdrop.classList.add('hidden');
+                sidebar.classList.remove('auth-translate-x-0');
+                sidebar.classList.add('-auth-translate-x-full');
+                if (backdrop) backdrop.classList.add('auth-hidden');
                 document.body.style.overflow = '';
             }
         }
@@ -157,7 +147,7 @@
 
         links.forEach(link => {
             link.addEventListener('click', () => {
-                if (sidebar && sidebar.classList.contains('translate-x-0')) {
+                if (sidebar && sidebar.classList.contains('auth-translate-x-0')) {
                     toggleMenu();
                 }
             });
@@ -185,19 +175,20 @@
     {
         if (NavigationManager.Uri.EndsWith(href, StringComparison.OrdinalIgnoreCase))
         {
-            return "flex items-center px-2 py-2 text-sm font-medium text-primary-600 bg-primary-50 dark:bg-primary-900/50 dark:text-primary-400 rounded-md border-r-2 border-primary-600 dark:border-primary-500 group";
+            // Alle Klassen mit auth- Prefix versehen
+            return "auth-flex auth-items-center auth-px-2 auth-py-2 auth-text-sm auth-font-medium auth-text-primary-600 auth-bg-primary-50 dark:auth-bg-primary-900/50 dark:auth-text-primary-400 auth-rounded-md auth-border-r-2 auth-border-primary-600 dark:auth-border-primary-500 auth-group";
         }
 
-        return "flex items-center px-2 py-2 text-sm font-medium text-gray-600 dark:text-dark-muted rounded-md hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 group transition-colors duration-200";
+        return "auth-flex auth-items-center auth-px-2 auth-py-2 auth-text-sm auth-font-medium auth-text-gray-600 dark:auth-text-dark-muted auth-rounded-md hover:auth-text-gray-900 dark:hover:auth-text-white hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 auth-group auth-transition-colors auth-duration-200";
     }
 
     private string GetIconClass(string href)
     {
         if (NavigationManager.Uri.EndsWith(href, StringComparison.OrdinalIgnoreCase))
         {
-            return "text-primary-500 dark:text-primary-400";
+            return "auth-text-primary-500 dark:auth-text-primary-400";
         }
 
-        return "text-gray-400 dark:text-dark-muted group-hover:text-gray-500 dark:group-hover:text-gray-300";
+        return "auth-text-gray-400 dark:auth-text-dark-muted group-hover:auth-text-gray-500 dark:group-hover:auth-text-gray-300";
     }
 }

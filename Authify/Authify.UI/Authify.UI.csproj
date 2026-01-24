@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.7.0</Version>
+        <Version>1.7.3</Version>
     </PropertyGroup>
 
 
@@ -101,4 +101,9 @@
         </EmbeddedResource>
     </ItemGroup>
 
+    <Target Name="BuildCss" BeforeTargets="Build">
+        <Exec Command="npm run css:build" Condition=" '$(Configuration)' == 'Release' " />
+        <Exec Command="npm run css:build" />
+    </Target>
+    
 </Project>
