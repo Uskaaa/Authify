@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/Uskaaa/Authify</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <PackageProjectUrl>https://github.com/Uskaaa/Authify</PackageProjectUrl>
+    <Authors>Bene / carefreeerror20</Authors>
+    <Company>Bene</Company>
+    <Description>Authify Libraries und Tools</Description>
+  </PropertyGroup>
+</Project>
