@@ -43,34 +43,40 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_ForgotPassword" xml:space="preserve">
-    <value>Forgot Password</value>
+    <data name="Title_VerifyEmail" xml:space="preserve">
+    <value>E-Mail verifizieren</value>
   </data>
-    <data name="Subtitle_EnterEmail" xml:space="preserve">
-    <value>Enter your email to reset your password</value>
+    <data name="Text_SentTo" xml:space="preserve">
+    <value>Wir haben eine Verifizierungs-E-Mail gesendet an</value>
   </data>
-    <data name="Label_Email" xml:space="preserve">
-    <value>Email</value>
+    <data name="Text_Instruction" xml:space="preserve">
+    <value>Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu bestätigen. Wenn Sie sie nicht finden können, prüfen Sie Ihren Spam-Ordner.</value>
   </data>
-    <data name="Placeholder_Email" xml:space="preserve">
-    <value>name@example.com</value>
+    <data name="Btn_BackToLogin" xml:space="preserve">
+    <value>Zurück zum Login</value>
   </data>
-    <data name="Btn_Sending" xml:space="preserve">
-    <value>Sending...</value>
+    <data name="Title_Verifying" xml:space="preserve">
+    <value>Verifiziere...</value>
   </data>
-    <data name="Btn_SendLink" xml:space="preserve">
-    <value>Send Reset Link</value>
+    <data name="Text_Verifying" xml:space="preserve">
+    <value>Bitte warten Sie, während wir Ihre E-Mail-Adresse überprüfen.</value>
   </data>
     <data name="Title_Success" xml:space="preserve">
-    <value>Email Sent!</value>
+    <value>E-Mail verifiziert!</value>
   </data>
     <data name="Text_Success" xml:space="preserve">
-    <value>We've sent you an email with instructions to reset your password.</value>
+    <value>Ihre E-Mail wurde erfolgreich bestätigt. Sie können sich nun anmelden.</value>
   </data>
-    <data name="Footer_Remember" xml:space="preserve">
-    <value>Remember your password?</value>
+    <data name="Btn_GoToLogin" xml:space="preserve">
+    <value>Zum Login</value>
   </data>
-    <data name="Link_Login" xml:space="preserve">
-    <value>Sign in</value>
+    <data name="Title_Error" xml:space="preserve">
+    <value>Verifizierung fehlgeschlagen</value>
+  </data>
+    <data name="Text_Error" xml:space="preserve">
+    <value>Wir konnten Ihre E-Mail nicht verifizieren. Der Link ist möglicherweise ungültig oder abgelaufen.</value>
+  </data>
+    <data name="Btn_RetryRegister" xml:space="preserve">
+    <value>Erneut registrieren</value>
   </data>
 </root>

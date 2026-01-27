@@ -43,40 +43,70 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_VerifyEmail" xml:space="preserve">
-    <value>Verify your email</value>
+    <data name="Title_CreateAccount" xml:space="preserve">
+    <value>Konto erstellen</value>
   </data>
-    <data name="Text_SentTo" xml:space="preserve">
-    <value>We've sent a verification email to</value>
+    <data name="Subtitle_FillDetails" xml:space="preserve">
+    <value>Bitte füllen Sie Ihre Daten aus, um sich zu registrieren</value>
   </data>
-    <data name="Text_Instruction" xml:space="preserve">
-    <value>Click the link in the email to confirm your account. If you can't find it, check your spam folder.</value>
+    <data name="Label_FullName" xml:space="preserve">
+    <value>Vollständiger Name</value>
   </data>
-    <data name="Btn_BackToLogin" xml:space="preserve">
-    <value>Back to Login</value>
+    <data name="Placeholder_FullName" xml:space="preserve">
+    <value>Max Mustermann</value>
   </data>
-    <data name="Title_Verifying" xml:space="preserve">
-    <value>Verifying...</value>
+    <data name="Label_Email" xml:space="preserve">
+    <value>E-Mail</value>
   </data>
-    <data name="Text_Verifying" xml:space="preserve">
-    <value>Please wait while we verify your email address.</value>
+    <data name="Placeholder_Email" xml:space="preserve">
+    <value>name@beispiel.de</value>
   </data>
-    <data name="Title_Success" xml:space="preserve">
-    <value>Email Verified!</value>
+    <data name="Label_Password" xml:space="preserve">
+    <value>Passwort</value>
   </data>
-    <data name="Text_Success" xml:space="preserve">
-    <value>Your email has been successfully verified. You can now login.</value>
+    <data name="Placeholder_Password" xml:space="preserve">
+    <value>Erstellen Sie ein Passwort</value>
   </data>
-    <data name="Btn_GoToLogin" xml:space="preserve">
-    <value>Go to Login</value>
+    <data name="Label_ConfirmPassword" xml:space="preserve">
+    <value>Passwort bestätigen</value>
   </data>
-    <data name="Title_Error" xml:space="preserve">
-    <value>Verification Failed</value>
+    <data name="Placeholder_ConfirmPassword" xml:space="preserve">
+    <value>Bestätigen Sie Ihr Passwort</value>
   </data>
-    <data name="Text_Error" xml:space="preserve">
-    <value>We couldn't verify your email. The link might be invalid or expired.</value>
+    <data name="Text_AgreeTo" xml:space="preserve">
+    <value>Ich stimme den</value>
   </data>
-    <data name="Btn_RetryRegister" xml:space="preserve">
-    <value>Try Registering Again</value>
+    <data name="Link_Terms" xml:space="preserve">
+    <value>Nutzungsbedingungen</value>
+  </data>
+    <data name="Text_And" xml:space="preserve">
+    <value>und der</value>
+  </data>
+    <data name="Link_Privacy" xml:space="preserve">
+    <value>Datenschutzerklärung</value>
+  </data>
+    <data name="Btn_Register_Loading" xml:space="preserve">
+    <value>Konto wird erstellt...</value>
+  </data>
+    <data name="Btn_Register" xml:space="preserve">
+    <value>Konto erstellen</value>
+  </data>
+    <data name="Divider_Or" xml:space="preserve">
+    <value>oder weiter mit</value>
+  </data>
+    <data name="Btn_Google" xml:space="preserve">
+    <value>Registrieren mit Google</value>
+  </data>
+    <data name="Btn_GitHub" xml:space="preserve">
+    <value>Registrieren mit GitHub</value>
+  </data>
+    <data name="Footer_HaveAccount" xml:space="preserve">
+    <value>Sie haben bereits ein Konto?</value>
+  </data>
+    <data name="Link_Login" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+    <data name="Error_RegisterFailed" xml:space="preserve">
+    <value>Registrierung fehlgeschlagen.</value>
   </data>
 </root>

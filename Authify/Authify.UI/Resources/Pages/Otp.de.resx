@@ -29,6 +29,7 @@
             </xsd:complexType>
         </xsd:element>
     </xsd:schema>
+
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -42,46 +43,34 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_Welcome" xml:space="preserve">
-    <value>Welcome Back</value>
+    <data name="Title_VerifyEmail" xml:space="preserve">
+    <value>E-Mail verifizieren</value>
   </data>
-    <data name="Subtitle_Credentials" xml:space="preserve">
-    <value>Please enter your credentials to login</value>
+    <data name="Subtitle_EnterCode" xml:space="preserve">
+    <value>Geben Sie den 6-stelligen Code ein, der an Ihre E-Mail gesendet wurde</value>
   </data>
-    <data name="Label_Email" xml:space="preserve">
-    <value>Email</value>
+    <data name="Error_VerificationFailed" xml:space="preserve">
+    <value>Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
   </data>
-    <data name="Label_Password" xml:space="preserve">
-    <value>Password</value>
+    <data name="Text_ResendCodeIn" xml:space="preserve">
+    <value>Code erneut senden in</value>
   </data>
-    <data name="Label_RememberMe" xml:space="preserve">
-    <value>Remember me</value>
+    <data name="Text_NoCode" xml:space="preserve">
+    <value>Keinen Code erhalten?</value>
   </data>
-    <data name="Link_ForgotPassword" xml:space="preserve">
-    <value>Forgot password?</value>
+    <data name="Btn_Sending" xml:space="preserve">
+    <value>Sende...</value>
   </data>
-    <data name="Btn_Login_Loading" xml:space="preserve">
-    <value>Logging in...</value>
+    <data name="Btn_Resend" xml:space="preserve">
+    <value>Erneut senden</value>
   </data>
-    <data name="Btn_Login" xml:space="preserve">
-    <value>Login</value>
+    <data name="Btn_Verifying" xml:space="preserve">
+    <value>Verifiziere...</value>
   </data>
-    <data name="Divider_Or" xml:space="preserve">
-    <value>or continue with</value>
+    <data name="Btn_Verify" xml:space="preserve">
+    <value>Verifizieren</value>
   </data>
-    <data name="Btn_Google" xml:space="preserve">
-    <value>Sign in with Google</value>
-  </data>
-    <data name="Btn_GitHub" xml:space="preserve">
-    <value>Sign in with GitHub</value>
-  </data>
-    <data name="Footer_NoAccount" xml:space="preserve">
-    <value>Don't have an account?</value>
-  </data>
-    <data name="Link_Register" xml:space="preserve">
-    <value>Sign up</value>
-  </data>
-    <data name="Error_LoginFailed" xml:space="preserve">
-    <value>Login failed.</value>
+    <data name="Link_BackToLogin" xml:space="preserve">
+    <value>Zurück zum Login</value>
   </data>
 </root>

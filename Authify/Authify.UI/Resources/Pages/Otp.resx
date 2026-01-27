@@ -44,33 +44,33 @@
     </resheader>
 
     <data name="Title_VerifyEmail" xml:space="preserve">
-    <value>E-Mail verifizieren</value>
+    <value>Verify Your Email</value>
   </data>
     <data name="Subtitle_EnterCode" xml:space="preserve">
-    <value>Geben Sie den 6-stelligen Code ein, der an Ihre E-Mail gesendet wurde</value>
+    <value>Enter the 6-digit code sent to your email</value>
   </data>
     <data name="Error_VerificationFailed" xml:space="preserve">
-    <value>Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
+    <value>Verification failed. Please try again.</value>
   </data>
     <data name="Text_ResendCodeIn" xml:space="preserve">
-    <value>Code erneut senden in</value>
+    <value>Resend code in</value>
   </data>
     <data name="Text_NoCode" xml:space="preserve">
-    <value>Keinen Code erhalten?</value>
+    <value>Didn't receive code?</value>
   </data>
     <data name="Btn_Sending" xml:space="preserve">
-    <value>Sende...</value>
+    <value>Sending...</value>
   </data>
     <data name="Btn_Resend" xml:space="preserve">
-    <value>Erneut senden</value>
+    <value>Resend</value>
   </data>
     <data name="Btn_Verifying" xml:space="preserve">
-    <value>Verifiziere...</value>
+    <value>Verifying...</value>
   </data>
     <data name="Btn_Verify" xml:space="preserve">
-    <value>Verifizieren</value>
+    <value>Verify</value>
   </data>
     <data name="Link_BackToLogin" xml:space="preserve">
-    <value>Zurück zum Login</value>
+    <value>Back to Login</value>
   </data>
 </root>

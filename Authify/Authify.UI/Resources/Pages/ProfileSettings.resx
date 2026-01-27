@@ -43,55 +43,55 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_Page" xml:space="preserve"><value>Profileinstellungen</value></data>
-    <data name="Subtitle_Page" xml:space="preserve"><value>Verwalten Sie Ihre Kontoinformationen und Einstellungen</value></data>
-    <data name="Btn_ExportData" xml:space="preserve"><value>Daten exportieren</value></data>
-    <data name="Btn_Saving" xml:space="preserve"><value>Speichere...</value></data>
-    <data name="Btn_SaveChanges" xml:space="preserve"><value>Änderungen speichern</value></data>
+    <data name="Title_Page" xml:space="preserve"><value>Profile Settings</value></data>
+    <data name="Subtitle_Page" xml:space="preserve"><value>Manage your account information and settings</value></data>
+    <data name="Btn_ExportData" xml:space="preserve"><value>Export Data</value></data>
+    <data name="Btn_Saving" xml:space="preserve"><value>Saving...</value></data>
+    <data name="Btn_SaveChanges" xml:space="preserve"><value>Save Changes</value></data>
 
-    <data name="Title_PersonalInfo" xml:space="preserve"><value>Persönliche Informationen</value></data>
-    <data name="Text_PersonalInfoDesc" xml:space="preserve"><value>Aktualisieren Sie Ihre persönlichen Daten, um Ihr Profil aktuell zu halten.</value></data>
+    <data name="Title_PersonalInfo" xml:space="preserve"><value>Personal Information</value></data>
+    <data name="Text_PersonalInfoDesc" xml:space="preserve"><value>Update your personal details and contact information to keep your profile current.</value></data>
 
-    <data name="Label_FullName" xml:space="preserve"><value>Vollständiger Name</value></data>
-    <data name="Placeholder_FullName" xml:space="preserve"><value>Geben Sie Ihren Namen ein</value></data>
+    <data name="Label_FullName" xml:space="preserve"><value>Full Name</value></data>
+    <data name="Placeholder_FullName" xml:space="preserve"><value>Enter your full name</value></data>
 
-    <data name="Label_Email" xml:space="preserve"><value>E-Mail Adresse</value></data>
-    <data name="Placeholder_Email" xml:space="preserve"><value>ihre@email.de</value></data>
-    <data name="Text_EmailChange" xml:space="preserve"><value>Um Ihre E-Mail zu ändern, kontaktieren Sie bitte den Support.</value></data>
+    <data name="Label_Email" xml:space="preserve"><value>Email Address</value></data>
+    <data name="Placeholder_Email" xml:space="preserve"><value>your@email.com</value></data>
+    <data name="Text_EmailChange" xml:space="preserve"><value>To change your email, please contact support.</value></data>
 
-    <data name="Label_Phone" xml:space="preserve"><value>Telefonnummer</value></data>
-    <data name="Placeholder_Phone" xml:space="preserve"><value>+49 123 456789</value></data>
+    <data name="Label_Phone" xml:space="preserve"><value>Phone Number</value></data>
+    <data name="Placeholder_Phone" xml:space="preserve"><value>+1 (555) 000-0000</value></data>
 
-    <data name="Label_JobTitle" xml:space="preserve"><value>Berufsbezeichnung</value></data>
-    <data name="Placeholder_JobTitle" xml:space="preserve"><value>Ihre Berufsbezeichnung</value></data>
+    <data name="Label_JobTitle" xml:space="preserve"><value>Job Title</value></data>
+    <data name="Placeholder_JobTitle" xml:space="preserve"><value>Your job title</value></data>
 
-    <data name="Label_Company" xml:space="preserve"><value>Firma</value></data>
-    <data name="Placeholder_Company" xml:space="preserve"><value>Ihr Firmenname</value></data>
+    <data name="Label_Company" xml:space="preserve"><value>Company</value></data>
+    <data name="Placeholder_Company" xml:space="preserve"><value>Your company name</value></data>
 
-    <data name="Label_Bio" xml:space="preserve"><value>Biografie</value></data>
-    <data name="Placeholder_Bio" xml:space="preserve"><value>Erzählen Sie uns etwas über sich...</value></data>
-    <data name="Text_BioLimit" xml:space="preserve"><value>Maximal 500 Zeichen</value></data>
+    <data name="Label_Bio" xml:space="preserve"><value>Bio</value></data>
+    <data name="Placeholder_Bio" xml:space="preserve"><value>Tell us a little about yourself...</value></data>
+    <data name="Text_BioLimit" xml:space="preserve"><value>Maximum 500 characters</value></data>
 
-    <data name="Text_AutoSave" xml:space="preserve"><value>Alle Änderungen werden automatisch gespeichert</value></data>
-    <data name="Btn_Reset" xml:space="preserve"><value>Zurücksetzen</value></data>
+    <data name="Text_AutoSave" xml:space="preserve"><value>All changes are automatically saved</value></data>
+    <data name="Btn_Reset" xml:space="preserve"><value>Reset</value></data>
 
-    <data name="Title_ProfilePic" xml:space="preserve"><value>Profilbild</value></data>
-    <data name="Text_ProfilePicDesc" xml:space="preserve"><value>Laden Sie ein neues Profilbild hoch oder ändern Sie Ihr aktuelles.</value></data>
-    <data name="Btn_Change" xml:space="preserve"><value>Ändern</value></data>
-    <data name="Btn_Remove" xml:space="preserve"><value>Entfernen</value></data>
-    <data name="Text_FileSpecs" xml:space="preserve"><value>JPG, GIF oder PNG. Max. 1MB.</value></data>
+    <data name="Title_ProfilePic" xml:space="preserve"><value>Profile Picture</value></data>
+    <data name="Text_ProfilePicDesc" xml:space="preserve"><value>Upload a new profile picture or change your current one.</value></data>
+    <data name="Btn_Change" xml:space="preserve"><value>Change</value></data>
+    <data name="Btn_Remove" xml:space="preserve"><value>Remove</value></data>
+    <data name="Text_FileSpecs" xml:space="preserve"><value>JPG, GIF or PNG. Max. 1MB.</value></data>
 
-    <data name="Title_Crop" xml:space="preserve"><value>Profilbild zuschneiden</value></data>
-    <data name="Text_CropInstruction" xml:space="preserve"><value>Verschieben Sie den Kreis und ziehen Sie am Rand, um die Größe zu ändern</value></data>
-    <data name="Btn_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
-    <data name="Btn_Apply" xml:space="preserve"><value>Anwenden</value></data>
+    <data name="Title_Crop" xml:space="preserve"><value>Crop Profile Picture</value></data>
+    <data name="Text_CropInstruction" xml:space="preserve"><value>Move the circle and drag the edge to resize</value></data>
+    <data name="Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+    <data name="Btn_Apply" xml:space="preserve"><value>Apply</value></data>
 
-    <data name="Msg_ProfileUpdated" xml:space="preserve"><value>Profil erfolgreich aktualisiert!</value></data>
-    <data name="Msg_UpdateFailed" xml:space="preserve"><value>Aktualisierung fehlgeschlagen.</value></data>
-    <data name="Msg_Reset" xml:space="preserve"><value>Änderungen zurückgesetzt.</value></data>
-    <data name="Msg_PicUpdated" xml:space="preserve"><value>Profilbild aktualisiert!</value></data>
-    <data name="Msg_PicUploadFailed" xml:space="preserve"><value>Bild-Upload fehlgeschlagen.</value></data>
-    <data name="Msg_PicRemoved" xml:space="preserve"><value>Profilbild entfernt.</value></data>
-    <data name="Msg_PicRemoveFailed" xml:space="preserve"><value>Bild konnte nicht entfernt werden.</value></data>
+    <data name="Msg_ProfileUpdated" xml:space="preserve"><value>Profile updated successfully!</value></data>
+    <data name="Msg_UpdateFailed" xml:space="preserve"><value>Update failed.</value></data>
+    <data name="Msg_Reset" xml:space="preserve"><value>Reset changes.</value></data>
+    <data name="Msg_PicUpdated" xml:space="preserve"><value>Profile picture updated!</value></data>
+    <data name="Msg_PicUploadFailed" xml:space="preserve"><value>Failed to upload image.</value></data>
+    <data name="Msg_PicRemoved" xml:space="preserve"><value>Profile picture removed.</value></data>
+    <data name="Msg_PicRemoveFailed" xml:space="preserve"><value>Failed to remove image.</value></data>
 
 </root>

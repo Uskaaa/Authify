@@ -43,67 +43,67 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_Page" xml:space="preserve"><value>Sicherheitseinstellungen</value></data>
-    <data name="Subtitle_Page" xml:space="preserve"><value>Verwalten Sie Ihr Passwort, die Zwei-Faktor-Authentifizierung und verbundene Konten</value></data>
-    <data name="Btn_ExportReport" xml:space="preserve"><value>Sicherheitsbericht exportieren</value></data>
-    <data name="Btn_SaveChanges" xml:space="preserve"><value>Änderungen speichern</value></data>
+    <data name="Title_Page" xml:space="preserve"><value>Security Settings</value></data>
+    <data name="Subtitle_Page" xml:space="preserve"><value>Manage your password, two-factor authentication, and connected accounts</value></data>
+    <data name="Btn_ExportReport" xml:space="preserve"><value>Export Security Report</value></data>
+    <data name="Btn_SaveChanges" xml:space="preserve"><value>Save Changes</value></data>
 
-    <data name="Title_ChangePassword" xml:space="preserve"><value>Passwort ändern</value></data>
-    <data name="Text_ChangePasswordDesc" xml:space="preserve"><value>Aktualisieren Sie Ihr Passwort, um Ihr Konto sicher zu halten.</value></data>
-    <data name="Label_CurrentPassword" xml:space="preserve"><value>Aktuelles Passwort</value></data>
-    <data name="Placeholder_CurrentPassword" xml:space="preserve"><value>Aktuelles Passwort eingeben</value></data>
-    <data name="Label_NewPassword" xml:space="preserve"><value>Neues Passwort</value></data>
-    <data name="Placeholder_NewPassword" xml:space="preserve"><value>Neues Passwort eingeben</value></data>
+    <data name="Title_ChangePassword" xml:space="preserve"><value>Change Password</value></data>
+    <data name="Text_ChangePasswordDesc" xml:space="preserve"><value>Update your account password to keep your account secure.</value></data>
+    <data name="Label_CurrentPassword" xml:space="preserve"><value>Current Password</value></data>
+    <data name="Placeholder_CurrentPassword" xml:space="preserve"><value>Enter current password</value></data>
+    <data name="Label_NewPassword" xml:space="preserve"><value>New Password</value></data>
+    <data name="Placeholder_NewPassword" xml:space="preserve"><value>Enter new password</value></data>
 
-    <data name="Label_Strength" xml:space="preserve"><value>Passwortstärke</value></data>
-    <data name="Check_Length" xml:space="preserve"><value>Mindestens 8 Zeichen</value></data>
-    <data name="Check_Uppercase" xml:space="preserve"><value>Enthält Großbuchstaben</value></data>
-    <data name="Check_Special" xml:space="preserve"><value>Enthält Sonderzeichen</value></data>
-    <data name="Text_UpdateInfo" xml:space="preserve"><value>Das Passwort wird sofort aktualisiert</value></data>
-    <data name="Btn_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
-    <data name="Btn_Updating" xml:space="preserve"><value>Aktualisiere...</value></data>
-    <data name="Btn_UpdatePassword" xml:space="preserve"><value>Passwort aktualisieren</value></data>
+    <data name="Label_Strength" xml:space="preserve"><value>Password Strength</value></data>
+    <data name="Check_Length" xml:space="preserve"><value>At least 8 characters</value></data>
+    <data name="Check_Uppercase" xml:space="preserve"><value>Contains uppercase letter</value></data>
+    <data name="Check_Special" xml:space="preserve"><value>Contains special character</value></data>
+    <data name="Text_UpdateInfo" xml:space="preserve"><value>Password will be updated immediately</value></data>
+    <data name="Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+    <data name="Btn_Updating" xml:space="preserve"><value>Updating...</value></data>
+    <data name="Btn_UpdatePassword" xml:space="preserve"><value>Update Password</value></data>
 
-    <data name="Title_2FA" xml:space="preserve"><value>Zwei-Faktor-Authentifizierung</value></data>
-    <data name="Text_2FADesc" xml:space="preserve"><value>Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu.</value></data>
-    <data name="Title_Enable2FA" xml:space="preserve"><value>2FA aktivieren</value></data>
-    <data name="Text_Enable2FADesc" xml:space="preserve"><value>Schützen Sie Ihr Konto mit einem zusätzlichen Verifizierungsschritt.</value></data>
-    <data name="Btn_Manage2FA" xml:space="preserve"><value>2-Faktor verwalten</value></data>
-    <data name="Status_2FA_Enabled" xml:space="preserve"><value>2FA ist derzeit aktiviert</value></data>
-    <data name="Status_2FA_Enabled_Desc" xml:space="preserve"><value>Ihr Konto ist durch {0} Methode(n) geschützt.</value></data>
-    <data name="Status_2FA_Disabled" xml:space="preserve"><value>2FA ist derzeit deaktiviert</value></data>
-    <data name="Status_2FA_Disabled_Desc" xml:space="preserve"><value>Wir empfehlen, mindestens eine Methode zu aktivieren.</value></data>
+    <data name="Title_2FA" xml:space="preserve"><value>Two-Factor Authentication</value></data>
+    <data name="Text_2FADesc" xml:space="preserve"><value>Add an extra layer of security to your account.</value></data>
+    <data name="Title_Enable2FA" xml:space="preserve"><value>Enable 2FA</value></data>
+    <data name="Text_Enable2FADesc" xml:space="preserve"><value>Protect your account with an additional verification step.</value></data>
+    <data name="Btn_Manage2FA" xml:space="preserve"><value>Manage 2Factor</value></data>
+    <data name="Status_2FA_Enabled" xml:space="preserve"><value>2FA is currently enabled</value></data>
+    <data name="Status_2FA_Enabled_Desc" xml:space="preserve"><value>Your account is protected with {0} method(s).</value></data>
+    <data name="Status_2FA_Disabled" xml:space="preserve"><value>2FA is currently disabled</value></data>
+    <data name="Status_2FA_Disabled_Desc" xml:space="preserve"><value>We recommend enabling at least one method.</value></data>
 
-    <data name="Title_Connected" xml:space="preserve"><value>Verbundene Konten</value></data>
-    <data name="Text_ConnectedDesc" xml:space="preserve"><value>Verwalten Sie Ihre externen Login-Anbieter.</value></data>
-    <data name="Status_Connected" xml:space="preserve"><value>Verbunden</value></data>
-    <data name="Status_NotConnected" xml:space="preserve"><value>Nicht verbunden</value></data>
-    <data name="Btn_Disconnect" xml:space="preserve"><value>Trennen</value></data>
-    <data name="Btn_Connect" xml:space="preserve"><value>Verbinden</value></data>
+    <data name="Title_Connected" xml:space="preserve"><value>Connected Accounts</value></data>
+    <data name="Text_ConnectedDesc" xml:space="preserve"><value>Manage your external login providers.</value></data>
+    <data name="Status_Connected" xml:space="preserve"><value>Connected</value></data>
+    <data name="Status_NotConnected" xml:space="preserve"><value>Not connected</value></data>
+    <data name="Btn_Disconnect" xml:space="preserve"><value>Disconnect</value></data>
+    <data name="Btn_Connect" xml:space="preserve"><value>Connect</value></data>
 
-    <data name="Dialog_2FA_Title" xml:space="preserve"><value>Zwei-Faktor-Authentifizierung verwalten</value></data>
-    <data name="Section_ActiveMethods" xml:space="preserve"><value>Aktivierte Methoden</value></data>
-    <data name="Badge_Default" xml:space="preserve"><value>Standard</value></data>
-    <data name="Btn_SetDefault" xml:space="preserve"><value>Als Standard</value></data>
-    <data name="Btn_Remove" xml:space="preserve"><value>Entfernen</value></data>
-    <data name="Section_AvailableMethods" xml:space="preserve"><value>Verfügbare Methoden</value></data>
-    <data name="Btn_Add" xml:space="preserve"><value>Hinzufügen</value></data>
+    <data name="Dialog_2FA_Title" xml:space="preserve"><value>Two-Factor Authentication Management</value></data>
+    <data name="Section_ActiveMethods" xml:space="preserve"><value>Active Methods</value></data>
+    <data name="Badge_Default" xml:space="preserve"><value>Default</value></data>
+    <data name="Btn_SetDefault" xml:space="preserve"><value>Set Default</value></data>
+    <data name="Btn_Remove" xml:space="preserve"><value>Remove</value></data>
+    <data name="Section_AvailableMethods" xml:space="preserve"><value>Available Methods</value></data>
+    <data name="Btn_Add" xml:space="preserve"><value>Add</value></data>
 
-    <data name="Method_Email_Name" xml:space="preserve"><value>E-Mail Verifizierung</value></data>
-    <data name="Method_Email_Desc" xml:space="preserve"><value>Erhalten Sie Codes per E-Mail</value></data>
-    <data name="Method_SMS_Name" xml:space="preserve"><value>SMS Verifizierung</value></data>
-    <data name="Method_SMS_Desc" xml:space="preserve"><value>Erhalten Sie Codes per SMS</value></data>
+    <data name="Method_Email_Name" xml:space="preserve"><value>Email Verification</value></data>
+    <data name="Method_Email_Desc" xml:space="preserve"><value>Get codes via email</value></data>
+    <data name="Method_SMS_Name" xml:space="preserve"><value>SMS Verification</value></data>
+    <data name="Method_SMS_Desc" xml:space="preserve"><value>Get codes via SMS</value></data>
 
-    <data name="Msg_ConnectFailed" xml:space="preserve"><value>Verbindung zum externen Anbieter fehlgeschlagen</value></data>
-    <data name="Msg_ProviderDisconnected" xml:space="preserve"><value>{0} getrennt.</value></data>
-    <data name="Msg_DisconnectFailed" xml:space="preserve"><value>Trennen fehlgeschlagen.</value></data>
-    <data name="Msg_MethodAdded" xml:space="preserve"><value>2FA Methode hinzugefügt.</value></data>
-    <data name="Msg_AddFailed" xml:space="preserve"><value>Hinzufügen fehlgeschlagen.</value></data>
-    <data name="Msg_MethodRemoved" xml:space="preserve"><value>2FA Methode entfernt.</value></data>
-    <data name="Msg_RemoveFailed" xml:space="preserve"><value>Entfernen fehlgeschlagen.</value></data>
-    <data name="Msg_DefaultUpdated" xml:space="preserve"><value>Standardmethode aktualisiert.</value></data>
-    <data name="Msg_DefaultFailed" xml:space="preserve"><value>Aktualisierung fehlgeschlagen.</value></data>
-    <data name="Msg_PasswordUpdated" xml:space="preserve"><value>Passwort erfolgreich aktualisiert!</value></data>
-    <data name="Msg_PasswordUpdateFailed" xml:space="preserve"><value>Aktualisierung des Passworts fehlgeschlagen.</value></data>
+    <data name="Msg_ConnectFailed" xml:space="preserve"><value>Failed to connect external provider</value></data>
+    <data name="Msg_ProviderDisconnected" xml:space="preserve"><value>{0} disconnected.</value></data>
+    <data name="Msg_DisconnectFailed" xml:space="preserve"><value>Failed to disconnect.</value></data>
+    <data name="Msg_MethodAdded" xml:space="preserve"><value>2FA Method added.</value></data>
+    <data name="Msg_AddFailed" xml:space="preserve"><value>Failed to add.</value></data>
+    <data name="Msg_MethodRemoved" xml:space="preserve"><value>2FA Method removed.</value></data>
+    <data name="Msg_RemoveFailed" xml:space="preserve"><value>Failed to remove.</value></data>
+    <data name="Msg_DefaultUpdated" xml:space="preserve"><value>Default method updated.</value></data>
+    <data name="Msg_DefaultFailed" xml:space="preserve"><value>Failed.</value></data>
+    <data name="Msg_PasswordUpdated" xml:space="preserve"><value>Password updated successfully!</value></data>
+    <data name="Msg_PasswordUpdateFailed" xml:space="preserve"><value>Failed to update password.</value></data>
 
 </root>

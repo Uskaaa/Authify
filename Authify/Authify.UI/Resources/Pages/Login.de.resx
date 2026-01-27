@@ -29,7 +29,6 @@
             </xsd:complexType>
         </xsd:element>
     </xsd:schema>
-
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -43,40 +42,46 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
 
-    <data name="Title_ResetPassword" xml:space="preserve">
-    <value>Reset Password</value>
+    <data name="Title_Welcome" xml:space="preserve">
+    <value>Willkommen zurück</value>
   </data>
-    <data name="Subtitle_EnterNew" xml:space="preserve">
-    <value>Enter your new password</value>
+    <data name="Subtitle_Credentials" xml:space="preserve">
+    <value>Bitte geben Sie Ihre Zugangsdaten ein, um sich anzumelden</value>
   </data>
-    <data name="Error_InvalidLink" xml:space="preserve">
-    <value>Invalid password reset link. Missing information.</value>
+    <data name="Label_Email" xml:space="preserve">
+    <value>E-Mail</value>
   </data>
-    <data name="Label_NewPassword" xml:space="preserve">
-    <value>New Password</value>
+    <data name="Label_Password" xml:space="preserve">
+    <value>Passwort</value>
   </data>
-    <data name="Placeholder_NewPassword" xml:space="preserve">
-    <value>New password</value>
+    <data name="Label_RememberMe" xml:space="preserve">
+    <value>Angemeldet bleiben</value>
   </data>
-    <data name="Label_ConfirmPassword" xml:space="preserve">
-    <value>Confirm New Password</value>
+    <data name="Link_ForgotPassword" xml:space="preserve">
+    <value>Passwort vergessen?</value>
   </data>
-    <data name="Placeholder_ConfirmPassword" xml:space="preserve">
-    <value>Confirm new password</value>
+    <data name="Btn_Login_Loading" xml:space="preserve">
+    <value>Anmelden...</value>
   </data>
-    <data name="Btn_Resetting" xml:space="preserve">
-    <value>Resetting...</value>
+    <data name="Btn_Login" xml:space="preserve">
+    <value>Anmelden</value>
   </data>
-    <data name="Btn_ResetPassword" xml:space="preserve">
-    <value>Reset Password</value>
+    <data name="Divider_Or" xml:space="preserve">
+    <value>oder weiter mit</value>
   </data>
-    <data name="Title_Success" xml:space="preserve">
-    <value>Password Reset!</value>
+    <data name="Btn_Google" xml:space="preserve">
+    <value>Mit Google anmelden</value>
   </data>
-    <data name="Text_Success" xml:space="preserve">
-    <value>Your password has been successfully reset. You can now login with your new password.</value>
+    <data name="Btn_GitHub" xml:space="preserve">
+    <value>Mit GitHub anmelden</value>
   </data>
-    <data name="Btn_GoToLogin" xml:space="preserve">
-    <value>Go to Login</value>
+    <data name="Footer_NoAccount" xml:space="preserve">
+    <value>Noch keinen Account?</value>
+  </data>
+    <data name="Link_Register" xml:space="preserve">
+    <value>Registrieren</value>
+  </data>
+    <data name="Error_LoginFailed" xml:space="preserve">
+    <value>Anmeldung fehlgeschlagen.</value>
   </data>
 </root>

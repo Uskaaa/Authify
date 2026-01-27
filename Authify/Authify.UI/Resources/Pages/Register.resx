@@ -44,69 +44,69 @@
     </resheader>
 
     <data name="Title_CreateAccount" xml:space="preserve">
-    <value>Konto erstellen</value>
+    <value>Create Account</value>
   </data>
     <data name="Subtitle_FillDetails" xml:space="preserve">
-    <value>Bitte füllen Sie Ihre Daten aus, um sich zu registrieren</value>
+    <value>Please fill in your details to register</value>
   </data>
     <data name="Label_FullName" xml:space="preserve">
-    <value>Vollständiger Name</value>
+    <value>Full Name</value>
   </data>
     <data name="Placeholder_FullName" xml:space="preserve">
-    <value>Max Mustermann</value>
+    <value>John Doe</value>
   </data>
     <data name="Label_Email" xml:space="preserve">
-    <value>E-Mail</value>
+    <value>Email</value>
   </data>
     <data name="Placeholder_Email" xml:space="preserve">
-    <value>name@beispiel.de</value>
+    <value>name@example.com</value>
   </data>
     <data name="Label_Password" xml:space="preserve">
-    <value>Passwort</value>
+    <value>Password</value>
   </data>
     <data name="Placeholder_Password" xml:space="preserve">
-    <value>Erstellen Sie ein Passwort</value>
+    <value>Create a password</value>
   </data>
     <data name="Label_ConfirmPassword" xml:space="preserve">
-    <value>Passwort bestätigen</value>
+    <value>Confirm Password</value>
   </data>
     <data name="Placeholder_ConfirmPassword" xml:space="preserve">
-    <value>Bestätigen Sie Ihr Passwort</value>
+    <value>Confirm your password</value>
   </data>
     <data name="Text_AgreeTo" xml:space="preserve">
-    <value>Ich stimme den</value>
+    <value>I agree to the</value>
   </data>
     <data name="Link_Terms" xml:space="preserve">
-    <value>Nutzungsbedingungen</value>
+    <value>Terms of Service</value>
   </data>
     <data name="Text_And" xml:space="preserve">
-    <value>und der</value>
+    <value>and</value>
   </data>
     <data name="Link_Privacy" xml:space="preserve">
-    <value>Datenschutzerklärung</value>
+    <value>Privacy Policy</value>
   </data>
     <data name="Btn_Register_Loading" xml:space="preserve">
-    <value>Konto wird erstellt...</value>
+    <value>Creating account...</value>
   </data>
     <data name="Btn_Register" xml:space="preserve">
-    <value>Konto erstellen</value>
+    <value>Create Account</value>
   </data>
     <data name="Divider_Or" xml:space="preserve">
-    <value>oder weiter mit</value>
+    <value>or continue with</value>
   </data>
     <data name="Btn_Google" xml:space="preserve">
-    <value>Registrieren mit Google</value>
+    <value>Sign up with Google</value>
   </data>
     <data name="Btn_GitHub" xml:space="preserve">
-    <value>Registrieren mit GitHub</value>
+    <value>Sign up with GitHub</value>
   </data>
     <data name="Footer_HaveAccount" xml:space="preserve">
-    <value>Sie haben bereits ein Konto?</value>
+    <value>Already have an account?</value>
   </data>
     <data name="Link_Login" xml:space="preserve">
-    <value>Anmelden</value>
+    <value>Sign in</value>
   </data>
     <data name="Error_RegisterFailed" xml:space="preserve">
-    <value>Registrierung fehlgeschlagen.</value>
+    <value>Register failed.</value>
   </data>
 </root>
