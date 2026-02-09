@@ -19,16 +19,16 @@
         <div class="auth-flex auth-flex-col lg:auth-flex-row lg:auth-items-center lg:auth-justify-between">
             <div>
                 <h1 class="auth-text-3xl auth-font-bold auth-leading-tight auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Page"]</h1>
-                <p class="auth-mt-2 auth-text-sm auth-text-gray-600 dark:auth-text-dark-muted">@Loc["Subtitle_Page"]</p>
+                <p class="auth-mt-2 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Subtitle_Page"]</p>
             </div>
             <div class="auth-flex auth-flex-col sm:auth-flex-row auth-items-start sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-mt-4 lg:auth-mt-0">
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-gray-700 dark:auth-text-dark-text auth-bg-white dark:auth-bg-dark-card auth-border auth-border-gray-300 dark:auth-border-dark-border auth-rounded-md hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 focus:auth-outline-none auth-transition-all auth-duration-200">
-                    <svg class="auth-w-4 auth-h-4 auth-mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-gray-700 dark:auth-text-gray-200 auth-bg-white dark:auth-bg-gray-800 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 auth-transition-all">
+                    <svg class="auth-w-4 auth-h-4 auth-mr-2 auth-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                     </svg>
                     @Loc["Btn_ExportReport"]
                 </button>
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-primary-600 auth-border auth-border-transparent auth-rounded-md hover:auth-bg-primary-700 focus:auth-outline-none auth-transition-all auth-duration-200">
+                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-primary-600 auth-border auth-border-transparent auth-rounded-lg hover:auth-bg-primary-700 focus:auth-outline-none auth-shadow-sm auth-transition-all">
                     @Loc["Btn_SaveChanges"]
                 </button>
             </div>
@@ -38,8 +38,8 @@
 
 @if (_showNotification)
 {
-    <div class="auth-fixed auth-top-4 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-md auth-shadow-lg auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down">
-        <div class="auth-flex auth-items-center">
+    <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-lg auth-shadow-xl auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down auth-border auth-border-white/10">
+        <div class="auth-flex auth-items-center auth-font-medium">
             @if (_notificationClass.Contains("auth-bg-green")) { <i class="fa-solid fa-check-circle auth-mr-2"></i> }
             else { <i class="fa-solid fa-circle-info auth-mr-2"></i> }
             @_notificationMessage
@@ -47,19 +47,19 @@
     </div>
 }
 
-<div class="auth-px-4 auth-py-6 sm:auth-px-6 lg:auth-px-8 auth-bg-gray-50 dark:auth-bg-dark-bg auth-min-h-screen">
+<div class="auth-px-4 auth-py-8 sm:auth-px-6 lg:auth-px-8 auth-bg-gray-50 dark:auth-bg-dark-bg auth-min-h-screen">
     <div class="auth-max-w-4xl auth-mx-auto">
         
-        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-100 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
-            <div class="auth-px-8 auth-py-6 auth-border-b auth-border-gray-100 dark:auth-border-dark-border auth-bg-gray-50/50 dark:auth-bg-gray-800/50">
+        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-200 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
+            <div class="auth-px-8 auth-py-6 auth-border-b auth-border-gray-100 dark:auth-border-dark-border">
                 <div class="auth-flex auth-items-center auth-justify-between">
                     <div>
-                        <h3 class="auth-text-xl auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_ChangePassword"]</h3>
-                        <p class="auth-mt-2 auth-text-sm auth-text-gray-600 dark:auth-text-dark-muted">@Loc["Text_ChangePasswordDesc"]</p>
+                        <h3 class="auth-text-lg auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_ChangePassword"]</h3>
+                        <p class="auth-mt-1 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_ChangePasswordDesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0">
-                        <div class="auth-w-12 auth-h-12 auth-bg-blue-100 dark:auth-bg-blue-900/50 auth-rounded-xl auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-6 auth-h-6 auth-text-blue-600 dark:auth-text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-10 auth-h-10 auth-bg-blue-50 dark:auth-bg-blue-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
+                            <svg class="auth-w-5 auth-h-5 auth-text-blue-600 dark:auth-text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                             </svg>
                         </div>
@@ -71,51 +71,51 @@
                 <EditForm Model="@_passwordModel" OnValidSubmit="UpdatePassword">
                     <DataAnnotationsValidator />
                     
-                    <div class="auth-grid auth-grid-cols-1 auth-gap-6 lg:auth-grid-cols-2">
+                    <div class="auth-grid auth-grid-cols-1 auth-gap-y-6 auth-gap-x-8 lg:auth-grid-cols-2">
                         <div>
-                            <label class="auth-block auth-text-sm auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text auth-mb-3">
+                            <label class="auth-block auth-text-sm auth-font-semibold auth-text-gray-700 dark:auth-text-gray-300 auth-mb-2">
                                 @Loc["Label_CurrentPassword"] <span class="auth-text-red-500 auth-ml-1">*</span>
                             </label>
                             <div class="auth-relative">
                                 <input type="password" id="current-password" name="current-password"
                                        @bind="_passwordModel.CurrentPassword"
-                                       class="auth-block auth-w-full auth-px-4 auth-py-3 auth-text-gray-900 dark:auth-text-dark-text auth-placeholder-gray-500 dark:auth-placeholder-dark-muted auth-border auth-border-gray-200 dark:auth-border-dark-border auth-bg-white dark:auth-bg-gray-700 auth-rounded-xl auth-shadow-sm auth-transition-all auth-duration-200 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500 focus:auth-border-primary-500"
+                                       class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-text-gray-900 dark:auth-text-white auth-bg-white dark:auth-bg-gray-950 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
                                        placeholder="@Loc["Placeholder_CurrentPassword"]" />
                             </div>
                             <ValidationMessage For="@(() => _passwordModel.CurrentPassword)" class="auth-text-red-500 auth-text-xs auth-mt-1" />
                         </div>
 
                         <div>
-                            <label class="auth-block auth-text-sm auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text auth-mb-3">
+                            <label class="auth-block auth-text-sm auth-font-semibold auth-text-gray-700 dark:auth-text-gray-300 auth-mb-2">
                                 @Loc["Label_NewPassword"] <span class="auth-text-red-500 auth-ml-1">*</span>
                             </label>
                             <div class="auth-relative">
                                 <input type="password" id="new-password" name="new-password"
                                        @bind="_passwordModel.NewPassword"
-                                       class="auth-block auth-w-full auth-px-4 auth-py-3 auth-text-gray-900 dark:auth-text-dark-text auth-placeholder-gray-500 dark:auth-placeholder-dark-muted auth-border auth-border-gray-200 dark:auth-border-dark-border auth-bg-white dark:auth-bg-gray-700 auth-rounded-xl auth-shadow-sm auth-transition-all auth-duration-200 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500 focus:auth-border-primary-500"
+                                       class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-text-gray-900 dark:auth-text-white auth-bg-white dark:auth-bg-gray-950 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
                                        placeholder="@Loc["Placeholder_NewPassword"]" />
                             </div>
                             <ValidationMessage For="@(() => _passwordModel.NewPassword)" class="auth-text-red-500 auth-text-xs auth-mt-1" />
 
-                            <div class="auth-mt-3 auth-space-y-2">
+                            <div class="auth-mt-4 auth-space-y-3">
                                 <div class="auth-flex auth-justify-between auth-text-xs">
                                     <span class="auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Label_Strength"]</span>
-                                    <span id="strength-text" class="auth-font-medium auth-text-gray-500 dark:auth-text-dark-muted"></span>
+                                    <span id="strength-text" class="auth-font-medium auth-text-gray-700 dark:auth-text-gray-300"></span>
                                 </div>
-                                <div class="auth-w-full auth-bg-gray-200 dark:auth-bg-dark-border auth-rounded-full auth-h-2">
-                                    <div id="strength-bar" class="auth-bg-gray-300 dark:auth-bg-dark-border auth-h-2 auth-rounded-full auth-transition-all auth-duration-300" style="width: 0%"></div>
+                                <div class="auth-w-full auth-bg-gray-200 dark:auth-bg-gray-700 auth-rounded-full auth-h-1.5">
+                                    <div id="strength-bar" class="auth-bg-gray-300 dark:auth-bg-gray-600 auth-h-1.5 auth-rounded-full auth-transition-all auth-duration-300" style="width: 0%"></div>
                                 </div>
-                                <ul class="auth-text-xs auth-text-gray-500 dark:auth-text-dark-muted auth-space-y-1">
+                                <ul class="auth-text-xs auth-text-gray-500 dark:auth-text-gray-400 auth-space-y-1.5">
                                     <li id="length-check" class="auth-flex auth-items-center auth-transition-colors auth-duration-200">
-                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-dark-muted" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                         @Loc["Check_Length"]
                                     </li>
                                     <li id="uppercase-check" class="auth-flex auth-items-center auth-transition-colors auth-duration-200">
-                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-dark-muted" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                         @Loc["Check_Uppercase"]
                                     </li>
                                     <li id="special-check" class="auth-flex auth-items-center auth-transition-colors auth-duration-200">
-                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-dark-muted" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                        <svg class="auth-w-3 auth-h-3 auth-mr-2 auth-text-gray-300 dark:auth-text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                         @Loc["Check_Special"]
                                     </li>
                                 </ul>
@@ -123,16 +123,16 @@
                         </div>
                     </div>
                     
-                    <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center sm:auth-justify-between auth-pt-6 auth-border-t auth-border-gray-100 dark:auth-border-dark-border auth-mt-6">
+                    <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center sm:auth-justify-between auth-pt-6 auth-border-t auth-border-gray-100 dark:auth-border-dark-border auth-mt-8">
                         <div class="auth-flex auth-items-center auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted auth-mb-4 sm:auth-mb-0">
-                            <svg class="auth-w-4 auth-h-4 auth-mr-2 auth-text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                            <i class="fa-solid fa-lock auth-mr-2 auth-text-blue-500"></i>
                             @Loc["Text_UpdateInfo"]
                         </div>
                         <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-w-full sm:auth-w-auto">
-                            <button type="button" class="auth-w-full sm:auth-w-auto auth-px-6 auth-py-3 auth-text-sm auth-font-medium auth-text-gray-700 dark:auth-text-dark-text auth-bg-white dark:auth-bg-dark-card auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 auth-transition-all auth-duration-200">
+                            <button type="button" class="auth-w-full sm:auth-w-auto auth-px-5 auth-py-2.5 auth-text-sm auth-font-medium auth-text-gray-700 dark:auth-text-gray-200 auth-bg-white dark:auth-bg-gray-800 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 auth-transition-all">
                                 @Loc["Btn_Cancel"]
                             </button>
-                            <button type="submit" disabled="@_isSaving" class="auth-w-full sm:auth-w-auto auth-px-8 auth-py-3 auth-text-sm auth-font-semibold auth-text-white auth-bg-primary-600 auth-border auth-border-transparent auth-rounded-xl hover:auth-bg-primary-700 auth-transform hover:auth-scale-105 auth-transition-all auth-duration-200 auth-shadow-lg disabled:auth-opacity-50 disabled:auth-cursor-not-allowed">
+                            <button type="submit" disabled="@_isSaving" class="auth-w-full sm:auth-w-auto auth-px-6 auth-py-2.5 auth-text-sm auth-font-semibold auth-text-white auth-bg-primary-600 auth-border auth-border-transparent auth-rounded-lg hover:auth-bg-primary-700 focus:auth-outline-none auth-shadow-md auth-transform hover:auth-scale-[1.02] auth-transition-all disabled:auth-opacity-50">
                                 @if (_isSaving) { <span>@Loc["Btn_Updating"]</span> } else { <span>@Loc["Btn_UpdatePassword"]</span> }
                             </button>
                         </div>
@@ -141,16 +141,16 @@
             </div>
         </div>
 
-        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-100 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
+        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-200 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
             <div class="auth-px-8 auth-py-6 auth-border-b auth-border-gray-100 dark:auth-border-dark-border auth-bg-gray-50/50 dark:auth-bg-gray-800/50">
                 <div class="auth-flex auth-items-center auth-justify-between">
                     <div>
-                        <h3 class="auth-text-xl auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_2FA"]</h3>
-                        <p class="auth-mt-2 auth-text-sm auth-text-gray-600 dark:auth-text-dark-muted">@Loc["Text_2FADesc"]</p>
+                        <h3 class="auth-text-lg auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_2FA"]</h3>
+                        <p class="auth-mt-1 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_2FADesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0">
-                        <div class="auth-w-12 auth-h-12 auth-bg-green-100 dark:auth-bg-green-900/50 auth-rounded-xl auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-6 auth-h-6 auth-text-green-600 dark:auth-text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-10 auth-h-10 auth-bg-green-50 dark:auth-bg-green-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
+                            <svg class="auth-w-5 auth-h-5 auth-text-green-600 dark:auth-text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                             </svg>
                         </div>
@@ -159,33 +159,31 @@
             </div>
             
             <div class="auth-px-8 auth-py-8 auth-space-y-6">
-                <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center sm:auth-justify-between auth-p-6 auth-bg-gray-50 dark:auth-bg-gray-700/50 auth-rounded-xl">
+                <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center sm:auth-justify-between auth-p-5 auth-bg-gray-50 dark:auth-bg-gray-800/50 auth-rounded-xl auth-border auth-border-gray-100 dark:auth-border-gray-800">
                     <div class="auth-flex-1 auth-mb-4 sm:auth-mb-0">
                         <h5 class="auth-text-sm auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Enable2FA"]</h5>
-                        <p class="auth-text-sm auth-text-gray-600 dark:auth-text-dark-muted auth-mt-1">@Loc["Text_Enable2FADesc"]</p>
+                        <p class="auth-text-xs auth-text-gray-500 dark:auth-text-dark-muted auth-mt-1">@Loc["Text_Enable2FADesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0 sm:auth-ml-6">
-                        <button @onclick="OpenTwoFaDialog" class="auth-w-full sm:auth-w-auto auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-primary-700 dark:auth-text-primary-300 auth-bg-primary-100 dark:auth-bg-primary-900/50 auth-border auth-border-primary-300 dark:auth-border-primary-700 auth-rounded-lg hover:auth-bg-primary-200 dark:hover:auth-bg-primary-900/70 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 dark:focus:auth-ring-offset-gray-800 auth-transition-all auth-duration-200">
+                        <button @onclick="OpenTwoFaDialog" class="auth-w-full sm:auth-w-auto auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-primary-700 dark:auth-text-primary-300 auth-bg-primary-50 dark:auth-bg-primary-900/20 auth-border auth-border-primary-200 dark:auth-border-primary-800 auth-rounded-lg hover:auth-bg-primary-100 dark:hover:auth-bg-primary-900/40 auth-transition-all">
                             @Loc["Btn_Manage2FA"]
                         </button>
                     </div>
                 </div>
                 
-                <div class="auth-border auth-rounded-xl auth-p-4 @(_activeTwoFaMethods.Any() ? "auth-bg-green-50 dark:auth-bg-green-900/20 auth-border-green-200 dark:auth-border-green-800" : "auth-bg-red-50 dark:auth-bg-red-900/20 auth-border-red-200 dark:auth-border-red-800")">
+                <div class="auth-border auth-rounded-xl auth-p-4 @(_activeTwoFaMethods.Any() ? "auth-bg-green-50 dark:auth-bg-green-900/10 auth-border-green-200 dark:auth-border-green-900/30" : "auth-bg-red-50 dark:auth-bg-red-900/10 auth-border-red-200 dark:auth-border-red-900/30")">
                     <div class="auth-flex auth-items-start">
-                        <svg class="auth-w-5 auth-h-5 auth-mt-0.5 auth-mr-3 @(_activeTwoFaMethods.Any() ? "auth-text-green-500" : "auth-text-red-500")" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
+                        <i class="auth-mt-0.5 auth-mr-3 @(_activeTwoFaMethods.Any() ? "fa-solid fa-check-circle auth-text-green-500" : "fa-solid fa-circle-xmark auth-text-red-500")"></i>
                         <div>
                             @if (_activeTwoFaMethods.Any())
                             {
-                                <h6 class="auth-text-sm auth-font-medium auth-text-green-800 dark:auth-text-green-400">@Loc["Status_2FA_Enabled"]</h6>
-                                <p class="auth-text-sm auth-text-green-700 dark:auth-text-green-300 auth-mt-1">@string.Format(Loc["Status_2FA_Enabled_Desc"], _activeTwoFaMethods.Count)</p>
+                                <h6 class="auth-text-sm auth-font-bold auth-text-green-800 dark:auth-text-green-400">@Loc["Status_2FA_Enabled"]</h6>
+                                <p class="auth-text-xs auth-text-green-700 dark:auth-text-green-300 auth-mt-1">@string.Format(Loc["Status_2FA_Enabled_Desc"], _activeTwoFaMethods.Count)</p>
                             }
                             else
                             {
-                                <h6 class="auth-text-sm auth-font-medium auth-text-red-800 dark:auth-text-red-400">@Loc["Status_2FA_Disabled"]</h6>
-                                <p class="auth-text-sm auth-text-red-700 dark:auth-text-red-300 auth-mt-1">@Loc["Status_2FA_Disabled_Desc"]</p>
+                                <h6 class="auth-text-sm auth-font-bold auth-text-red-800 dark:auth-text-red-400">@Loc["Status_2FA_Disabled"]</h6>
+                                <p class="auth-text-xs auth-text-red-700 dark:auth-text-red-300 auth-mt-1">@Loc["Status_2FA_Disabled_Desc"]</p>
                             }
                         </div>
                     </div>
@@ -193,16 +191,16 @@
             </div>
         </div>
 
-        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-100 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
+        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-200 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
             <div class="auth-px-8 auth-py-6 auth-border-b auth-border-gray-100 dark:auth-border-dark-border auth-bg-gray-50/50 dark:auth-bg-gray-800/50">
                 <div class="auth-flex auth-items-center auth-justify-between">
                     <div>
-                        <h3 class="auth-text-xl auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Connected"]</h3>
-                        <p class="auth-mt-2 auth-text-sm auth-text-gray-600 dark:auth-text-dark-muted">@Loc["Text_ConnectedDesc"]</p>
+                        <h3 class="auth-text-lg auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Connected"]</h3>
+                        <p class="auth-mt-1 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_ConnectedDesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0">
-                        <div class="auth-w-12 auth-h-12 auth-bg-indigo-100 dark:auth-bg-indigo-900/50 auth-rounded-xl auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-6 auth-h-6 auth-text-indigo-600 dark:auth-text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-10 auth-h-10 auth-bg-indigo-50 dark:auth-bg-indigo-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
+                            <svg class="auth-w-5 auth-h-5 auth-text-indigo-600 dark:auth-text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                             </svg>
                         </div>
@@ -214,26 +212,26 @@
                 @if (_isLoadingProviders)
                 {
                     <div class="auth-flex auth-justify-center auth-p-4">
-                        <i class="fa-solid fa-circle-notch fa-spin auth-text-primary-500"></i>
+                        <i class="fa-solid fa-circle-notch fa-spin auth-text-primary-500 auth-text-2xl"></i>
                     </div>
                 }
                 else
                 {
                     @foreach (var provider in _providers)
                     {
-                        <div class="auth-flex auth-items-center auth-justify-between auth-p-4 auth-bg-white dark:auth-bg-gray-700/50 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl">
+                        <div class="auth-flex auth-items-center auth-justify-between auth-p-4 auth-bg-white dark:auth-bg-gray-900/50 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl">
                             <div class="auth-flex auth-items-center auth-space-x-4">
                                 <div class="auth-w-10 auth-h-10 @provider.BgClass auth-rounded-full auth-flex auth-items-center auth-justify-center auth-text-lg @provider.TextClass">
                                     <i class="@provider.Icon"></i>
                                 </div>
                                 <div>
-                                    <h5 class="auth-text-sm auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@provider.Name</h5>
+                                    <h5 class="auth-text-sm auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@provider.Name</h5>
                                     <p class="auth-text-xs auth-text-gray-500 dark:auth-text-dark-muted">
                                         @(provider.IsConnected ? Loc["Status_Connected"] : Loc["Status_NotConnected"])
                                     </p>
                                 </div>
                             </div>
-                            <button @onclick="() => ToggleProvider(provider)" class="auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-rounded-lg auth-transition-all auth-duration-200 @(provider.IsConnected ? "auth-text-red-600 dark:auth-text-red-400 auth-border auth-border-red-200 dark:auth-border-red-900/50 hover:auth-bg-red-50 dark:hover:auth-bg-red-900/20" : "auth-text-primary-600 dark:auth-text-primary-400 auth-border auth-border-primary-200 dark:auth-border-primary-900/50 hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/20")">
+                            <button @onclick="() => ToggleProvider(provider)" class="auth-px-4 auth-py-2 auth-text-xs auth-font-semibold auth-rounded-lg auth-transition-all auth-duration-200 @(provider.IsConnected ? "auth-text-red-600 dark:auth-text-red-400 auth-border auth-border-red-200 dark:auth-border-red-900/50 hover:auth-bg-red-50 dark:hover:auth-bg-red-900/20" : "auth-text-primary-600 dark:auth-text-primary-400 auth-border auth-border-primary-200 dark:auth-border-primary-900/50 hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/20")">
                                 @(provider.IsConnected ? Loc["Btn_Disconnect"] : Loc["Btn_Connect"])
                             </button>
                         </div>
@@ -248,15 +246,14 @@
 {
     <div class="auth-fixed auth-inset-0 auth-z-[9999] auth-overflow-y-auto" role="dialog" aria-modal="true">
         <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-p-4 auth-text-center">
-            <div class="auth-fixed auth-inset-0 auth-bg-gray-900 auth-bg-opacity-75 dark:auth-bg-black/85 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseTwoFaDialog"></div>
+            <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseTwoFaDialog"></div>
             
-            <div class="auth-relative auth-bg-white dark:auth-bg-dark-card auth-rounded-lg auth-shadow-xl auth-max-w-2xl auth-w-full auth-max-h-[90vh] auth-overflow-hidden auth-transition-colors auth-duration-300">
-                <div class="auth-px-6 auth-py-4 auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-flex auth-justify-between auth-items-center auth-bg-gray-50 dark:auth-bg-gray-700/50">
+            <div class="auth-relative auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-2xl auth-max-w-2xl auth-w-full auth-max-h-[90vh] auth-overflow-hidden auth-transition-colors auth-duration-300 auth-border auth-border-gray-200 dark:auth-border-dark-border">
+                
+                <div class="auth-px-6 auth-py-4 auth-border-b auth-border-gray-100 dark:auth-border-dark-border auth-flex auth-justify-between auth-items-center auth-bg-gray-50/50 dark:auth-bg-gray-800/50">
                     <h3 class="auth-text-lg auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Dialog_2FA_Title"]</h3>
-                    <button @onclick="CloseTwoFaDialog" class="auth-text-gray-400 hover:auth-text-gray-600 dark:hover:auth-text-dark-text focus:auth-outline-none auth-rounded-md">
-                        <svg class="auth-w-6 auth-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+                    <button @onclick="CloseTwoFaDialog" class="auth-text-gray-400 hover:auth-text-gray-600 dark:hover:auth-text-gray-200 focus:auth-outline-none">
+                        <i class="fa-solid fa-xmark auth-text-lg"></i>
                     </button>
                 </div>
                 
@@ -266,30 +263,30 @@
                         <div class="auth-space-y-3">
                             @foreach(var method in _activeTwoFaMethods)
                             {
-                                <div class="auth-bg-white dark:auth-bg-gray-700/50 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl auth-p-4 auth-flex auth-items-center auth-justify-between auth-shadow-sm">
+                                <div class="auth-bg-white dark:auth-bg-gray-700/30 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl auth-p-4 auth-flex auth-items-center auth-justify-between">
                                     <div class="auth-flex auth-items-center auth-gap-4">
                                         <div class="auth-w-10 auth-h-10 @method.BgClass auth-rounded-full auth-flex auth-items-center auth-justify-center @method.TextClass">
                                             @((MarkupString)method.IconSvg)
                                         </div>
-                                        <div>
+                                        <div class="auth-text-left">
                                             <h5 class="auth-text-sm auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc[method.NameKey]</h5>
                                             <p class="auth-text-xs auth-text-gray-500 dark:auth-text-dark-muted">@Loc[method.DescKey]</p>
                                         </div>
                                     </div>
                                     
                                     <div class="auth-flex auth-items-center auth-gap-2">
-                                        @if(method.Priority == 0) // 0 = Default
+                                        @if(method.Priority == 0)
                                         {
-                                            <span class="auth-hidden sm:auth-inline-block auth-px-2 auth-py-1 auth-text-xs auth-font-medium auth-bg-green-100 dark:auth-bg-green-900/50 auth-text-green-800 dark:auth-text-green-300 auth-rounded-full">@Loc["Badge_Default"]</span>
+                                            <span class="auth-hidden sm:auth-inline-block auth-px-2.5 auth-py-1 auth-text-xs auth-font-semibold auth-bg-green-100 dark:auth-bg-green-900/50 auth-text-green-700 dark:auth-text-green-300 auth-rounded-full">@Loc["Badge_Default"]</span>
                                         }
                                         else if(_activeTwoFaMethods.Count > 1)
                                         {
-                                            <button @onclick="() => SetDefaultTwoFa(method)" class="auth-hidden sm:auth-block auth-text-xs auth-font-medium auth-text-primary-600 hover:auth-text-primary-700 dark:auth-text-primary-400 dark:hover:auth-text-primary-300 auth-px-3 auth-py-1.5 auth-rounded-lg hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/30 auth-transition-colors">
+                                            <button @onclick="() => SetDefaultTwoFa(method)" class="auth-hidden sm:auth-block auth-text-xs auth-font-bold auth-text-primary-600 hover:auth-text-primary-700 dark:auth-text-primary-400 dark:hover:auth-text-primary-300 auth-px-3 auth-py-1.5 auth-rounded-lg hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/30 auth-transition-colors">
                                                 @Loc["Btn_SetDefault"]
                                             </button>
                                         }
                                         
-                                        <button @onclick="() => RemoveTwoFa(method)" class="auth-text-xs auth-font-medium auth-text-red-600 hover:auth-text-red-700 dark:auth-text-red-400 dark:hover:auth-text-red-300 auth-px-3 auth-py-1.5 auth-rounded-lg hover:auth-bg-red-50 dark:hover:auth-bg-red-900/30 auth-transition-colors">
+                                        <button @onclick="() => RemoveTwoFa(method)" class="auth-text-xs auth-font-bold auth-text-red-600 hover:auth-text-red-700 dark:auth-text-red-400 dark:hover:auth-text-red-300 auth-px-3 auth-py-1.5 auth-rounded-lg hover:auth-bg-red-50 dark:hover:auth-bg-red-900/30 auth-transition-colors">
                                             @Loc["Btn_Remove"]
                                         </button>
                                     </div>
@@ -305,17 +302,17 @@
                             <div class="auth-space-y-3">
                                 @foreach(var method in _availableTwoFaMethods)
                                 {
-                                    <div class="auth-bg-gray-50 dark:auth-bg-gray-700/30 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl auth-p-4 auth-flex auth-items-center auth-justify-between">
+                                    <div class="auth-bg-gray-50 dark:auth-bg-gray-800/30 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-rounded-xl auth-p-4 auth-flex auth-items-center auth-justify-between">
                                         <div class="auth-flex auth-items-center auth-gap-4">
                                             <div class="auth-w-10 auth-h-10 @method.BgClass auth-rounded-full auth-flex auth-items-center auth-justify-center @method.TextClass">
                                                 @((MarkupString)method.IconSvg)
                                             </div>
-                                            <div>
+                                            <div class="auth-text-left">
                                                 <h5 class="auth-text-sm auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc[method.NameKey]</h5>
                                                 <p class="auth-text-xs auth-text-gray-500 dark:auth-text-dark-muted">@Loc[method.DescKey]</p>
                                             </div>
                                         </div>
-                                        <button @onclick="() => AddTwoFa(method)" class="auth-text-xs auth-font-bold auth-text-primary-600 dark:auth-text-primary-400 auth-bg-white dark:auth-bg-gray-800 auth-border auth-border-gray-200 dark:auth-border-dark-border auth-px-3 auth-py-1.5 auth-rounded-lg auth-shadow-sm hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/20 auth-transition-colors">
+                                        <button @onclick="() => AddTwoFa(method)" class="auth-text-xs auth-font-bold auth-text-primary-600 dark:auth-text-primary-400 auth-bg-white dark:auth-bg-gray-700 auth-border auth-border-gray-200 dark:auth-border-gray-600 auth-px-3 auth-py-1.5 auth-rounded-lg auth-shadow-sm hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/20 auth-transition-colors">
                                             @Loc["Btn_Add"]
                                         </button>
                                     </div>
@@ -338,7 +335,6 @@
     // Notification
     private bool _showNotification = false;
     private string _notificationMessage = "";
-    // Prefix angepasst
     private string _notificationClass = "auth-bg-green-500 auth-text-white";
 
     // Listen
@@ -388,19 +384,17 @@
         }
         else if (!string.IsNullOrEmpty(error))
         {
-            // Prefix angepasst
             ShowNotification(Loc["Msg_ConnectFailed"], "auth-bg-red-500");
         }
         
-        // Definition der unterstützten UI Modelle mit Prefix-Klassen für Icons/Bg/Text
+        // Initialisierung der 2FA Methoden mit angepassten Klassen (Prefixes)
         _allSupportedMethods = new List<TwoFaUiModel>
         {
             new TwoFaUiModel 
             { 
                 MethodType = TwoFactorMethod.Email, 
                 NameKey = "Method_Email_Name", 
-                DescKey = "Method_Email_Desc",
-                // SVG Klassen angepasst: w-5 h-5 -> auth-w-5 auth-h-5
+                DescKey = "Method_Email_Desc", 
                 IconSvg = "<svg class='auth-w-5 auth-h-5' fill='currentColor' viewBox='0 0 20 20'><path d='M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z'></path><path d='M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z'></path></svg>",
                 BgClass = "auth-bg-orange-100 dark:auth-bg-orange-900/50",
                 TextClass = "auth-text-orange-600 dark:auth-text-orange-400"
@@ -410,7 +404,6 @@
                 MethodType = TwoFactorMethod.Sms, 
                 NameKey = "Method_SMS_Name", 
                 DescKey = "Method_SMS_Desc", 
-                // SVG Klassen angepasst
                 IconSvg = "<svg class='auth-w-5 auth-h-5' fill='currentColor' viewBox='0 0 20 20'><path d='M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z'></path></svg>",
                 BgClass = "auth-bg-green-100 dark:auth-bg-green-900/50",
                 TextClass = "auth-text-green-600 dark:auth-text-green-400"
@@ -426,7 +419,7 @@
     {
         _isLoadingProviders = true;
         _providers.Clear();
-        // Hier ebenfalls Prefixes für Bg/Text Klassen
+        // Updated Classes with auth- prefix
         _providers.Add(new ExternalProvider { Name = "Google",   LoginProvider = "Google",   Icon = "fa-brands fa-google",   BgClass = "auth-bg-red-100 dark:auth-bg-red-900/50",   TextClass = "auth-text-red-600 dark:auth-text-red-400" });
         _providers.Add(new ExternalProvider { Name = "GitHub",   LoginProvider = "GitHub",   Icon = "fa-brands fa-github",   BgClass = "auth-bg-gray-100 dark:auth-bg-gray-700",     TextClass = "auth-text-gray-800 dark:auth-text-gray-200" });
         _providers.Add(new ExternalProvider { Name = "Facebook", LoginProvider = "Facebook", Icon = "fa-brands fa-facebook", BgClass = "auth-bg-blue-100 dark:auth-bg-blue-900/50", TextClass = "auth-text-blue-600 dark:auth-text-blue-400" });
@@ -457,10 +450,8 @@
             if (result.Success) 
             {
                 provider.IsConnected = false;
-                // Prefix angepasst
                 ShowNotification(string.Format(Loc["Msg_ProviderDisconnected"], provider.Name), "auth-bg-blue-500");
             }
-            // Prefix angepasst
             else ShowNotification(result.ErrorMessage ?? Loc["Msg_DisconnectFailed"], "auth-bg-red-500");
         }
         else
@@ -525,11 +516,9 @@
         var result = await DataService.AddOrUpdateAsync(request);
         if(result.Success)
         {
-            // Prefix angepasst
             ShowNotification(Loc["Msg_MethodAdded"], "auth-bg-green-500");
             await LoadTwoFaStatus();
         }
-        // Prefix angepasst
         else ShowNotification(result.ErrorMessage ?? Loc["Msg_AddFailed"], "auth-bg-red-500");
     }
 
@@ -539,11 +528,9 @@
         var result = await DataService.RemoveAsync(request);
         if(result.Success)
         {
-             // Prefix angepasst
              ShowNotification(Loc["Msg_MethodRemoved"], "auth-bg-blue-500");
              await LoadTwoFaStatus();
         }
-        // Prefix angepasst
         else ShowNotification(result.ErrorMessage ?? Loc["Msg_RemoveFailed"], "auth-bg-red-500");
     }
 
@@ -559,11 +546,9 @@
         var result = await DataService.AddOrUpdateAsync(request);
         if(result.Success)
         {
-             // Prefix angepasst
              ShowNotification(Loc["Msg_DefaultUpdated"], "auth-bg-green-500");
              await LoadTwoFaStatus();
         }
-        // Prefix angepasst
         else ShowNotification(result.ErrorMessage ?? Loc["Msg_DefaultFailed"], "auth-bg-red-500");
     }
 
@@ -576,13 +561,11 @@
         
         if (result.Success)
         {
-            // Prefix angepasst
             ShowNotification(Loc["Msg_PasswordUpdated"], "auth-bg-green-500");
             _passwordModel = new();
         }
         else
         {
-            // Prefix angepasst
             ShowNotification(result.ErrorMessage ?? Loc["Msg_PasswordUpdateFailed"], "auth-bg-red-500");
         }
     }
@@ -594,7 +577,6 @@
     private void ShowNotification(string message, string cssClass)
     {
         _notificationMessage = message;
-        // String Concatenation behalten, cssClass hat bereits prefix
         _notificationClass = cssClass + " auth-text-white";
         _showNotification = true;
         StateHasChanged();
@@ -602,7 +584,7 @@
     }
     
     // Klassen für UI
-    public class SessionModel { /* Mock bleibt */ public int Id { get; set; } public string DeviceName { get; set; } = ""; public string IpAddress { get; set; } = ""; public string Location { get; set; } = ""; public string LastActive { get; set; } = ""; public bool IsCurrent { get; set; } public string Icon { get; set; } = ""; public string BgColor { get; set; } = ""; public string IconColor { get; set; } = ""; }
+    public class SessionModel { public int Id { get; set; } public string DeviceName { get; set; } = ""; public string IpAddress { get; set; } = ""; public string Location { get; set; } = ""; public string LastActive { get; set; } = ""; public bool IsCurrent { get; set; } public string Icon { get; set; } = ""; public string BgColor { get; set; } = ""; public string IconColor { get; set; } = ""; }
     
     public class ExternalProvider 
     { 
@@ -618,8 +600,8 @@
     public class TwoFaUiModel
     {
         public TwoFactorMethod MethodType { get; set; }
-        public string NameKey { get; set; } = ""; // Resource Key statt Hardcoded String
-        public string DescKey { get; set; } = ""; // Resource Key statt Hardcoded String
+        public string NameKey { get; set; } = ""; 
+        public string DescKey { get; set; } = ""; 
         public bool IsEnabled { get; set; }
         public int Priority { get; set; }
         public bool IsDefault => Priority == 0;

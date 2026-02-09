@@ -4,6 +4,7 @@ using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Authify.Application.Services;
 
@@ -14,14 +15,16 @@ public class UserService<TUser> : IUserService
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _infrastructureOptions;
     private readonly IEnumerable<IUserRegistrationHook> _registrationHooks;
+    private readonly ILogger<UserService<TUser>> _logger;
 
     public UserService(UserManager<TUser> userManager, IEmailSender emailSender,
-        InfrastructureOptions infrastructureOptions, IEnumerable<IUserRegistrationHook> registrationHooks)
+        InfrastructureOptions infrastructureOptions, IEnumerable<IUserRegistrationHook> registrationHooks, ILogger<UserService<TUser>> logger)
     {
         _userManager = userManager;
         _emailSender = emailSender;
         _infrastructureOptions = infrastructureOptions;
         _registrationHooks = registrationHooks;
+        _logger = logger; 
     }
 
     public async Task<OperationResult> RegisterAsync(RegisterRequest request)
@@ -41,7 +44,8 @@ public class UserService<TUser> : IUserService
 
         if (!result.Succeeded)
             return OperationResult.Fail(string.Join(", ", result.Errors.Select(e => e.Description)));
-
+        
+        
         foreach (var hook in _registrationHooks)
         {
             try
