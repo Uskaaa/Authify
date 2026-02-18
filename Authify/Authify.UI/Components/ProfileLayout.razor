@@ -24,9 +24,9 @@
                 <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span></span>
             </a>
 
-            <label for="profile-mobile-toggle" class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors" @onclick="ToggleMobileMenu">
+            <button type="button" class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors" @onclick="ToggleMobileMenu">
                 <i class="fa-solid fa-xmark auth-text-lg"></i>
-            </label>
+            </button>
         </div>
 
         <ProfileNavMenu />
@@ -37,9 +37,9 @@
         
         <header class="lg:auth-hidden auth-h-16 auth-bg-white dark:auth-bg-slate-900 auth-border-b auth-border-gray-200 dark:auth-border-slate-800 auth-flex auth-items-center auth-justify-between auth-px-4 auth-sticky auth-top-0 auth-z-30">
             <div class="auth-flex auth-items-center auth-gap-3">
-                <label for="profile-mobile-toggle" class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer" @onclick="ToggleMobileMenu">
+                <button type="button" class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer" @onclick="ToggleMobileMenu">
                     <i class="fa-solid fa-bars auth-text-xl"></i>
-                </label>
+                </button>
                 
                 <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
                     Authify
