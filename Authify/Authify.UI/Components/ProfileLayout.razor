@@ -3,26 +3,28 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
-<div class="auth-min-h-screen auth-bg-gray-50 dark:auth-bg-slate-950 auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-flex auth-flex-col lg:auth-flex-row auth-overflow-hidden auth-transition-colors auth-duration-300">
+<div class="auth-h-screen auth-bg-gray-50 dark:auth-bg-slate-950 auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-flex auth-flex-col lg:auth-flex-row auth-overflow-hidden auth-transition-colors auth-duration-300">
 
-    <input type="checkbox" id="profile-mobile-toggle" class="auth-peer auth-sr-only" />
+    @* Backdrop overlay *@
+    <div id="profile-mobile-backdrop" 
+         class="auth-fixed auth-inset-0 auth-z-40 auth-bg-slate-900/60 auth-backdrop-blur-sm auth-hidden lg:auth-hidden auth-transition-opacity auth-cursor-pointer"
+         @onclick="ToggleMobileMenu">
+    </div>
 
-    <label for="profile-mobile-toggle" 
-           class="auth-fixed auth-inset-0 auth-z-40 auth-bg-slate-900/60 auth-backdrop-blur-sm auth-hidden auth-peer-checked:auth-block lg:auth-hidden auth-transition-opacity auth-cursor-pointer">
-    </label>
-
-    <aside class="auth-fixed lg:auth-sticky auth-top-0 auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-slate-900 auth-border-r auth-border-gray-200 dark:auth-border-slate-800 auth-h-screen auth-transition-transform auth-duration-300 auth-ease-in-out auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none 
-                  -auth-translate-x-full auth-peer-checked:auth-translate-x-0 lg:auth-translate-x-0">
+    @* Sidebar *@
+    <aside id="profile-mobile-sidebar" 
+           class="auth-fixed lg:auth-sticky auth-top-0 auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-slate-900 auth-border-r auth-border-gray-200 dark:auth-border-slate-800 auth-h-screen auth-transition-transform auth-duration-300 auth-ease-in-out auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none 
+                   -auth-translate-x-full lg:auth-translate-x-0">
 
         <div class="auth-h-16 auth-flex auth-items-center auth-justify-between lg:auth-justify-center auth-px-6 auth-border-b auth-border-gray-100 dark:auth-border-slate-800/50 auth-flex-shrink-0">
-            <div class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer" @onclick='() => NavigationManager.NavigateTo("/")'>
+            <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
                 <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br auth-from-primary-500 auth-to-indigo-700 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20">
                     <i class="fa-solid fa-server auth-text-xs"></i>
                 </div>
                 <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span></span>
-            </div>
+            </a>
 
-            <label for="profile-mobile-toggle" class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors">
+            <label for="profile-mobile-toggle" class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors" @onclick="ToggleMobileMenu">
                 <i class="fa-solid fa-xmark auth-text-lg"></i>
             </label>
         </div>
@@ -35,7 +37,7 @@
         
         <header class="lg:auth-hidden auth-h-16 auth-bg-white dark:auth-bg-slate-900 auth-border-b auth-border-gray-200 dark:auth-border-slate-800 auth-flex auth-items-center auth-justify-between auth-px-4 auth-sticky auth-top-0 auth-z-30">
             <div class="auth-flex auth-items-center auth-gap-3">
-                <label for="profile-mobile-toggle" class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer">
+                <label for="profile-mobile-toggle" class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer" @onclick="ToggleMobileMenu">
                     <i class="fa-solid fa-bars auth-text-xl"></i>
                 </label>
                 
@@ -45,15 +47,15 @@
             </div>
         </header>
 
-        <main class="auth-flex-1 auth-w-full auth-h-full auth-overflow-y-auto auth-overscroll-y-auto custom-scrollbar auth-relative">
-            <div class="auth-min-h-full auth-flex auth-flex-col">
-                @Body
-            </div>
+        <main class="auth-flex-1 auth-overflow-y-auto auth-overscroll-y-auto custom-scrollbar auth-relative" style="-webkit-overflow-scrolling: touch;">
+            @Body
         </main>
     </div>
 </div>
 
 @code {
+    private bool isMobileMenuOpen = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -61,5 +63,33 @@
             // Stellt sicher, dass das Theme gesetzt wird, wenn man direkt auf eine Profil-URL zugreift
             try { await JS.InvokeVoidAsync("applyTheme"); } catch { }
         }
+    }
+
+    private async Task ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+        
+        try
+        {
+            if (isMobileMenuOpen)
+            {
+                await JS.InvokeVoidAsync("eval", @"
+                    document.getElementById('profile-mobile-sidebar').classList.remove('-auth-translate-x-full');
+                    document.getElementById('profile-mobile-sidebar').classList.add('auth-translate-x-0');
+                    document.getElementById('profile-mobile-backdrop').classList.remove('auth-hidden');
+                    document.getElementById('profile-mobile-backdrop').classList.add('auth-block');
+                ");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("eval", @"
+                    document.getElementById('profile-mobile-sidebar').classList.add('-auth-translate-x-full');
+                    document.getElementById('profile-mobile-sidebar').classList.remove('auth-translate-x-0');
+                    document.getElementById('profile-mobile-backdrop').classList.add('auth-hidden');
+                    document.getElementById('profile-mobile-backdrop').classList.remove('auth-block');
+                ");
+            }
+        }
+        catch { }
     }
 }
