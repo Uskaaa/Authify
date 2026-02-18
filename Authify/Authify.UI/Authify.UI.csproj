@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <None Include="wwwroot\js\otp.js" />
+      <None Include="wwwroot\js\authify-layout.js" />
     </ItemGroup>
 
     <ItemGroup>

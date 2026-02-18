@@ -47,7 +47,7 @@
             </div>
         </header>
 
-        <main class="auth-flex-1 auth-overflow-y-auto auth-overscroll-y-auto custom-scrollbar auth-relative" style="-webkit-overflow-scrolling: touch;">
+        <main class="auth-flex-1 auth-overflow-y-auto auth-overscroll-y-auto custom-scrollbar auth-relative profile-body">
             @Body
         </main>
     </div>
@@ -71,25 +71,17 @@
         
         try
         {
-            if (isMobileMenuOpen)
-            {
-                await JS.InvokeVoidAsync("eval", @"
-                    document.getElementById('profile-mobile-sidebar').classList.remove('-auth-translate-x-full');
-                    document.getElementById('profile-mobile-sidebar').classList.add('auth-translate-x-0');
-                    document.getElementById('profile-mobile-backdrop').classList.remove('auth-hidden');
-                    document.getElementById('profile-mobile-backdrop').classList.add('auth-block');
-                ");
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("eval", @"
-                    document.getElementById('profile-mobile-sidebar').classList.add('-auth-translate-x-full');
-                    document.getElementById('profile-mobile-sidebar').classList.remove('auth-translate-x-0');
-                    document.getElementById('profile-mobile-backdrop').classList.add('auth-hidden');
-                    document.getElementById('profile-mobile-backdrop').classList.remove('auth-block');
-                ");
-            }
+            await JS.InvokeVoidAsync("authify.toggleMobileMenu", isMobileMenuOpen);
         }
-        catch { }
+        catch
+        {
+            // Fallback if JS is not available
+        }
     }
 }
+
+<style>
+    .profile-body {
+        -webkit-overflow-scrolling: touch;
+    }
+</style>
