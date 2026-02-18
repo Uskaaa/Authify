@@ -3,6 +3,8 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
 <div class="auth-h-screen auth-bg-gray-50 dark:auth-bg-slate-950 auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-flex auth-flex-col lg:auth-flex-row auth-overflow-hidden auth-transition-colors auth-duration-300">
 
     @* Backdrop overlay *@
