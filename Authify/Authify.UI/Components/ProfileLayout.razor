@@ -3,26 +3,30 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
-<div class="auth-min-h-screen auth-bg-gray-50 dark:auth-bg-slate-950 auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-flex auth-flex-col lg:auth-flex-row auth-overflow-hidden auth-transition-colors auth-duration-300">
+<div class="auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-transition-colors auth-duration-300">
 
-    <input type="checkbox" id="profile-mobile-toggle" class="auth-peer auth-sr-only" />
+    <input type="checkbox" id="mobile-menu-toggle" class="auth-hidden" />
 
-    <label for="profile-mobile-toggle" 
-           class="auth-fixed auth-inset-0 auth-z-40 auth-bg-slate-900/60 auth-backdrop-blur-sm auth-hidden auth-peer-checked:auth-block lg:auth-hidden auth-transition-opacity auth-cursor-pointer">
+    <label for="mobile-menu-toggle" id="profile-mobile-backdrop"
+           class="auth-fixed auth-inset-0 auth-z-40 auth-bg-slate-900/60 auth-backdrop-blur-sm auth-hidden auth-pointer-events-none lg:auth-hidden auth-transition-opacity"
+           aria-label="Close mobile menu">
     </label>
 
-    <aside class="auth-fixed lg:auth-sticky auth-top-0 auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-slate-900 auth-border-r auth-border-gray-200 dark:auth-border-slate-800 auth-h-screen auth-transition-transform auth-duration-300 auth-ease-in-out auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none 
-                  -auth-translate-x-full auth-peer-checked:auth-translate-x-0 lg:auth-translate-x-0">
+    <aside id="profile-mobile-sidebar"
+           class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-slate-900 auth-border-r auth-border-gray-200 dark:auth-border-slate-800 auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full lg:auth-translate-x-0 auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none">
 
         <div class="auth-h-16 auth-flex auth-items-center auth-justify-between lg:auth-justify-center auth-px-6 auth-border-b auth-border-gray-100 dark:auth-border-slate-800/50 auth-flex-shrink-0">
-            <div class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer" @onclick='() => NavigationManager.NavigateTo("/")'>
+            <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
                 <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br auth-from-primary-500 auth-to-indigo-700 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20">
                     <i class="fa-solid fa-server auth-text-xs"></i>
                 </div>
-                <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span></span>
-            </div>
-
-            <label for="profile-mobile-toggle" class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors">
+                <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
+                    Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span>
+                </span>
+            </a>
+            <label for="mobile-menu-toggle"
+                   class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors"
+                   aria-label="Close menu">
                 <i class="fa-solid fa-xmark auth-text-lg"></i>
             </label>
         </div>
@@ -31,26 +35,23 @@
 
     </aside>
 
-    <div class="auth-flex-1 auth-flex auth-flex-col auth-min-w-0 auth-bg-gray-50 dark:auth-bg-slate-950">
-        
-        <header class="lg:auth-hidden auth-h-16 auth-bg-white dark:auth-bg-slate-900 auth-border-b auth-border-gray-200 dark:auth-border-slate-800 auth-flex auth-items-center auth-justify-between auth-px-4 auth-sticky auth-top-0 auth-z-30">
-            <div class="auth-flex auth-items-center auth-gap-3">
-                <label for="profile-mobile-toggle" class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer">
-                    <i class="fa-solid fa-bars auth-text-xl"></i>
-                </label>
-                
-                <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
-                    Authify
-                </span>
-            </div>
-        </header>
+    <header class="auth-fixed auth-top-0 auth-right-0 auth-left-0 lg:auth-left-64 auth-h-16 auth-bg-white dark:auth-bg-slate-900 auth-border-b auth-border-gray-200 dark:auth-border-slate-800 auth-flex auth-items-center auth-justify-between auth-px-4 auth-z-30 lg:auth-hidden">
+        <div class="auth-flex auth-items-center auth-gap-3">
+            <label for="mobile-menu-toggle"
+                   class="auth-p-2 auth--ml-2 auth-text-slate-500 hover:auth-text-slate-700 dark:auth-text-slate-400 dark:hover:auth-text-white auth-rounded-lg hover:auth-bg-slate-100 dark:hover:auth-bg-slate-800 auth-transition-colors auth-cursor-pointer"
+                   aria-label="Open menu">
+                <i class="fa-solid fa-bars auth-text-xl"></i>
+            </label>
+            <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
+                Authify
+            </span>
+        </div>
+    </header>
 
-        <main class="auth-flex-1 auth-w-full auth-h-full auth-overflow-y-auto auth-overscroll-y-auto custom-scrollbar auth-relative">
-            <div class="auth-min-h-full auth-flex auth-flex-col">
-                @Body
-            </div>
-        </main>
-    </div>
+    <main class="lg:auth-ml-64 auth-pt-16 lg:auth-pt-0 auth-min-h-screen auth-bg-gray-50 dark:auth-bg-slate-950">
+        @Body
+    </main>
+
 </div>
 
 @code {
@@ -58,8 +59,20 @@
     {
         if (firstRender)
         {
-            // Stellt sicher, dass das Theme gesetzt wird, wenn man direkt auf eine Profil-URL zugreift
             try { await JS.InvokeVoidAsync("applyTheme"); } catch { }
         }
     }
 }
+
+<style>
+    #mobile-menu-toggle:checked ~ #profile-mobile-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+        display: block;
+        cursor: pointer;
+    }
+
+    #mobile-menu-toggle:checked ~ #profile-mobile-sidebar {
+        transform: translateX(0);
+    }
+</style>

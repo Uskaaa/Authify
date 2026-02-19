@@ -58,15 +58,17 @@
 }
 
 <style>
-    /* ACTIVE STATE (LIGHT) */
+    /* =========================
+       ACTIVE STATE (LIGHT)
+    ========================== */
+
     .active {
-        background-color: rgb(248 250 252) !important; /* slate-50 */
+        background-color: rgb(248 250 252); /* slate-50 */
         color: rgb(15 23 42) !important;    /* slate-900 */
     }
     
-    /* Hover Fix: Bleibt hell */
     .active:hover {
-        background-color: rgb(241 245 249) !important; /* slate-100 */
+        background-color: rgb(241 245 249); /* slate-100 */
     }
 
     .active i {
@@ -77,18 +79,22 @@
         opacity: 1;
     }
 
-    /* ACTIVE STATE (DARK) */
-    :global(.dark) .active {
-        background-color: rgba(30, 41, 59, 0.5) !important; /* slate-800/50 */
-        color: rgb(248 250 252) !important;      /* slate-50 */
+
+    /* =========================
+       ACTIVE STATE (DARK)
+       wichtig: :global wegen CSS-Isolation
+    ========================== */
+
+    .dark .active {
+        background-color: rgba(30, 41, 59, 0.5) !important;
+        color: rgb(241 245 249) !important;
     }
 
-    /* Hover Fix Dark */
-    :global(.dark) .active:hover {
+    .dark .active:hover {
         background-color: rgba(30, 41, 59, 0.8) !important;
     }
-    
-    :global(.dark) .active i {
-        color: rgb(129 140 248) !important;      /* primary-400 */
+
+    .dark .active i {
+        color: rgb(129 140 248) !important;
     }
 </style>
