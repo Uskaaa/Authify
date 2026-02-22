@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @inject IStringLocalizer<Login> Loc
 
-<RedirectToHomeIfAuthenticated />
+<RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
 <div class="login-container">
     <div class="content-wrapper">
@@ -100,11 +100,15 @@
     private bool _isLoading;
     private bool _showPassword;
     private string? _errorMessage;
+    private string? _returnUrl;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        _returnUrl = queryParams.GetValueOrDefault("returnUrl").ToString();
+        if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
+
         if (uri.Fragment.Length > 1)
         {
             var fragmentString = uri.Fragment.Substring(1); 
@@ -115,14 +119,17 @@
 
             if (string.IsNullOrEmpty(refreshToken))
             {
-                NavigationManager.NavigateTo("/otp?token=" + (accessToken ?? ""));
+                var otpUrl = "/otp?token=" + (accessToken ?? "");
+                if (!string.IsNullOrEmpty(_returnUrl))
+                    otpUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                NavigationManager.NavigateTo(otpUrl);
             }
             
             if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
             {
                 await DataService.StoreTokensFromExternalAuth(accessToken, refreshToken);
                 
-                NavigationManager.NavigateTo("/", forceLoad: true);
+                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
             }
         }
     }
@@ -147,22 +154,28 @@
             {
                 if (string.IsNullOrEmpty(loginResponse.RefreshToken))
                 {
-                    NavigationManager.NavigateTo("/otp?token=" + (loginResponse.AccessToken ?? ""));
+                    var otpUrl = "/otp?token=" + (loginResponse.AccessToken ?? "");
+                    if (!string.IsNullOrEmpty(_returnUrl))
+                        otpUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                    NavigationManager.NavigateTo(otpUrl);
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/");
+                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
                 }
             }
             else if (loginResponse.ResultKind == LoginResultKind.Cookie)
             {
                 if (!loginResponse.CookieSet && !string.IsNullOrEmpty(loginResponse.AccessToken))
                 {
-                    NavigationManager.NavigateTo("/otp?token=" + loginResponse.AccessToken);
+                    var otpUrl = "/otp?token=" + loginResponse.AccessToken;
+                    if (!string.IsNullOrEmpty(_returnUrl))
+                        otpUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                    NavigationManager.NavigateTo(otpUrl);
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/");
+                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
                 }
             }
         }
@@ -180,11 +193,13 @@
 
     private void GoogleOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/login&mode=login", forceLoad: true);
+        var callbackUrl = "/login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : "");
+        NavigationManager.NavigateTo($"/auth/external-login?provider=Google&returnUrl={Uri.EscapeDataString(callbackUrl)}&mode=login", forceLoad: true);
     }
 
     private void GitHubOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/login&mode=login", forceLoad: true);
+        var callbackUrl = "/login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : "");
+        NavigationManager.NavigateTo($"/auth/external-login?provider=GitHub&returnUrl={Uri.EscapeDataString(callbackUrl)}&mode=login", forceLoad: true);
     }
 }

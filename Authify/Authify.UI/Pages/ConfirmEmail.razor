@@ -30,7 +30,7 @@
                             @Loc["Text_Instruction"]
                         </p>
                         <div class="auth-stack">
-                            <a href="login" class="btn btn-outline">@Loc["Btn_BackToLogin"]</a>
+                            <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))" class="btn btn-outline">@Loc["Btn_BackToLogin"]</a>
                         </div>
                     </div>
                     break;
@@ -82,6 +82,7 @@
     private ConfirmStatus _status = ConfirmStatus.Instruction;
     private string _email = "";
     private EmailConfirmationRequest _request = new();
+    private string? _returnUrl;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -100,6 +101,8 @@
         var userId = query.GetValueOrDefault("userId").ToString();
         var token = query.GetValueOrDefault("token").ToString();
         _email = query.GetValueOrDefault("email").ToString() ?? "your email";
+        _returnUrl = query.GetValueOrDefault("returnUrl").ToString();
+        if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
 
         // 2. Entscheidung: Instruktion oder Verifikation?
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
@@ -139,6 +142,9 @@
 
     private void NavigateToLogin()
     {
-        NavigationManager.NavigateTo("/login");
+        var loginUrl = "/login";
+        if (!string.IsNullOrEmpty(_returnUrl))
+            loginUrl += "?returnUrl=" + Uri.EscapeDataString(_returnUrl);
+        NavigationManager.NavigateTo(loginUrl);
     }
 }

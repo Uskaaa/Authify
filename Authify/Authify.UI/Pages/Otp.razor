@@ -75,7 +75,7 @@
                 </div> </EditForm>
             
             <p class="auth-footer">
-                <a href="login">@Loc["Link_BackToLogin"]</a>
+                <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))">@Loc["Link_BackToLogin"]</a>
             </p>
         </div>
     </div>
@@ -98,12 +98,15 @@
     private bool _isResending = false;
     private bool _error = false;
     private int _timeLeft = 60; // Sekunden für Countdown
+    private string? _returnUrl;
 
     protected override Task OnInitializedAsync()
     {
         var uri = new Uri(NavigationManager.Uri);
         var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
         _request.Token = query.GetValueOrDefault("token")!;
+        _returnUrl = query.GetValueOrDefault("returnUrl").ToString();
+        if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
         
         StartTimer();
         
@@ -188,7 +191,7 @@
         if (jwtResult.Success)
         {
             _error = false;
-            NavigationManager.NavigateTo("/", forceLoad: true);
+            NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
         }
         else
         {
@@ -197,7 +200,7 @@
             if (cookieResult.Success)
             {
                 _error = false;
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
             }
             else
             {
