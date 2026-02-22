@@ -1,8 +1,6 @@
 using System.Security.Claims;
-using Authify.Application.Data;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -12,19 +10,16 @@ namespace Authify.Api.Controllers;
 [Route("oidc")]
 public class OidcProviderController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
-    private readonly IJwtTokenService _jwtService; // Dein existierender Service
+    private readonly IJwtTokenService _jwtService;
 
     // Simpler In-Memory Cache für Auth Codes (in Produktion Redis nutzen!)
     private static readonly Dictionary<string, string> _authCodes = new();
 
     public OidcProviderController(
-        UserManager<ApplicationUser> userManager, 
         IConfiguration config,
         IJwtTokenService jwtService)
     {
-        _userManager = userManager;
         _config = config;
         _jwtService = jwtService;
     }
@@ -138,16 +133,17 @@ public class OidcProviderController : ControllerBase
     [HttpGet("userinfo")]
     public async Task<IActionResult> UserInfo()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var user = await _userManager.FindByIdAsync(userId!);
-        
-        if (user == null) return Unauthorized();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? User.FindFirstValue("email");
+        var name = User.FindFirstValue(ClaimTypes.Name) ?? User.FindFirstValue("name") ?? email;
+
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         return Ok(new
         {
-            sub = user.Id,
-            name = user.UserName,
-            email = user.Email,
+            sub = userId,
+            name = name ?? "PrivateAI User",
+            email = email ?? $"{userId}@privateai.local",
             email_verified = true
         });
     }
