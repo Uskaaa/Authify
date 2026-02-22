@@ -1,0 +1,70 @@
+/* authify-theme.css */
+
+/* --- Light Mode (Standard) --- */
+:root {
+    /* Primary: Entspricht 'primary-600' aus deiner Config (#4f46e5).
+       Das ist die gleiche Farbe wie die Buttons auf deiner Landing Page.
+    */
+    --auth-primary: #4f46e5;
+
+    /* Hover: Entspricht 'primary-700' (#4338ca) */
+    --auth-primary-hover: #4338ca;
+
+    /* Background: Entspricht 'primary-50' (#eef2ff).
+       Das gibt der Auth-Seite einen ganz leichten violetten Stich, passend zur Brand.
+       Alternativ 'slate-50' (#f8fafc) für reines Grau.
+    */
+    --auth-bg: #eef2ff;
+
+    /* Card Background: Weiß */
+    --auth-card-bg: #ffffff;
+
+    /* Text: Entspricht 'slate-900' (#0f172a) */
+    --auth-text: #0f172a;
+
+    /* Muted Text: Entspricht 'slate-500' (#64748b) - Standard Slate Wert */
+    --auth-text-muted: #64748b;
+
+    /* Inputs */
+    --auth-input-bg: #ffffff;
+    --auth-border: #e2e8f0;        /* Slate-200 */
+
+    /* Status Farben (können Standard bleiben oder angepasst werden) */
+    --auth-error: #ef4444;
+    --auth-success: #10b981;
+
+    --auth-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Dark Mode --- */
+:root.dark {
+    /* Primary im Dark Mode: Wir bleiben bei 'primary-600' (#4f46e5) 
+       oder nutzen 'primary-500' (#6366f1) für etwas mehr Leuchtkraft auf dunklem Grund.
+       Hier: primary-500 für besseren Kontrast.
+    */
+    --auth-primary: #6366f1;
+    --auth-primary-hover: #4f46e5; /* primary-600 */
+
+    /* Background: Entspricht 'slate-950' (#020617) aus deiner Config.
+       Das ist dein "Fast Schwarz".
+    */
+    --auth-bg: #020617;
+
+    /* Card Background: Entspricht 'slate-900' (#0f172a).
+       Hebt sich leicht vom 950er Hintergrund ab.
+    */
+    --auth-card-bg: #0f172a;
+
+    /* Text: Weiß oder helles Slate */
+    --auth-text: #f8fafc;          /* Slate-50 */
+    --auth-text-muted: #94a3b8;    /* Slate-400 */
+
+    /* Inputs im Dark Mode */
+    /* Wir nutzen hier Slate-950 (#020617), damit das Input-Feld "tiefer" wirkt als die Karte */
+    --auth-input-bg: #020617;
+
+    /* Border: Entspricht 'slate-800' (#1e293b) - Standard Slate Wert */
+    --auth-border: #1e293b;
+
+    --auth-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}

@@ -28,7 +28,7 @@ public class OidcProviderController : ControllerBase
     [HttpGet(".well-known/openid-configuration")]
     public IActionResult GetConfiguration()
     {
-        var domain = _config["App:Domain"]; 
+        var domain = _config["App:Domain"];
         return Ok(new
         {
             issuer = _config["Jwt:Issuer"],
@@ -53,8 +53,7 @@ public class OidcProviderController : ControllerBase
         <body>
             <h3>Authenticating via SimpliAI...</h3>
             <script>
-                // KEY ANPASSEN: Wie heißt dein Token im LocalStorage? (z.B. 'authToken', 'access_token')
-                const token = localStorage.getItem('authToken'); 
+                const token = localStorage.getItem('auth_access_token'); 
 
                 if (!token) {{
                     // Nicht eingeloggt -> Redirect zum Login
