@@ -133,16 +133,28 @@ public class OidcProviderController : ControllerBase
 
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("authorize-api")] 
-    public IActionResult AuthorizeApi([FromQuery] string? redirect_uri, [FromQuery] string? state, [FromQuery] string? nonce)
+    public IActionResult AuthorizeApi(
+        [FromQuery] string? redirect_uri, 
+        [FromQuery] string? state, 
+        [FromQuery] string? nonce,
+        [FromQuery] string? client_id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(redirect_uri)) 
-            return BadRequest();
+            return BadRequest("Fehlende Parameter.");
+
+        // Erwartete Client-ID für diesen Nutzer:
+        var expectedClientId = $"privateai-client-{userId}";
+
+        if (client_id != expectedClientId)
+        {
+            return StatusCode(403, "Zugriff verweigert! Du bist nicht der Besitzer dieser Instanz.");
+        }
         
         var code = Guid.NewGuid().ToString("N");
         
-        var sessionData = new OidcSessionData { UserId = userId, Nonce = nonce };
+        var sessionData = new OidcSessionData { UserId = userId, Nonce = nonce, ClientId = client_id };
         _cache.Set(code, sessionData, TimeSpan.FromMinutes(5));
 
         var targetUrl = $"{redirect_uri}?code={code}&state={state}";
@@ -221,5 +233,6 @@ public class OidcProviderController : ControllerBase
     {
         public required string UserId { get; set; }
         public string? Nonce { get; set; }
+        public string? ClientId { get; set; }
     }
 }
