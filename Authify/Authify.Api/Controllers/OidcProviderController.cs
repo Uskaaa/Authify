@@ -172,6 +172,7 @@ public class OidcProviderController : ControllerBase
 
         var userId = sessionData.UserId;
         var nonce = sessionData.Nonce;
+        var clientId = sessionData.ClientId ?? "privateai-client";
 
         // 1. Access Token
         var accessToken = await _jwtService.GenerateTokenAsync(userId);
@@ -180,7 +181,8 @@ public class OidcProviderController : ControllerBase
         var domain = _config["App:Domain"] ?? "http://localhost:5220";
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId)
+            new Claim(JwtRegisteredClaimNames.Sub, userId),
+            new Claim("azp", clientId)
         };
         
         if (!string.IsNullOrEmpty(nonce))
