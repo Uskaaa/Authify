@@ -57,7 +57,8 @@ public static class ServiceCollectionExtensions
                 options.ForwardDefaultSelector = context =>
                 {
                     if (context.Request.Path.StartsWithSegments("/api") || 
-                        context.Request.Path.StartsWithSegments("/auth"))
+                        context.Request.Path.StartsWithSegments("/auth") ||
+                        context.Request.Path.StartsWithSegments("/oidc"))
                     {
                         return JwtBearerDefaults.AuthenticationScheme;
                     }

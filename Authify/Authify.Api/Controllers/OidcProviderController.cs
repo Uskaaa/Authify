@@ -1,80 +1,127 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Authify.Api.Controllers;
 
 [ApiController]
 [Route("oidc")]
+[IgnoreAntiforgeryToken]
 public class OidcProviderController : ControllerBase
 {
     private readonly IConfiguration _config;
     private readonly IJwtTokenService _jwtService;
+    private readonly IMemoryCache _cache;
 
-    // Simpler In-Memory Cache für Auth Codes (in Produktion Redis nutzen!)
-    private static readonly Dictionary<string, string> _authCodes = new();
+
+    private static readonly RSA _rsa = RSA.Create(2048);
+    private static readonly RsaSecurityKey _rsaKey = new RsaSecurityKey(_rsa) { KeyId = "privateai-key-1" };
 
     public OidcProviderController(
-        IConfiguration config,
-        IJwtTokenService jwtService)
+        IConfiguration config, 
+        IJwtTokenService jwtService,
+        IMemoryCache cache)
     {
         _config = config;
         _jwtService = jwtService;
+        _cache = cache;
     }
 
-    // 1. Discovery
     [HttpGet(".well-known/openid-configuration")]
     public IActionResult GetConfiguration()
     {
-        var domain = _config["App:Domain"];
+        var browserDomain = _config["App:Domain"] ?? "http://localhost:5220";
+        var dockerDomain = "http://host.docker.internal:5220";
+
         return Ok(new
         {
-            issuer = _config["Jwt:Issuer"],
-            authorization_endpoint = $"{domain}/oidc/authorize",
-            token_endpoint = $"{domain}/oidc/token",
-            userinfo_endpoint = $"{domain}/oidc/userinfo",
+            issuer = _config["Jwt:Issuer"] ?? browserDomain,
+            authorization_endpoint = $"{browserDomain}/oidc/authorize",
+            token_endpoint = $"{dockerDomain}/oidc/token",
+            userinfo_endpoint = $"{dockerDomain}/oidc/userinfo",
+            jwks_uri = $"{dockerDomain}/oidc/jwks", 
+            
             response_types_supported = new[] { "code" },
-            id_token_signing_alg_values_supported = new[] { "HS256" }
+            id_token_signing_alg_values_supported = new[] { "RS256" }, 
+            subject_types_supported = new[] { "public" }
         });
     }
 
-    // 2. Authorize (Die Bridge)
-    // Dieser Endpunkt wird vom Browser aufgerufen. Er liefert HTML+JS zurück.
-    [HttpGet("authorize")]
-    public IActionResult Authorize([FromQuery] string redirect_uri, [FromQuery] string state, [FromQuery] string client_id)
+    [HttpGet("jwks")]
+    public IActionResult Jwks()
     {
-        // Wir liefern eine HTML Seite, die das JWT aus dem LocalStorage liest
-        // und damit den POST Request an /authorize-api macht.
+        var publicParameters = _rsa.ExportParameters(false);
+        var publicKey = new RsaSecurityKey(publicParameters) { KeyId = _rsaKey.KeyId };
+
+        var jwk = JsonWebKeyConverter.ConvertFromRSASecurityKey(publicKey);
+        jwk.Use = "sig";
+        jwk.Alg = "RS256";
+        
+        jwk.KeyOps.Clear();
+        jwk.KeyOps.Add("verify");
+
+        return Ok(new { keys = new[] { jwk } });
+    }
+
+    [HttpGet("authorize")]
+    public IActionResult Authorize([FromQuery] string? redirect_uri, [FromQuery] string? state, [FromQuery] string? client_id, [FromQuery] string? nonce)
+    {
         var html = $@"
-        <html>
-        <head><title>Authorizing...</title></head>
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='utf-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1'>
+            <title>Authenticating...</title>
+            <style>
+                body {{ display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f8fafc; font-family: ui-sans-serif, system-ui, sans-serif; color: #334155; }}
+                .loader {{ border: 3px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto 16px; }}
+                @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+                .container {{ text-align: center; background: white; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }}
+            </style>
+        </head>
         <body>
-            <h3>Authenticating via SimpliAI...</h3>
+            <div class='container'>
+                <div class='loader'></div>
+                <h3 style='margin:0; font-weight:600;'>Authenticating...</h3>
+                <p style='margin:8px 0 0; font-size:14px; color:#64748b;'>Securing your session.</p>
+            </div>
+
             <script>
-                const token = localStorage.getItem('auth_access_token'); 
+                function redirectToLogin() {{
+                    const currentUrl = encodeURIComponent(window.location.href);
+                    window.location.replace('/login?returnUrl=' + currentUrl);
+                }}
+
+                let token = localStorage.getItem('auth_access_token'); 
 
                 if (!token) {{
-                    // Nicht eingeloggt -> Redirect zum Login
-                    window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.href);
+                    redirectToLogin();
                 }} else {{
-                    // Token gefunden -> Code anfordern
-                    fetch('/oidc/authorize-api?redirect_uri={Uri.EscapeDataString(redirect_uri)}&state={Uri.EscapeDataString(state)}&client_id={Uri.EscapeDataString(client_id)}', {{
-                        method: 'POST',
+                    token = token.replace(/^""|""$/g, '');
+                    
+                    const apiUrl = `/oidc/authorize-api?redirect_uri=${{encodeURIComponent('{redirect_uri ?? ""}')}}&state=${{encodeURIComponent('{state ?? ""}')}}&client_id=${{encodeURIComponent('{client_id ?? ""}')}}&nonce=${{encodeURIComponent('{nonce ?? ""}')}}`;
+
+                    fetch(apiUrl, {{
+                        method: 'GET',
                         headers: {{ 'Authorization': 'Bearer ' + token }}
                     }})
                     .then(response => {{
-                        if (response.ok) return response.json();
-                        throw new Error('Unauthorized');
+                        if (!response.ok) throw new Error('Unauthorized');
+                        return response.json();
                     }})
                     .then(data => {{
-                        // Redirect zurück zu OpenWebUI mit dem Code
-                        window.location.href = data.redirectUrl;
+                        window.location.replace(data.redirectUrl);
                     }})
-                    .catch(err => {{
-                        // Token wohl abgelaufen -> Login
-                        window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.href);
+                    .catch(() => {{
+                        // Token abgelaufen oder ungültig -> Neu einloggen
+                        redirectToLogin();
                     }});
                 }}
             </script>
@@ -84,53 +131,75 @@ public class OidcProviderController : ControllerBase
         return Content(html, "text/html");
     }
 
-    // 2b. Authorize API (Intern)
-    // Hier kommt das JS mit dem Bearer Token hin.
-    [Authorize]
-    [HttpPost("authorize-api")]
-    public IActionResult AuthorizeApi([FromQuery] string redirect_uri, [FromQuery] string state)
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("authorize-api")] 
+    public IActionResult AuthorizeApi([FromQuery] string? redirect_uri, [FromQuery] string? state, [FromQuery] string? nonce)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         
-        // Code generieren
-        var code = Guid.NewGuid().ToString();
-        _authCodes[code] = userId!;
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(redirect_uri)) 
+            return BadRequest();
+        
+        var code = Guid.NewGuid().ToString("N");
+        
+        var sessionData = new OidcSessionData { UserId = userId, Nonce = nonce };
+        _cache.Set(code, sessionData, TimeSpan.FromMinutes(5));
 
-        // URL bauen, wohin das JS redirecten soll
         var targetUrl = $"{redirect_uri}?code={code}&state={state}";
         
         return Ok(new { redirectUrl = targetUrl });
     }
 
-    // 3. Token Endpoint
     [HttpPost("token")]
     public async Task<IActionResult> Token([FromForm] string code)
     {
-        if (!_authCodes.ContainsKey(code))
+        if (!_cache.TryGetValue(code, out OidcSessionData? sessionData) || sessionData == null)
             return BadRequest(new { error = "invalid_grant" });
+        
+        _cache.Remove(code); 
 
-        var userId = _authCodes[code];
-        _authCodes.Remove(code); // One-Time-Use
+        var userId = sessionData.UserId;
+        var nonce = sessionData.Nonce;
 
-        // JWT für OpenWebUI generieren
-        // Wir nutzen deinen existierenden Service!
+        // 1. Access Token
         var accessToken = await _jwtService.GenerateTokenAsync(userId);
         
-        // OpenWebUI braucht ein "id_token", das JWT-Format hat. 
-        // Wir nehmen einfach dein AccessToken auch als ID Token, da es User-Claims enthält.
+        // 2. ID Token (RS256 Token für OpenWebUI)
+        var domain = _config["App:Domain"] ?? "http://localhost:5220";
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId)
+        };
+        
+        if (!string.IsNullOrEmpty(nonce))
+        {
+            claims.Add(new Claim("nonce", nonce));
+        }
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Issuer = _config["Jwt:Issuer"] ?? domain,
+            Audience = "privateai-client", 
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            SigningCredentials = new SigningCredentials(_rsaKey, SecurityAlgorithms.RsaSha256) 
+        };
+        
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var idToken = tokenHandler.CreateToken(tokenDescriptor);
+        
         return Ok(new
         {
             access_token = accessToken,
             token_type = "Bearer",
             expires_in = 3600,
-            id_token = accessToken 
+            id_token = tokenHandler.WriteToken(idToken)
         });
     }
 
-    // 4. UserInfo
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("userinfo")]
-    public async Task<IActionResult> UserInfo()
+    public IActionResult UserInfo()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         var email = User.FindFirstValue(ClaimTypes.Email) ?? User.FindFirstValue("email");
@@ -145,5 +214,12 @@ public class OidcProviderController : ControllerBase
             email = email ?? $"{userId}@privateai.local",
             email_verified = true
         });
+    }
+
+    // Hilfsklasse for Cache
+    private class OidcSessionData
+    {
+        public required string UserId { get; set; }
+        public string? Nonce { get; set; }
     }
 }
