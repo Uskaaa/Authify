@@ -9,7 +9,7 @@
 @inject IJSRuntime JS
 @inject IStringLocalizer<Register> Loc
 
-<RedirectToHomeIfAuthenticated />
+<RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
 <div class="register-container">
     <div class="content-wrapper">
@@ -124,11 +124,15 @@
     private bool _showPassword = false;
     private bool _showConfirmPassword = false;
     private string? _errorMessage;
+    private string? _returnUrl;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+        _returnUrl = queryParams.GetValueOrDefault("returnUrl").ToString();
+        if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
+
         if (uri.Fragment.Length > 1)
         {
             var fragmentString = uri.Fragment.Substring(1); 
@@ -139,14 +143,17 @@
 
             if (string.IsNullOrEmpty(refreshToken))
             {
-                NavigationManager.NavigateTo("/otp?token=" + (accessToken ?? ""));
+                var otpUrl = "/otp?token=" + (accessToken ?? "");
+                if (!string.IsNullOrEmpty(_returnUrl))
+                    otpUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                NavigationManager.NavigateTo(otpUrl);
             }
             
             if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
             {
                 await DataService.StoreTokensFromExternalAuth(accessToken, refreshToken);
                 
-                NavigationManager.NavigateTo("/", forceLoad: true);
+                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
             }
         }
     }
@@ -164,7 +171,10 @@
         _errorMessage = null;
         if (result.Success)
         {
-            NavigationManager.NavigateTo($"/confirm-email?email={Uri.EscapeDataString(_request.Email)}");
+            var confirmUrl = $"/confirm-email?email={Uri.EscapeDataString(_request.Email)}";
+            if (!string.IsNullOrEmpty(_returnUrl))
+                confirmUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+            NavigationManager.NavigateTo(confirmUrl);
         }
         else
         {
@@ -185,11 +195,13 @@
 
     private void GoogleOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=Google&returnUrl=/register&mode=register", forceLoad: true);
+        var callbackUrl = "/register" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : "");
+        NavigationManager.NavigateTo($"/auth/external-login?provider=Google&returnUrl={Uri.EscapeDataString(callbackUrl)}&mode=register", forceLoad: true);
     }
 
     private void GitHubOAuth()
     {
-        NavigationManager.NavigateTo("/auth/external-login?provider=GitHub&returnUrl=/register&mode=register", forceLoad: true);
+        var callbackUrl = "/register" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : "");
+        NavigationManager.NavigateTo($"/auth/external-login?provider=GitHub&returnUrl={Uri.EscapeDataString(callbackUrl)}&mode=register", forceLoad: true);
     }
 }
