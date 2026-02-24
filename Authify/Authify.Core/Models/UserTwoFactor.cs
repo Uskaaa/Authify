@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Authify.Core.Models.Enums;
+﻿using Authify.Core.Models.Enums;
 namespace Authify.Core.Models;
 
 public class UserTwoFactor
 {
-    [Key]
     public string UserId { get; set; }
     public TwoFactorMethod Method { get; set; }
     public bool IsEnabled { get; set; } = true;
