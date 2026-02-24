@@ -61,6 +61,15 @@
 
     <data name="Label_Phone" xml:space="preserve"><value>Phone Number</value></data>
     <data name="Placeholder_Phone" xml:space="preserve"><value>+1 (555) 000-0000</value></data>
+    <data name="Status_PhoneVerified" xml:space="preserve"><value>Verified</value></data>
+    <data name="Status_PhoneNotVerified" xml:space="preserve"><value>Not verified</value></data>
+    <data name="Text_PhoneVerifyHint" xml:space="preserve"><value>Verify your phone number to enable SMS two-factor authentication.</value></data>
+    <data name="Btn_SendCode" xml:space="preserve"><value>Send Verification Code</value></data>
+    <data name="Btn_Sending" xml:space="preserve"><value>Sending...</value></data>
+    <data name="Btn_Verify" xml:space="preserve"><value>Verify</value></data>
+    <data name="Btn_Verifying" xml:space="preserve"><value>Verifying...</value></data>
+    <data name="Btn_Resend" xml:space="preserve"><value>Resend code</value></data>
+    <data name="Placeholder_Code" xml:space="preserve"><value>000000</value></data>
 
     <data name="Label_JobTitle" xml:space="preserve"><value>Job Title</value></data>
     <data name="Placeholder_JobTitle" xml:space="preserve"><value>Your job title</value></data>
@@ -93,5 +102,9 @@
     <data name="Msg_PicUploadFailed" xml:space="preserve"><value>Failed to upload image.</value></data>
     <data name="Msg_PicRemoved" xml:space="preserve"><value>Profile picture removed.</value></data>
     <data name="Msg_PicRemoveFailed" xml:space="preserve"><value>Failed to remove image.</value></data>
+    <data name="Msg_CodeSent" xml:space="preserve"><value>Verification code sent to your phone!</value></data>
+    <data name="Msg_CodeSendFailed" xml:space="preserve"><value>Failed to send verification code.</value></data>
+    <data name="Msg_PhoneVerified" xml:space="preserve"><value>Phone number verified successfully!</value></data>
+    <data name="Msg_PhoneVerifyFailed" xml:space="preserve"><value>Invalid verification code.</value></data>
 
 </root>

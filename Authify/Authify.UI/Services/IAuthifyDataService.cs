@@ -48,6 +48,8 @@ public interface IAuthifyDataService
     Task<OperationResult> UpdatePersonalInformationAsync(PersonalInformationUpdateRequest request);
     Task<OperationResult> UpdateProfileImageAsync(ProfileImageUpdateRequest request);
     Task<OperationResult<UserProfileDto>> GetProfileAsync();
+    Task<OperationResult> SendPhoneVerificationCodeAsync();
+    Task<OperationResult> VerifyPhoneNumberAsync(string code);
 
     //TwoFactorClaimService
     Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request);
