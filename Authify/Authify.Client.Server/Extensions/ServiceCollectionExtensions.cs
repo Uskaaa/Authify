@@ -33,30 +33,42 @@ public static class ServiceCollectionExtensions
         // register server-side implementation of IAuthifyDataService
         services.AddScoped<IAuthifyDataService, ServerDataService<TUser>>();
 
-        services.AddAuthentication(options =>
+        var authBuilder = services.AddAuthentication(authOptions =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                authOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                authOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie()
-            .AddGoogle(googleOptions =>
+            .AddCookie();
+
+        if (!string.IsNullOrEmpty(options.GoogleClientId) && !string.IsNullOrEmpty(options.GoogleClientSecret))
+        {
+            authBuilder.AddGoogle(googleOptions =>
             {
                 googleOptions.ClientId = options.GoogleClientId;
                 googleOptions.ClientSecret = options.GoogleClientSecret;
-            })
-            .AddGitHub(githubOptions =>
+            });
+        }
+
+        if (!string.IsNullOrEmpty(options.GitHubClientId) && !string.IsNullOrEmpty(options.GitHubClientSecret))
+        {
+            authBuilder.AddGitHub(githubOptions =>
             {
                 githubOptions.ClientId = options.GitHubClientId;
                 githubOptions.ClientSecret = options.GitHubClientSecret;
                 githubOptions.Scope.Add("user:email");
-            })
-            .AddFacebook(facebookOptions =>
+            });
+        }
+
+        if (!string.IsNullOrEmpty(options.FacebookAppId) && !string.IsNullOrEmpty(options.FacebookAppSecret))
+        {
+            authBuilder.AddFacebook(facebookOptions =>
             {
                 facebookOptions.AppId = options.FacebookAppId;
                 facebookOptions.AppSecret = options.FacebookAppSecret;
                 facebookOptions.Fields.Add("email");
             });
-            
+        }
+
         services.AddAuthorization();
         services.AddControllers();
 
