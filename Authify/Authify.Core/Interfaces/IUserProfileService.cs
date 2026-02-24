@@ -1,4 +1,4 @@
-﻿using Authify.Core.Common;
+using Authify.Core.Common;
 using Authify.Core.Models;
 
 namespace Authify.Core.Interfaces;

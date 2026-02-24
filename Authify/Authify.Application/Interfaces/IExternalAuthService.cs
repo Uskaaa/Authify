@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Authify.Core.Interfaces;
+namespace Authify.Application.Interfaces;
 
 public interface IExternalAuthService
 {

@@ -1,5 +1,5 @@
-using Authify.UI.Common;
-using Authify.UI.Models;
+using Authify.Core.Common;
+using Authify.Core.Models;
 
 
 namespace Authify.UI.Services;

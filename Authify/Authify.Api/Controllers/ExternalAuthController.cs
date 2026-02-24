@@ -1,6 +1,6 @@
 using System.Security.Claims;
+using Authify.Application.Interfaces;
 using Authify.Application.Services;
-using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Api.Controllers;

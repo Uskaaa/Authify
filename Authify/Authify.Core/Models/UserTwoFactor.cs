@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Authify.Core.Models.Enums;
-using Microsoft.AspNetCore.Identity;
-
 namespace Authify.Core.Models;
 
 public class UserTwoFactor

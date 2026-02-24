@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Authify.Core.Models;
+﻿namespace Authify.Core.Models;
 
 public class UserDeactivationRequest
 {

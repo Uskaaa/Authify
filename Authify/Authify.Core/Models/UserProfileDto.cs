@@ -1,4 +1,4 @@
-﻿namespace Authify.Core.Models;
+namespace Authify.Core.Models;
 
 public class UserProfileDto
 {

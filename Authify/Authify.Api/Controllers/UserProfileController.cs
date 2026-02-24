@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Microsoft.AspNetCore.Authorization;

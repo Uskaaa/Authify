@@ -1,4 +1,4 @@
-﻿using Authify.Application.Data;
+using Authify.Application.Data;
 using Authify.Core.Common;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
@@ -67,6 +67,7 @@ public class UserProfileService<TUser> : IUserProfileService
                 $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
         }
 
+        await _userManager.UpdateAsync(user);
         await _context.SaveChangesAsync();
 
         return OperationResult.Ok();

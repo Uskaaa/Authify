@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>2.0.9</Version>
+        <Version>2.1.0</Version>
     </PropertyGroup>
 
 
@@ -20,6 +20,10 @@
         <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.2" />
         <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Authify.Core/Authify.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
