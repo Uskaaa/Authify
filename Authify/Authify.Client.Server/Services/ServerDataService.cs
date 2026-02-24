@@ -1,6 +1,6 @@
-using Authify.UI.Common;
+using Authify.Core.Common;
 using Authify.Core.Interfaces;
-using Authify.UI.Models;
+using Authify.Core.Models;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +17,7 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
     private readonly IUserAccountService _userAccountService;
     private readonly IUserProfileService _userProfileService;
     private readonly ITwoFactorClaimService _twoFactorClaimService;
-    private readonly IExternalLoginManagementService<TUser> _externalLoginManagementService;
+    private readonly IExternalLoginManagementService _externalLoginManagementService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<TUser> _userManager;
 
@@ -27,7 +27,7 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         IUserAccountService userAccountService,
         IUserProfileService userProfileService,
         ITwoFactorClaimService twoFactorClaimService,
-        IExternalLoginManagementService<TUser> externalLoginManagementService,
+        IExternalLoginManagementService externalLoginManagementService,
         IHttpContextAccessor httpContextAccessor,
         UserManager<TUser> userManager)
     {
