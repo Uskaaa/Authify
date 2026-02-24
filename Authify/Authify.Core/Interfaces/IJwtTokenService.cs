@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Authify.Core.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Authify.Core.Models;
 
 namespace Authify.Core.Interfaces;
 
