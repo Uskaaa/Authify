@@ -1,4 +1,4 @@
-using Authify.UI.Common;
+using Authify.Core.Common;
 using Authify.UI.Models;
 
 
