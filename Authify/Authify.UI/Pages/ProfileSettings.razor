@@ -123,6 +123,70 @@
                                                class="auth-block auth-w-full auth-pl-10 auth-pr-4 auth-py-2.5 auth-text-gray-900 dark:auth-text-white auth-bg-white dark:auth-bg-gray-950 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
                                                placeholder="@Loc["Placeholder_Phone"]"/>
                                 </div>
+                                @if (!string.IsNullOrEmpty(_profileModel.PhoneNumber))
+                                {
+                                    <div class="auth-mt-2">
+                                        @if (_phoneNumberConfirmed)
+                                        {
+                                            <span class="auth-inline-flex auth-items-center auth-gap-1 auth-text-xs auth-font-semibold auth-text-green-700 dark:auth-text-green-400">
+                                                <i class="fa-solid fa-circle-check"></i> @Loc["Status_PhoneVerified"]
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="auth-inline-flex auth-items-center auth-gap-1 auth-text-xs auth-font-semibold auth-text-yellow-600 dark:auth-text-yellow-400">
+                                                <i class="fa-solid fa-circle-exclamation"></i> @Loc["Status_PhoneNotVerified"]
+                                            </span>
+                                        }
+                                    </div>
+                                    @if (!_phoneNumberConfirmed)
+                                    {
+                                        <div class="auth-mt-3 auth-p-4 auth-bg-yellow-50 dark:auth-bg-yellow-900/10 auth-border auth-border-yellow-200 dark:auth-border-yellow-900/30 auth-rounded-lg auth-space-y-3">
+                                            <p class="auth-text-xs auth-text-yellow-700 dark:auth-text-yellow-400">@Loc["Text_PhoneVerifyHint"]</p>
+                                            @if (!_verificationCodeSent)
+                                            {
+                                                <button type="button" @onclick="SendPhoneVerificationCode" disabled="@_isSendingCode"
+                                                        class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-primary-600 auth-rounded-lg hover:auth-bg-primary-700 disabled:auth-opacity-50 disabled:auth-cursor-not-allowed auth-transition-all">
+                                                    @if (_isSendingCode)
+                                                    {
+                                                        <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i>
+                                                        <span>@Loc["Btn_Sending"]</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa-solid fa-paper-plane auth-mr-2"></i>
+                                                        <span>@Loc["Btn_SendCode"]</span>
+                                                    }
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <div class="auth-flex auth-items-center auth-gap-2">
+                                                    <input type="text" @bind="_verificationCode" maxlength="6"
+                                                           aria-label="@Loc["Placeholder_Code"]"
+                                                           class="auth-block auth-w-32 auth-px-3 auth-py-2 auth-text-center auth-text-gray-900 dark:auth-text-white auth-bg-white dark:auth-bg-gray-950 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg auth-text-sm auth-tracking-widest focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-outline-none"
+                                                           placeholder="@Loc["Placeholder_Code"]"/>
+                                                    <button type="button" @onclick="VerifyPhoneNumber" disabled="@_isVerifying"
+                                                            class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-green-600 auth-rounded-lg hover:auth-bg-green-700 disabled:auth-opacity-50 disabled:auth-cursor-not-allowed auth-transition-all">
+                                                        @if (_isVerifying)
+                                                        {
+                                                            <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i>
+                                                            <span>@Loc["Btn_Verifying"]</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@Loc["Btn_Verify"]</span>
+                                                        }
+                                                    </button>
+                                                    <button type="button" @onclick="ResendPhoneVerificationCode" disabled="@_isSendingCode"
+                                                            class="auth-text-xs auth-text-primary-600 dark:auth-text-primary-400 hover:auth-underline disabled:auth-opacity-50">
+                                                        @Loc["Btn_Resend"]
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
                             </div>
 
                             <div>
@@ -245,6 +309,13 @@
     private string _notificationMessage = "";
     private string _notificationClass = "auth-bg-green-500 auth-text-white";
 
+    // Phone verification state
+    private bool _phoneNumberConfirmed = false;
+    private bool _verificationCodeSent = false;
+    private string _verificationCode = "";
+    private bool _isSendingCode = false;
+    private bool _isVerifying = false;
+
     private IJSObjectReference? _module;
     private DotNetObjectReference<ProfileSettings>? _objRef;
     private ElementReference _rootElement;
@@ -289,6 +360,9 @@
                 Company = data.Company,
                 Bio = data.Bio
             };
+            _phoneNumberConfirmed = data.PhoneNumberConfirmed;
+            _verificationCodeSent = false;
+            _verificationCode = "";
 
             if (data.ProfileImage != null && data.ProfileImage.Length > 0)
             {
@@ -302,7 +376,12 @@
     {
         _isSaving = true;
         var result = await DataService.UpdatePersonalInformationAsync(_profileModel);
-        if (result.Success) ShowNotification(Loc["Msg_ProfileUpdated"], "auth-bg-green-500");
+        if (result.Success)
+        {
+            ShowNotification(Loc["Msg_ProfileUpdated"], "auth-bg-green-500");
+            // Reload to get updated PhoneNumberConfirmed status
+            await LoadProfileData();
+        }
         else ShowNotification(result.ErrorMessage ?? Loc["Msg_UpdateFailed"], "auth-bg-red-500");
         _isSaving = false;
     }
@@ -350,6 +429,41 @@
         _showNotification = true;
         StateHasChanged();
         var timer = new System.Threading.Timer((_) => { _showNotification = false; InvokeAsync(StateHasChanged); }, null, 3000, System.Threading.Timeout.Infinite);
+    }
+
+    private async Task SendPhoneVerificationCode()
+    {
+        _isSendingCode = true;
+        var result = await DataService.SendPhoneVerificationCodeAsync();
+        if (result.Success)
+        {
+            _verificationCodeSent = true;
+            ShowNotification(Loc["Msg_CodeSent"], "auth-bg-blue-500");
+        }
+        else ShowNotification(result.ErrorMessage ?? Loc["Msg_CodeSendFailed"], "auth-bg-red-500");
+        _isSendingCode = false;
+    }
+
+    private async Task ResendPhoneVerificationCode()
+    {
+        _verificationCode = "";
+        await SendPhoneVerificationCode();
+    }
+
+    private async Task VerifyPhoneNumber()
+    {
+        if (string.IsNullOrWhiteSpace(_verificationCode)) return;
+        _isVerifying = true;
+        var result = await DataService.VerifyPhoneNumberAsync(_verificationCode);
+        if (result.Success)
+        {
+            _phoneNumberConfirmed = true;
+            _verificationCodeSent = false;
+            _verificationCode = "";
+            ShowNotification(Loc["Msg_PhoneVerified"], "auth-bg-green-500");
+        }
+        else ShowNotification(result.ErrorMessage ?? Loc["Msg_PhoneVerifyFailed"], "auth-bg-red-500");
+        _isVerifying = false;
     }
     
     public void Dispose()

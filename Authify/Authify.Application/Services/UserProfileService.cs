@@ -1,4 +1,4 @@
-﻿using Authify.Application.Data;
+using Authify.Application.Data;
 using Authify.Core.Common;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
@@ -14,13 +14,15 @@ public class UserProfileService<TUser> : IUserProfileService
     private readonly UserManager<TUser> _userManager;
     private readonly IAuthifyDbContext _context;
     private readonly IEmailSender _emailSender;
+    private readonly ISmsSender _smsSender;
     private readonly InfrastructureOptions _infrastructureOptions;
 
-    public UserProfileService(UserManager<TUser> userManager, IAuthifyDbContext context, IEmailSender emailSender, InfrastructureOptions infrastructureOptions)
+    public UserProfileService(UserManager<TUser> userManager, IAuthifyDbContext context, IEmailSender emailSender, ISmsSender smsSender, InfrastructureOptions infrastructureOptions)
     {
         _userManager = userManager;
         _context = context;
         _emailSender = emailSender;
+        _smsSender = smsSender;
         _infrastructureOptions = infrastructureOptions;
     }
 
@@ -39,11 +41,18 @@ public class UserProfileService<TUser> : IUserProfileService
         }
 
         profile.FullName = request.FullName;
-        profile.PhoneNumber = request.PhoneNumber;
-        user.PhoneNumber = request.PhoneNumber;
         profile.JobTitle = request.JobTitle;
         profile.Company = request.Company;
         profile.Bio = request.Bio;
+
+        // Phone number change: reset confirmation
+        if (request.PhoneNumber != user.PhoneNumber)
+        {
+            user.PhoneNumber = request.PhoneNumber;
+            user.PhoneNumberConfirmed = false;
+        }
+
+        profile.PhoneNumber = user.PhoneNumber;
 
         // E-Mail ändern
         if (!string.IsNullOrEmpty(request.Email) && request.Email != user.Email)
@@ -56,12 +65,9 @@ public class UserProfileService<TUser> : IUserProfileService
                 $"https://{_infrastructureOptions.Domain}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
             await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
                 $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
-            // ConfirmEmailAsync kann später für Bestätigung genutzt werden
         }
 
-        if (!string.IsNullOrEmpty(request.PhoneNumber))
-            user.PhoneNumber = request.PhoneNumber;
-
+        await _userManager.UpdateAsync(user);
         await _context.SaveChangesAsync();
 
         return OperationResult.Ok();
@@ -94,6 +100,7 @@ public class UserProfileService<TUser> : IUserProfileService
         {
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
             FullName = user.FullName,
             JobTitle = profile?.JobTitle,
             Company = profile?.Company,
@@ -102,5 +109,39 @@ public class UserProfileService<TUser> : IUserProfileService
         };
 
         return OperationResult<UserProfileDto>.Ok(dto);
+    }
+
+    public async Task<OperationResult> SendPhoneVerificationCodeAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return OperationResult.Fail("User not found.");
+
+        if (string.IsNullOrEmpty(user.PhoneNumber))
+            return OperationResult.Fail("No phone number set.");
+
+        var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
+        await _smsSender.SendSmsAsync(user.PhoneNumber, token);
+
+        return OperationResult.Ok();
+    }
+
+    public async Task<OperationResult> VerifyPhoneNumberAsync(string userId, string code)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return OperationResult.Fail("User not found.");
+
+        if (string.IsNullOrEmpty(user.PhoneNumber))
+            return OperationResult.Fail("No phone number set.");
+
+        var result = await _userManager.ChangePhoneNumberAsync(user, user.PhoneNumber, code);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return OperationResult.Fail(errors);
+        }
+
+        return OperationResult.Ok();
     }
 }

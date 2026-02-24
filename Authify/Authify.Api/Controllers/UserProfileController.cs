@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -55,5 +55,25 @@ public class UserProfileController : ControllerBase
         var result = await _userProfileService.GetProfileAsync(userId);
 
         return result.Success ? Ok(result) : NotFound(result);
+    }
+
+    // ---- Telefonnummer Bestätigungscode senden ----
+    [HttpPost("send-phone-verification")]
+    public async Task<IActionResult> SendPhoneVerification()
+    {
+        var userId = GetUserId();
+        var result = await _userProfileService.SendPhoneVerificationCodeAsync(userId);
+
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    // ---- Telefonnummer verifizieren ----
+    [HttpPost("verify-phone")]
+    public async Task<IActionResult> VerifyPhone([FromBody] PhoneVerificationRequest request)
+    {
+        var userId = GetUserId();
+        var result = await _userProfileService.VerifyPhoneNumberAsync(userId, request.Code);
+
+        return result.Success ? Ok(result) : BadRequest(result);
     }
 }

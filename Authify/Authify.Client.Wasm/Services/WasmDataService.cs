@@ -236,6 +236,13 @@ public class WasmDataService : IAuthifyDataService
 
     public Task<OperationResult<UserProfileDto>> GetProfileAsync() => GetAsync<UserProfileDto>("api/userprofile/me");
 
+    public Task<OperationResult> SendPhoneVerificationCodeAsync() =>
+        PostAsync("api/userprofile/send-phone-verification", new { });
+
+    public Task<OperationResult> VerifyPhoneNumberAsync(string code) =>
+        PostAsync("api/userprofile/verify-phone", new { Code = code });
+
+
     public Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request) =>
         PostAsync("api/twofactorclaim/add-or-update", request);
 

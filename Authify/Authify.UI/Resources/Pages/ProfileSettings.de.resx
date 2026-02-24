@@ -61,6 +61,15 @@
 
     <data name="Label_Phone" xml:space="preserve"><value>Telefonnummer</value></data>
     <data name="Placeholder_Phone" xml:space="preserve"><value>+49 123 456789</value></data>
+    <data name="Status_PhoneVerified" xml:space="preserve"><value>Verifiziert</value></data>
+    <data name="Status_PhoneNotVerified" xml:space="preserve"><value>Nicht verifiziert</value></data>
+    <data name="Text_PhoneVerifyHint" xml:space="preserve"><value>Verifizieren Sie Ihre Telefonnummer, um die SMS-Zwei-Faktor-Authentifizierung zu aktivieren.</value></data>
+    <data name="Btn_SendCode" xml:space="preserve"><value>Bestätigungscode senden</value></data>
+    <data name="Btn_Sending" xml:space="preserve"><value>Wird gesendet...</value></data>
+    <data name="Btn_Verify" xml:space="preserve"><value>Verifizieren</value></data>
+    <data name="Btn_Verifying" xml:space="preserve"><value>Wird verifiziert...</value></data>
+    <data name="Btn_Resend" xml:space="preserve"><value>Code erneut senden</value></data>
+    <data name="Placeholder_Code" xml:space="preserve"><value>000000</value></data>
 
     <data name="Label_JobTitle" xml:space="preserve"><value>Berufsbezeichnung</value></data>
     <data name="Placeholder_JobTitle" xml:space="preserve"><value>Ihre Berufsbezeichnung</value></data>
@@ -93,5 +102,9 @@
     <data name="Msg_PicUploadFailed" xml:space="preserve"><value>Bild-Upload fehlgeschlagen.</value></data>
     <data name="Msg_PicRemoved" xml:space="preserve"><value>Profilbild entfernt.</value></data>
     <data name="Msg_PicRemoveFailed" xml:space="preserve"><value>Bild konnte nicht entfernt werden.</value></data>
+    <data name="Msg_CodeSent" xml:space="preserve"><value>Bestätigungscode wurde an Ihr Telefon gesendet!</value></data>
+    <data name="Msg_CodeSendFailed" xml:space="preserve"><value>Bestätigungscode konnte nicht gesendet werden.</value></data>
+    <data name="Msg_PhoneVerified" xml:space="preserve"><value>Telefonnummer erfolgreich verifiziert!</value></data>
+    <data name="Msg_PhoneVerifyFailed" xml:space="preserve"><value>Ungültiger Bestätigungscode.</value></data>
 
 </root>

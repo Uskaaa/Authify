@@ -248,6 +248,25 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         return _userProfileService.GetProfileAsync(userId);
     }
 
+    public Task<OperationResult> SendPhoneVerificationCodeAsync()
+    {
+        var userId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Task.FromResult(OperationResult.Fail("User not authenticated."));
+        
+        return _userProfileService.SendPhoneVerificationCodeAsync(userId);
+    }
+
+    public Task<OperationResult> VerifyPhoneNumberAsync(string code)
+    {
+        var userId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Task.FromResult(OperationResult.Fail("User not authenticated."));
+        
+        return _userProfileService.VerifyPhoneNumberAsync(userId, code);
+    }
+
+
     public Task<OperationResult> AddOrUpdateAsync(TwoFactorRequest request)
     {
         var userId = GetCurrentUserId();
