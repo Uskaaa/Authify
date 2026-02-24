@@ -1,4 +1,4 @@
-using Authify.Core.Interfaces;
+using Authify.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Authify.Client.Server.Controllers;

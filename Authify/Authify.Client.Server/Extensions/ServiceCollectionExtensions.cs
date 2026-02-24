@@ -1,5 +1,6 @@
 using Authify.Application.Data;
 using Authify.Application.Extensions;
+using Authify.Application.Interfaces;
 using Authify.Application.Services;
 using Authify.Client.Server.Services;
 using Authify.Core.Extensions;

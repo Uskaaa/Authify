@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Authify.Application.Data;
 using Authify.Application.Extensions;
+using Authify.Application.Interfaces;
 using Authify.Application.Services;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;

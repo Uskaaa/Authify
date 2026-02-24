@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Authify.Application.Data;
+using Authify.Application.Interfaces;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
