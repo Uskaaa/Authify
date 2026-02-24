@@ -508,7 +508,7 @@
         {
             TwoFactorMethod = method.MethodType,
             IsEnabled = true,
-            Priority = 10
+            Priority = _activeTwoFaMethods.Count == 0 ? 0 : 10
         };
         
         var result = await DataService.AddOrUpdateAsync(request);

@@ -43,6 +43,16 @@ public class TwoFactorClaimService<TUser> : ITwoFactorClaimService
                 return OperationResult.Fail("Unknown two-factor method.");
         }
 
+        // Wenn diese Methode als Default (Priority 0) gesetzt wird, alle anderen zurücksetzen
+        if (request.Priority == 0)
+        {
+            var others = await _context.UserTwoFactors
+                .Where(x => x.UserId == userId && x.Method != request.TwoFactorMethod && x.Priority == 0)
+                .ToListAsync();
+            foreach (var other in others)
+                other.Priority = 1;
+        }
+
         var existing = await _context.UserTwoFactors
             .FirstOrDefaultAsync(x => x.UserId == userId && x.Method == request.TwoFactorMethod);
 
