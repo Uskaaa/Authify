@@ -3,8 +3,8 @@ using System.Text.Json;
 using Authify.Client.Wasm.Extensions;
 using Authify.Client.Wasm.Interfaces;
 using Authify.Client.Wasm.Models;
-using Authify.UI.Common;
-using Authify.UI.Models;
+using Authify.Core.Common;
+using Authify.Core.Models;
 using Authify.UI.Services;
 
 namespace Authify.Client.Wasm.Services;
