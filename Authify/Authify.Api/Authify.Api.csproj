@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.7.0</Version>
+        <Version>1.7.2</Version>
     </PropertyGroup>
     
     <ItemGroup>
