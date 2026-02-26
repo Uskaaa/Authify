@@ -3,5 +3,5 @@ namespace Authify.Core.Models;
 public class RefreshTokenResponse
 {
     public string AccessToken { get; set; } = string.Empty;
-    public RefreshTokenRequest RefreshToken { get; set; }
+    public string RefreshToken { get; set; } = string.Empty;
 }
