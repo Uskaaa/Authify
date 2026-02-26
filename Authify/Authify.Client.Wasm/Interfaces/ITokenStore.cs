@@ -1,4 +1,4 @@
-using Authify.Client.Wasm.Models;
+using Authify.Core.Models;
 using Authify.Core.Common;
 
 namespace Authify.Client.Wasm.Interfaces;
