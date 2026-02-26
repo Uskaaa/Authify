@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Authify.Client.Wasm.Extensions;
 using Authify.Client.Wasm.Interfaces;
-using Authify.Client.Wasm.Models;
 using Authify.Core.Common;
 using Authify.Core.Models;
 using Authify.UI.Services;

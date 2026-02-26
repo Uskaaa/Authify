@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Authify.Client.Wasm.Interfaces;
-using Authify.Client.Wasm.Models;
 using Microsoft.AspNetCore.Components;
 
 
