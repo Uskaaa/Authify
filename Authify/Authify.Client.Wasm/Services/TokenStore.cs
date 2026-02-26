@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Authify.Client.Wasm.Interfaces;
-using Authify.Client.Wasm.Models;
+using Authify.Core.Models;
 using Authify.Core.Common;
 using Microsoft.JSInterop;
 
