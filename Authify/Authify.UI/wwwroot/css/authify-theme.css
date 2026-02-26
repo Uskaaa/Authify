@@ -1,4 +1,31 @@
-/* authify-theme.css */
+/* authify-theme.css
+ *
+ * Defines the default color tokens for Authify UI components.
+ * All variables can be overridden at the host-project level in two ways:
+ *
+ *   1. CSS: add a :root { --auth-primary: #yourcolor; } rule that loads AFTER
+ *      this file to override individual variables.
+ *
+ *   2. Blazor: pass an AuthifyTheme instance to the Theme parameter of
+ *      ProfileLayout. Any non-null property will emit an inline :root override
+ *      that takes precedence over these defaults. Dark-mode overrides are
+ *      emitted into :root.dark { }.
+ *
+ * Available variables (light mode):
+ *   --auth-primary          Primary action colour
+ *   --auth-primary-hover    Primary hover colour
+ *   --auth-bg               Page background
+ *   --auth-card-bg          Card / surface background
+ *   --auth-text             Default text colour
+ *   --auth-text-muted       Muted / secondary text colour
+ *   --auth-input-bg         Input field background
+ *   --auth-border           Border colour
+ *   --auth-error            Error / danger colour
+ *   --auth-success          Success colour
+ *   --auth-shadow           Default box shadow
+ *
+ * Dark-mode counterparts live inside :root.dark { } below.
+ */
 
 /* --- Light Mode (Standard) --- */
 :root {

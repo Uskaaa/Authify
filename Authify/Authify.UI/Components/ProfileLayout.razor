@@ -3,6 +3,42 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
+@if (Theme is not null && (Theme.HasLightOverrides || Theme.HasDarkOverrides))
+{
+    <style>
+        @if (Theme.HasLightOverrides)
+        {
+            <text>:root {</text>
+            @if (Theme.Primary is not null)       { <text>--auth-primary: @Theme.Primary;</text>                   }
+            @if (Theme.PrimaryHover is not null)  { <text>--auth-primary-hover: @Theme.PrimaryHover;</text>        }
+            @if (Theme.Background is not null)    { <text>--auth-bg: @Theme.Background;</text>                     }
+            @if (Theme.CardBackground is not null){ <text>--auth-card-bg: @Theme.CardBackground;</text>            }
+            @if (Theme.Text is not null)          { <text>--auth-text: @Theme.Text;</text>                         }
+            @if (Theme.TextMuted is not null)     { <text>--auth-text-muted: @Theme.TextMuted;</text>              }
+            @if (Theme.InputBackground is not null){ <text>--auth-input-bg: @Theme.InputBackground;</text>         }
+            @if (Theme.Border is not null)        { <text>--auth-border: @Theme.Border;</text>                     }
+            @if (Theme.Error is not null)         { <text>--auth-error: @Theme.Error;</text>                       }
+            @if (Theme.Success is not null)        { <text>--auth-success: @Theme.Success;</text>                   }
+            @if (Theme.Shadow is not null)         { <text>--auth-shadow: @Theme.Shadow;</text>                     }
+            <text>}</text>
+        }
+        @if (Theme.HasDarkOverrides)
+        {
+            <text>:root.dark {</text>
+            @if (Theme.DarkPrimary is not null)      { <text>--auth-primary: @Theme.DarkPrimary;</text>            }
+            @if (Theme.DarkPrimaryHover is not null) { <text>--auth-primary-hover: @Theme.DarkPrimaryHover;</text> }
+            @if (Theme.DarkBackground is not null)   { <text>--auth-bg: @Theme.DarkBackground;</text>              }
+            @if (Theme.DarkCardBackground is not null){ <text>--auth-card-bg: @Theme.DarkCardBackground;</text>    }
+            @if (Theme.DarkText is not null)         { <text>--auth-text: @Theme.DarkText;</text>                  }
+            @if (Theme.DarkTextMuted is not null)    { <text>--auth-text-muted: @Theme.DarkTextMuted;</text>       }
+            @if (Theme.DarkInputBackground is not null){ <text>--auth-input-bg: @Theme.DarkInputBackground;</text> }
+            @if (Theme.DarkBorder is not null)       { <text>--auth-border: @Theme.DarkBorder;</text>              }
+            @if (Theme.DarkShadow is not null)       { <text>--auth-shadow: @Theme.DarkShadow;</text>              }
+            <text>}</text>
+        }
+    </style>
+}
+
 <div class="auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-transition-colors auth-duration-300">
 
     <input type="checkbox" id="mobile-menu-toggle" class="auth-hidden" />
@@ -17,12 +53,29 @@
 
         <div class="auth-h-16 auth-flex auth-items-center auth-justify-between lg:auth-justify-center auth-px-6 auth-border-b auth-border-gray-100 dark:auth-border-slate-800/50 auth-flex-shrink-0">
             <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
-                <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br auth-from-primary-500 auth-to-indigo-700 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20">
-                    <i class="fa-solid fa-server auth-text-xs"></i>
-                </div>
-                <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
-                    Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span>
-                </span>
+                @if (LogoImageUrl is not null)
+                {
+                    <img src="@SafeImageUrl(LogoImageUrl)" alt="@(AppName ?? "Logo")" class="auth-h-8 auth-w-auto auth-object-contain" />
+                }
+                else
+                {
+                    <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br auth-from-primary-500 auth-to-indigo-700 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20">
+                        @if (IconImageUrl is not null)
+                        {
+                            <img src="@SafeImageUrl(IconImageUrl)" alt="@(AppName ?? "Icon")" class="auth-w-5 auth-h-5 auth-object-contain" />
+                        }
+                        else
+                        {
+                            <i class="@(IconCssClass ?? "fa-solid fa-server") auth-text-xs"></i>
+                        }
+                    </div>
+                    @if (AppName is not null)
+                    {
+                        <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
+                            @AppName
+                        </span>
+                    }
+                }
             </a>
             <label for="mobile-menu-toggle"
                    class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors"
@@ -42,9 +95,12 @@
                    aria-label="Open menu">
                 <i class="fa-solid fa-bars auth-text-xl"></i>
             </label>
-            <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
-                Authify
-            </span>
+            @if (AppName is not null)
+            {
+                <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
+                    @AppName
+                </span>
+            }
         </div>
     </header>
 
@@ -55,12 +111,62 @@
 </div>
 
 @code {
+    /// <summary>
+    /// URL (or data URI) of a single combined logo image or SVG file.
+    /// When set, replaces both the icon badge and the app-name text in the sidebar header.
+    /// Supports PNG, SVG, or any image format the browser can render.
+    /// </summary>
+    [Parameter] public string? LogoImageUrl { get; set; }
+
+    /// <summary>
+    /// URL (or data URI) of an icon image (PNG or SVG) rendered inside the gradient badge.
+    /// Takes precedence over <see cref="IconCssClass"/> when both are supplied.
+    /// Ignored when <see cref="LogoImageUrl"/> is set.
+    /// </summary>
+    [Parameter] public string? IconImageUrl { get; set; }
+
+    /// <summary>
+    /// CSS class(es) for an icon rendered inside the gradient badge, e.g. a FontAwesome class
+    /// such as <c>"fa-solid fa-shield-halved"</c>. Falls back to <c>"fa-solid fa-server"</c>
+    /// when neither this nor <see cref="IconImageUrl"/> is provided.
+    /// Ignored when <see cref="LogoImageUrl"/> is set.
+    /// </summary>
+    [Parameter] public string? IconCssClass { get; set; }
+
+    /// <summary>
+    /// Application name shown in the sidebar header and in the mobile top-bar.
+    /// When <see cref="LogoImageUrl"/> is set this value is used only as the image's
+    /// <c>alt</c> attribute. When null, no name text is rendered.
+    /// </summary>
+    [Parameter] public string? AppName { get; set; }
+
+    /// <summary>
+    /// Optional theme color overrides. Any property left null falls back to the
+    /// defaults declared in <c>authify-theme.css</c>.
+    /// </summary>
+    [Parameter] public AuthifyTheme? Theme { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try { await JS.InvokeVoidAsync("applyTheme"); } catch { }
         }
+    }
+
+    /// <summary>
+    /// Returns the URL only when it uses a safe scheme, preventing XSS through
+    /// malicious data URIs (e.g. <c>data:text/html,…</c>).
+    /// Allowed schemes: https, http, relative paths, and <c>data:image/</c> URIs.
+    /// </summary>
+    private static string? SafeImageUrl(string? url)
+    {
+        if (url is null) return null;
+        if (url.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase)) return url;
+        if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return url;
+        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) return url;
+        if (url.StartsWith('/') || url.StartsWith('.')) return url;
+        return null;
     }
 }
 
