@@ -1,7 +1,11 @@
 @using Microsoft.JSInterop
+@using Authify.UI.Models.Branding
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@inject AuthifyBrandOptions Brand
+
+<AuthifyThemeStyle />
 
 <div class="auth-font-sans auth-text-gray-900 dark:auth-text-slate-100 auth-transition-colors auth-duration-300">
 
@@ -16,14 +20,7 @@
            class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-w-64 auth-bg-white dark:auth-bg-slate-900 auth-border-r auth-border-gray-200 dark:auth-border-slate-800 auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full lg:auth-translate-x-0 auth-flex auth-flex-col auth-shadow-2xl lg:auth-shadow-none">
 
         <div class="auth-h-16 auth-flex auth-items-center auth-justify-between lg:auth-justify-center auth-px-6 auth-border-b auth-border-gray-100 dark:auth-border-slate-800/50 auth-flex-shrink-0">
-            <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
-                <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br auth-from-primary-500 auth-to-indigo-700 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20">
-                    <i class="fa-solid fa-server auth-text-xs"></i>
-                </div>
-                <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
-                    Private<span class="auth-text-primary-600 dark:auth-text-primary-400">AI</span>
-                </span>
-            </a>
+            <AuthifyLogo />
             <label for="mobile-menu-toggle"
                    class="lg:auth-hidden auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:auth-text-slate-500 dark:hover:auth-text-slate-300 auth-cursor-pointer auth-transition-colors"
                    aria-label="Close menu">
@@ -42,9 +39,7 @@
                    aria-label="Open menu">
                 <i class="fa-solid fa-bars auth-text-xl"></i>
             </label>
-            <span class="auth-font-semibold auth-text-slate-800 dark:auth-text-white auth-text-lg">
-                Authify
-            </span>
+            <AuthifyLogo />
         </div>
     </header>
 
