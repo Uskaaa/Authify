@@ -216,6 +216,9 @@ project.lock.json
 !**/wwwroot/
 !**/wwwroot/**
 
+# Aber .DS_Store auch in wwwroot ignorieren (überschreibt obige Ausnahme)
+**/.DS_Store
+
 # SpecFlow specific
 *.feature.cs
 *.feature.xlsx.*
