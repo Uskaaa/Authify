@@ -6,6 +6,7 @@ using Authify.Client.Server.Services;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.UI.Extensions;
+using Authify.UI.Models.Branding;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -16,8 +17,15 @@ namespace Authify.Client.Server.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers Authify server-side UI and application services.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureOptions">Infrastructure options (DB, OAuth providers, …).</param>
+    /// <param name="configureBranding">Optional branding configuration (logo, theme colors, app name).</param>
     public static IServiceCollection AddAuthifyServerUI<TDbContext, TUser>(this IServiceCollection services,
-        Action<InfrastructureOptions> configureOptions)
+        Action<InfrastructureOptions> configureOptions,
+        Action<AuthifyBrandOptions>? configureBranding = null)
         where TDbContext : DbContext, IAuthifyDbContext
         where TUser : ApplicationUser, new()
     {
@@ -25,7 +33,7 @@ public static class ServiceCollectionExtensions
         configureOptions(options);
         
         services.AddAuthifyApplication<TDbContext, TUser>(configureOptions);
-        services.AddAuthifyUI();
+        services.AddAuthifyUI(configureBranding);
 
         // ensure HttpContextAccessor is available for ServerDataService
         services.AddHttpContextAccessor();
