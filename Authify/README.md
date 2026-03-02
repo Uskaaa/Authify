@@ -1,32 +1,21 @@
-<div align="center">
+# Authify
 
-<img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 10" />
-<img src="https://img.shields.io/badge/Blazor-WASM%20%7C%20Server-5C2D91?style=for-the-badge&logo=blazor&logoColor=white" alt="Blazor" />
-<img src="https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge" alt="MIT License" />
+Authify is a Blazor authentication library that provides a ready-made auth and user-profile UI for Blazor WASM and Blazor Server projects. Instead of building login, registration and profile pages from scratch, you add the package, configure a few options and the pages are there.
 
-<h1>🔐 Authify</h1>
-
-<p><strong>A plug-and-play authentication UI library for Blazor.</strong><br/>
-Drop it into your WASM or Server project and get a complete, branded auth flow in minutes.</p>
-
-</div>
+Built on top of ASP.NET Core Identity. Supports OAuth (Google, GitHub, Facebook), two-factor authentication, e-mail confirmation, password reset and more.
 
 ---
 
-## What is Authify?
-
-Authify is a set of NuGet packages that provides a **ready-made authentication and user-profile UI** for Blazor applications. Instead of building login, registration and profile pages from scratch, you reference Authify, configure a few options and your app has a fully working auth flow — including dark mode, localization and OAuth.
-
-### What's included
+## What's included
 
 | Area | Details |
 |---|---|
 | **Auth pages** | Login, Register, OTP verification, Forgot Password, Reset Password, Confirm E-Mail |
-| **Profile pages** | Profile Settings (avatar, name, …), Privacy Settings, Security Settings (password, 2FA, OAuth) |
+| **Profile pages** | Profile Settings, Privacy Settings, Security Settings (password, 2FA, OAuth) |
 | **Styling** | Tailwind-based scoped CSS + CSS custom properties for full theme control |
-| **Branding** | Logo (icon, SVG or image) + primary color palette — all configurable from the host project |
+| **Branding** | Logo (icon, SVG or image) + primary color palette — configurable from the host project |
 | **Localization** | English and German out of the box |
-| **Dark mode** | Automatic via `dark` class on `<html>` |
+| **Dark mode** | Via `dark` class on `<html>` |
 
 ---
 
@@ -34,23 +23,22 @@ Authify is a set of NuGet packages that provides a **ready-made authentication a
 
 ```
 Authify.UI              → Razor Class Library (pages, components, CSS)
-Authify.Client.Wasm     → Blazor WebAssembly integration  (references Authify.UI)
-Authify.Client.Server   → Blazor Server integration       (references Authify.UI)
+Authify.Client.Wasm     → Blazor WebAssembly integration
+Authify.Client.Server   → Blazor Server integration
 Authify.Api             → ASP.NET Core backend REST API
 ```
 
-For a **Blazor WASM** host project you reference **`Authify.Client.Wasm`**.  
-For a **Blazor Server** host project you reference **`Authify.Client.Server`**.  
-You never need to reference `Authify.UI` directly.
+For a **Blazor WASM** host project reference `Authify.Client.Wasm`.  
+For a **Blazor Server** host project reference `Authify.Client.Server`.  
+You don't need to reference `Authify.UI` directly.
 
 ---
 
 ## Quick Start — Blazor WebAssembly
 
-### 1. Install the package
+### 1. Add the package
 
 ```xml
-<!-- YourApp.Client.csproj -->
 <PackageReference Include="Authify.Client.Wasm" Version="*" />
 ```
 
@@ -63,24 +51,18 @@ builder.Services.AddAuthifyWasmUI(client =>
 });
 ```
 
-### 3. Link static assets (`App.razor` or `index.html`)
+### 3. Link static assets (`App.razor`)
 
 ```html
-<!-- Default Authify theme (CSS custom properties) -->
 <link rel="stylesheet" href="_content/Authify.UI/css/authify-theme.css" />
-
-<!-- Compiled Tailwind utility bundle -->
 <link rel="stylesheet" href="_content/Authify.UI/authify.bundle.css" />
-
-<!-- Font Awesome (required for default icon logo and page icons) -->
+<!-- Font Awesome — needed for the default icon logo and page icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 ```
 
-> **Tip:** Place these links **before** your own stylesheets so you can override them easily.
-
 ### 4. Add routes (`App.razor`)
 
-Authify pages live in the `Authify.UI` assembly. Tell the Blazor router to scan it:
+Authify pages live in the `Authify.UI` assembly. Add it to the router:
 
 ```razor
 <Router AppAssembly="typeof(App).Assembly"
@@ -95,10 +77,9 @@ Authify pages live in the `Authify.UI` assembly. Tell the Blazor router to scan 
 
 ## Quick Start — Blazor Server
 
-### 1. Install the package
+### 1. Add the package
 
 ```xml
-<!-- YourApp.csproj -->
 <PackageReference Include="Authify.Client.Server" Version="*" />
 ```
 
@@ -110,26 +91,25 @@ builder.Services.AddAuthifyServerUI<AppDbContext, AppUser>(options =>
     options.Domain           = "https://yourapp.com";
     options.ConnectionString = builder.Configuration.GetConnectionString("Default")!;
 
-    // SMTP — required for e-mail confirmation and password reset
     options.SmtpHost     = "smtp.example.com";
     options.SmtpPort     = 587;
     options.SmtpUsername = "user@example.com";
     options.SmtpPassword = "••••••••";
     options.EnableSsl    = true;
 
-    // OAuth providers — all optional
-    options.GoogleClientId      = builder.Configuration["Auth:Google:ClientId"]!;
-    options.GoogleClientSecret  = builder.Configuration["Auth:Google:ClientSecret"]!;
+    // OAuth — all optional
+    options.GoogleClientId     = builder.Configuration["Auth:Google:ClientId"]!;
+    options.GoogleClientSecret = builder.Configuration["Auth:Google:ClientSecret"]!;
 
-    options.GitHubClientId      = builder.Configuration["Auth:GitHub:ClientId"]!;
-    options.GitHubClientSecret  = builder.Configuration["Auth:GitHub:ClientSecret"]!;
+    options.GitHubClientId     = builder.Configuration["Auth:GitHub:ClientId"]!;
+    options.GitHubClientSecret = builder.Configuration["Auth:GitHub:ClientSecret"]!;
 
-    options.FacebookAppId       = builder.Configuration["Auth:Facebook:AppId"]!;
-    options.FacebookAppSecret   = builder.Configuration["Auth:Facebook:AppSecret"]!;
+    options.FacebookAppId      = builder.Configuration["Auth:Facebook:AppId"]!;
+    options.FacebookAppSecret  = builder.Configuration["Auth:Facebook:AppSecret"]!;
 });
 ```
 
-### 3. Register middleware (`Program.cs`)
+### 3. Middleware (`Program.cs`)
 
 ```csharp
 app.UseAuthentication();
@@ -139,23 +119,13 @@ app.MapControllers(); // required for OAuth callback endpoints
 
 ### 4. Link static assets
 
-Same as WASM — add the three `<link>` tags to your layout (`_Layout.cshtml` or `App.razor`):
-
-```html
-<link rel="stylesheet" href="_content/Authify.UI/css/authify-theme.css" />
-<link rel="stylesheet" href="_content/Authify.UI/authify.bundle.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-```
+Same as WASM — add the three `<link>` tags to your layout.
 
 ### 5. DbContext & User model
 
-Your `AppDbContext` must implement `IAuthifyDbContext` and your `AppUser` must extend `ApplicationUser`:
-
 ```csharp
-// AppUser.cs
 public class AppUser : ApplicationUser { }
 
-// AppDbContext.cs
 public class AppDbContext : IdentityDbContext<AppUser>, IAuthifyDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -164,104 +134,72 @@ public class AppDbContext : IdentityDbContext<AppUser>, IAuthifyDbContext
 
 ---
 
-## Pages Reference
-
-All pages are registered automatically once the router is configured.
+## Pages
 
 | Route | Page | Description |
 |---|---|---|
-| `/login` | Login | Username/e-mail + password, remember me, OAuth buttons |
-| `/register` | Register | New account with e-mail confirmation flow |
-| `/otp` | OTP Verification | One-time-password input after login (if 2FA is active) |
-| `/forgot-password` | Forgot Password | Sends a password-reset link via e-mail |
-| `/reset-password` | Reset Password | Sets a new password using the link token |
-| `/confirm-email` | Confirm E-Mail | Verifies the e-mail address from the confirmation link |
-| `/profile-settings` | Profile Settings | Avatar, display name and account details |
+| `/login` | Login | E-mail + password, remember me, OAuth buttons |
+| `/register` | Register | New account with e-mail confirmation |
+| `/otp` | OTP | One-time-password input (if 2FA is active) |
+| `/forgot-password` | Forgot Password | Sends a reset link via e-mail |
+| `/reset-password` | Reset Password | Sets a new password using the token from the link |
+| `/confirm-email` | Confirm E-Mail | Verifies the e-mail from the confirmation link |
+| `/profile-settings` | Profile Settings | Avatar, display name, account details |
 | `/privacy-settings` | Privacy Settings | Data export and account deletion |
-| `/security-settings` | Security Settings | Change password, manage 2FA methods, connected OAuth accounts |
+| `/security-settings` | Security Settings | Change password, 2FA methods, connected OAuth accounts |
 
-> The three profile pages use `ProfileLayout` which includes the branded sidebar and mobile navigation.
+The three profile pages use `ProfileLayout` which includes the branded sidebar and mobile navigation.
 
 ---
 
-## InfrastructureOptions (Server only)
+## InfrastructureOptions (Blazor Server)
 
-All options are set via the `Action<InfrastructureOptions>` callback in `AddAuthifyServerUI`.
-
-| Property | Type | Required | Description |
-|---|---|---|---|
-| `Domain` | `string` | ✅ | Public base URL of the app (used in e-mail links) |
-| `ConnectionString` | `string` | ✅ | EF Core connection string |
-| `SmtpHost` | `string` | ✅ | SMTP server hostname |
-| `SmtpPort` | `int` | ✅ | SMTP port (typically `587` for STARTTLS) |
-| `SmtpUsername` | `string` | ✅ | SMTP login username |
-| `SmtpPassword` | `string` | ✅ | SMTP login password |
-| `EnableSsl` | `bool` | — | Enable SSL/TLS (`true` by default) |
-| `GoogleClientId` | `string` | — | Google OAuth Client ID |
-| `GoogleClientSecret` | `string` | — | Google OAuth Client Secret |
-| `GitHubClientId` | `string` | — | GitHub OAuth App Client ID |
-| `GitHubClientSecret` | `string` | — | GitHub OAuth App Client Secret |
-| `FacebookAppId` | `string` | — | Facebook App ID |
-| `FacebookAppSecret` | `string` | — | Facebook App Secret |
-| `AccountSid` | `string` | — | Twilio Account SID (SMS / phone 2FA) |
-| `AuthToken` | `string` | — | Twilio Auth Token |
-| `FromNumber` | `string` | — | Twilio sender number |
+| Property | Required | Description |
+|---|---|---|
+| `Domain` | ✅ | Public base URL — used in e-mail links |
+| `ConnectionString` | ✅ | EF Core connection string |
+| `SmtpHost` | ✅ | SMTP server hostname |
+| `SmtpPort` | ✅ | SMTP port (`587` for STARTTLS) |
+| `SmtpUsername` | ✅ | SMTP login username |
+| `SmtpPassword` | ✅ | SMTP login password |
+| `EnableSsl` | — | Default: `true` |
+| `GoogleClientId/Secret` | — | Google OAuth |
+| `GitHubClientId/Secret` | — | GitHub OAuth |
+| `FacebookAppId/Secret` | — | Facebook OAuth |
+| `AccountSid / AuthToken / FromNumber` | — | Twilio for SMS-based 2FA |
 
 ---
 
 ## Branding
 
-Authify is fully brandable. Pass an optional second parameter to either registration method.
-
-### WASM
+Both `AddAuthifyWasmUI` and `AddAuthifyServerUI` accept an optional second parameter for branding. If you skip it, the default Authify look is used.
 
 ```csharp
 builder.Services.AddAuthifyWasmUI(
     client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress),
     brand =>
     {
-        brand.AppName = "MyApp"; // shown in mobile top-bar
-        brand.Logo    = /* see Logo options below */;
-        brand.Theme   = /* see Theme options below */;
+        brand.AppName = "MyApp"; // shown in the mobile header
+        brand.Logo    = /* see below */;
+
+        // primary color palette — override any of the 11 shades (50–950)
+        brand.Theme.PrimaryPalette[600] = "#e11d48";
+        brand.Theme.PrimaryPalette[500] = "#f43f5e";
     });
 ```
 
-### Blazor Server
+### Logo
 
-```csharp
-builder.Services.AddAuthifyServerUI<AppDbContext, AppUser>(
-    opts => { /* InfrastructureOptions … */ },
-    brand =>
-    {
-        brand.AppName = "MyApp";
-        brand.Logo    = /* … */;
-    });
-```
-
----
-
-### Logo Options
-
-Three logo styles are available. Desktop sidebar and mobile header always show the **same** logo automatically.
-
-#### Option A — Icon + Text *(default)*
-
-A FontAwesome icon inside a gradient box, followed by a two-part brand name.
-
+**Option A — Icon + Text** (default style)
 ```csharp
 brand.Logo = AuthifyLogoOptions.FromIcon(
-    iconClass:     "fa-solid fa-rocket",  // any FontAwesome class
-    textPrefix:    "My",                  // plain part of the name
-    textHighlight: "App",                 // highlighted (primary-colored) part
-    gradientFrom:  "auth-from-primary-500",  // optional – Tailwind gradient-from class
-    gradientTo:    "auth-to-indigo-700"      // optional – Tailwind gradient-to class
+    iconClass:     "fa-solid fa-rocket",
+    textPrefix:    "My",
+    textHighlight: "App"   // rendered in the primary color
 );
 ```
 
-#### Option B — SVG + Text
-
-Provide raw inline SVG markup as the icon.
-
+**Option B — SVG + Text**
 ```csharp
 brand.Logo = AuthifyLogoOptions.FromSvg(
     svgContent:    "<svg xmlns='…'>…</svg>",
@@ -270,57 +208,42 @@ brand.Logo = AuthifyLogoOptions.FromSvg(
 );
 ```
 
-#### Option C — Image file (PNG / JPG / SVG)
-
+**Option C — Image file**
 ```csharp
 brand.Logo = AuthifyLogoOptions.FromImage(
-    imageUrl: "/images/logo.svg",   // relative or absolute URL
-    altText:  "MyApp",              // optional – defaults to AppName
-    cssClass: "auth-h-7"            // optional – extra Tailwind classes on <img>
+    imageUrl: "/images/logo.svg",
+    altText:  "MyApp"
 );
 ```
 
----
+Desktop sidebar and mobile header always show the **same** logo — no separate configuration needed.
 
-### Theme Options
+### Theme colors
 
-Override the primary color palette and semantic colors at runtime — no CSS rebuild needed.
+All primary color shades reference CSS custom properties, so changing the palette takes effect at runtime without any CSS rebuild.
 
 ```csharp
 brand.Theme.PrimaryPalette[50]  = "#fff1f2";
 brand.Theme.PrimaryPalette[100] = "#ffe4e6";
-brand.Theme.PrimaryPalette[200] = "#fecdd3";
-brand.Theme.PrimaryPalette[300] = "#fda4af";
-brand.Theme.PrimaryPalette[400] = "#fb7185";
-brand.Theme.PrimaryPalette[500] = "#f43f5e";
-brand.Theme.PrimaryPalette[600] = "#e11d48";  // main action color (buttons, links)
-brand.Theme.PrimaryPalette[700] = "#be123c";  // hover state
-brand.Theme.PrimaryPalette[800] = "#9f1239";
-brand.Theme.PrimaryPalette[900] = "#881337";
-brand.Theme.PrimaryPalette[950] = "#4c0519";
+// … shades 200–500 …
+brand.Theme.PrimaryPalette[600] = "#e11d48"; // main buttons, links
+brand.Theme.PrimaryPalette[700] = "#be123c"; // hover state
+// … shades 800–950 …
 
-// Optional: semantic background overrides
-brand.Theme.LightBackground    = "#fff1f2";  // page bg in light mode (default: primary-50)
-brand.Theme.DarkBackground     = "#0c0a09";  // page bg in dark mode
-brand.Theme.LightCardBackground = "#ffffff"; // card/form bg in light mode
-brand.Theme.DarkCardBackground  = "#1c1917"; // card/form bg in dark mode
+// optional semantic overrides
+brand.Theme.LightBackground     = "#fff1f2";
+brand.Theme.DarkBackground      = "#0c0a09";
+brand.Theme.LightCardBackground = "#ffffff";
+brand.Theme.DarkCardBackground  = "#1c1917";
 ```
-
-> **How it works:** `authify-theme.css` defines the default CSS custom properties.  
-> `AuthifyThemeStyle` (rendered inside `ProfileLayout`) injects a `<style>` block that overrides those variables at runtime via the CSS cascade.  
-> Both Tailwind utility classes (e.g. `auth-bg-primary-600/20`) and scoped page CSS (e.g. `var(--auth-primary)`) pick up the new values automatically — no rebuild required.
 
 ---
 
 ## Localization
 
-Authify ships with **English** (default) and **German** resource files.  
-Add your preferred culture to the host project's `Program.cs`:
+English and German resource files are included. Set the culture in `Program.cs`:
 
 ```csharp
-builder.Services.AddLocalization();
-
-// Blazor WASM – set culture before rendering
 CultureInfo.DefaultThreadCurrentCulture   = new CultureInfo("de-DE");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("de-DE");
 ```
@@ -329,21 +252,15 @@ CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("de-DE");
 
 ## Dark Mode
 
-Authify respects the `dark` class on the `<html>` element (same convention as Tailwind's `darkMode: 'class'`).  
-Toggle dark mode by adding/removing the class via JavaScript:
+Add or remove the `dark` class on `<html>`:
 
 ```js
-// turn on
-document.documentElement.classList.add('dark');
-
-// turn off
-document.documentElement.classList.remove('dark');
-
-// toggle
-document.documentElement.classList.toggle('dark');
+document.documentElement.classList.add('dark');    // on
+document.documentElement.classList.remove('dark'); // off
+document.documentElement.classList.toggle('dark'); // toggle
 ```
 
-A built-in `applyTheme` JavaScript function is included in `authify.bundle.css` and is called automatically on first render to restore the user's last preference from `localStorage`.
+A built-in `applyTheme` script restores the user's last preference from `localStorage` on first render automatically.
 
 ---
 
@@ -353,7 +270,7 @@ A built-in `applyTheme` JavaScript function is included in `authify.bundle.css` 
 Authify.sln
 ├── Authify.Core            → Shared models, interfaces, DTOs
 ├── Authify.Application     → Business logic, Identity, EF Core
-├── Authify.Api             → ASP.NET Core REST API backend
+├── Authify.Api             → ASP.NET Core backend REST API
 ├── Authify.UI              → Razor Class Library (pages + components + CSS)
 ├── Authify.Client.Wasm     → WASM integration (services, auth state)
 └── Authify.Client.Server   → Blazor Server integration (controllers, cookie auth)
@@ -361,8 +278,4 @@ Authify.sln
 
 ---
 
-<div align="center">
-
 *This README was automatically generated with the assistance of GitHub Copilot.*
-
-</div>
