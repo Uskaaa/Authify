@@ -1,0 +1,62 @@
+@using Authify.UI.Models.Branding
+@inject AuthifyBrandOptions Brand
+
+@{
+    var theme = Brand.Theme;
+
+    // Determine semantic color overrides (fall back to palette values when not explicitly set)
+    string lightPrimary      = theme.GetPrimaryHex(600);
+    string lightPrimaryHover = theme.GetPrimaryHex(700);
+    string lightBg           = theme.LightBackground     ?? theme.GetPrimaryHex(50);
+    string lightCardBg       = theme.LightCardBackground ?? "#ffffff";
+
+    string darkPrimary       = theme.GetPrimaryHex(500);
+    string darkPrimaryHover  = theme.GetPrimaryHex(600);
+    string darkBg            = theme.DarkBackground      ?? "#020617";
+    string darkCardBg        = theme.DarkCardBackground  ?? "#0f172a";
+}
+
+<style>
+    :root {
+        /* Primary palette – RGB triplets for Tailwind utility classes */
+        --auth-primary-50-rgb:  @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(50));
+        --auth-primary-100-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(100));
+        --auth-primary-200-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(200));
+        --auth-primary-300-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(300));
+        --auth-primary-400-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(400));
+        --auth-primary-500-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(500));
+        --auth-primary-600-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(600));
+        --auth-primary-700-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(700));
+        --auth-primary-800-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(800));
+        --auth-primary-900-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(900));
+        --auth-primary-950-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(950));
+
+        /* Semantic overrides (light mode) */
+        --auth-primary:       @lightPrimary;
+        --auth-primary-hover: @lightPrimaryHover;
+        --auth-bg:            @lightBg;
+        --auth-card-bg:       @lightCardBg;
+    }
+
+    :root.dark {
+        /* Primary palette in dark mode – same RGB values so utility classes
+           keep consistent; dark-mode shift is handled by semantic vars below */
+        --auth-primary-50-rgb:  @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(50));
+        --auth-primary-100-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(100));
+        --auth-primary-200-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(200));
+        --auth-primary-300-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(300));
+        --auth-primary-400-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(400));
+        --auth-primary-500-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(500));
+        --auth-primary-600-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(600));
+        --auth-primary-700-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(700));
+        --auth-primary-800-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(800));
+        --auth-primary-900-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(900));
+        --auth-primary-950-rgb: @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(950));
+
+        /* Semantic overrides (dark mode) */
+        --auth-primary:       @darkPrimary;
+        --auth-primary-hover: @darkPrimaryHover;
+        --auth-bg:            @darkBg;
+        --auth-card-bg:       @darkCardBg;
+    }
+</style>

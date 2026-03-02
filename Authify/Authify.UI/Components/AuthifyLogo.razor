@@ -1,0 +1,37 @@
+@using Authify.UI.Models.Branding
+@inject AuthifyBrandOptions Brand
+
+@{
+    var logo = Brand.Logo;
+}
+
+@if (logo is AuthifyIconTextLogo iconText)
+{
+    <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
+        <div class="auth-w-8 auth-h-8 auth-bg-gradient-to-br @iconText.GradientFrom @iconText.GradientTo auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20 auth-flex-shrink-0">
+            <i class="@iconText.IconClass auth-text-xs"></i>
+        </div>
+        <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
+            @iconText.TextPrefix<span class="auth-text-primary-600 dark:auth-text-primary-400">@iconText.TextHighlight</span>
+        </span>
+    </a>
+}
+else if (logo is AuthifySvgTextLogo svgText)
+{
+    <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
+        <div class="auth-w-8 auth-h-8 auth-flex auth-items-center auth-justify-center auth-flex-shrink-0">
+            @((MarkupString)svgText.SvgContent)
+        </div>
+        <span class="auth-font-bold auth-text-lg auth-tracking-tight auth-text-slate-900 dark:auth-text-white">
+            @svgText.TextPrefix<span class="auth-text-primary-600 dark:auth-text-primary-400">@svgText.TextHighlight</span>
+        </span>
+    </a>
+}
+else if (logo is AuthifyImageLogo imageLogo)
+{
+    <a href="/" class="auth-flex auth-items-center auth-cursor-pointer">
+        <img src="@imageLogo.ImageUrl"
+             alt="@(imageLogo.AltText ?? Brand.AppName)"
+             class="auth-h-8 auth-w-auto @imageLogo.CssClass" />
+    </a>
+}
