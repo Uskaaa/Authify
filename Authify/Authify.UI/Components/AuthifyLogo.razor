@@ -1,7 +1,8 @@
 @using Authify.UI.Models.Branding
-@inject AuthifyBrandOptions Brand
+@inject IServiceProvider SP
 
 @{
+    var Brand = SP.GetService<AuthifyBrandOptions>() ?? new AuthifyBrandOptions();
     var logo = Brand.Logo;
 }
 
