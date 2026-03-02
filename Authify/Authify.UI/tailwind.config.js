@@ -9,18 +9,21 @@ module.exports = {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
             },
             colors: {
+                // Primary palette – resolved at runtime via CSS custom properties.
+                // Each shade is defined as an RGB triplet variable so that Tailwind's
+                // opacity modifier syntax (e.g. auth-bg-primary-600/20) continues to work.
                 primary: {
-                    50: '#eef2ff',
-                    100: '#e0e7ff',
-                    200: '#c7d2fe',
-                    300: '#a5b4fc',
-                    400: '#818cf8',
-                    500: '#6366f1',
-                    600: '#4f46e5',
-                    700: '#4338ca',
-                    800: '#3730a3',
-                    900: '#312e81',
-                    950: '#1e1b4b',
+                    50:  'rgb(var(--auth-primary-50-rgb)  / <alpha-value>)',
+                    100: 'rgb(var(--auth-primary-100-rgb) / <alpha-value>)',
+                    200: 'rgb(var(--auth-primary-200-rgb) / <alpha-value>)',
+                    300: 'rgb(var(--auth-primary-300-rgb) / <alpha-value>)',
+                    400: 'rgb(var(--auth-primary-400-rgb) / <alpha-value>)',
+                    500: 'rgb(var(--auth-primary-500-rgb) / <alpha-value>)',
+                    600: 'rgb(var(--auth-primary-600-rgb) / <alpha-value>)',
+                    700: 'rgb(var(--auth-primary-700-rgb) / <alpha-value>)',
+                    800: 'rgb(var(--auth-primary-800-rgb) / <alpha-value>)',
+                    900: 'rgb(var(--auth-primary-900-rgb) / <alpha-value>)',
+                    950: 'rgb(var(--auth-primary-950-rgb) / <alpha-value>)',
                 },
 
                 // ────────────────────────────────────────────────
