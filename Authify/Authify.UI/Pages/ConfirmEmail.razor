@@ -2,7 +2,7 @@
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
 
-@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@rendermode @(new InteractiveAutoRenderMode(prerender: false))
 @inject NavigationManager NavigationManager
 @inject IAuthifyDataService DataService
 @inject IJSRuntime JS

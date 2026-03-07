@@ -8,7 +8,7 @@
 @inject IJSRuntime JS
 @inject IAuthifyDataService DataService
 @inject IStringLocalizer<ProfileSettings> Loc
-@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@rendermode @(new InteractiveAutoRenderMode(prerender: false))
 
 <header class="auth-bg-white dark:auth-bg-dark-card auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-pt-16 lg:auth-pt-0 auth-transition-colors auth-duration-300">
     <div class="auth-px-4 auth-py-6 sm:auth-px-6 lg:auth-px-8">
