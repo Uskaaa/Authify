@@ -20,10 +20,9 @@ public static class ServiceCollectionExtensions
     /// <param name="configureRender"></param>
     public static IServiceCollection AddAuthifyWasmUI(this IServiceCollection services,
         Action<HttpClient> configureClient,
-        Action<AuthifyBrandOptions>? configureBranding = null,
-        Action<AuthifyRenderOptions>? configureRender = null)
+        Action<AuthifyBrandOptions>? configureBranding = null)
     {
-        services.AddAuthifyUI(configureBranding, configureRender);
+        services.AddAuthifyUI(configureBranding);
         
         services.AddHttpClient<IAuthRefreshService, AuthRefreshService>(client => 
         {

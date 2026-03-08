@@ -26,8 +26,7 @@ public static class ServiceCollectionExtensions
     /// <param name="configureRender"></param>
     public static IServiceCollection AddAuthifyServerUI<TDbContext, TUser>(this IServiceCollection services,
         Action<InfrastructureOptions> configureOptions,
-        Action<AuthifyBrandOptions>? configureBranding = null,
-        Action<AuthifyRenderOptions>? configureRender = null)
+        Action<AuthifyBrandOptions>? configureBranding = null)
         where TDbContext : DbContext, IAuthifyDbContext
         where TUser : ApplicationUser, new()
     {
@@ -35,7 +34,6 @@ public static class ServiceCollectionExtensions
         configureOptions(options);
         
         services.AddAuthifyApplication<TDbContext, TUser>(configureOptions);
-        services.AddAuthifyUI(configureBranding, configureRender);
 
         // ensure HttpContextAccessor is available for ServerDataService
         services.AddHttpContextAccessor();
