@@ -13,12 +13,17 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddAuthifyUI(
         this IServiceCollection services,
-        Action<AuthifyBrandOptions>? configureBranding = null)
+        Action<AuthifyBrandOptions>? configureBranding = null,
+        Action<AuthifyRenderOptions>? configureRender = null)
     {
         var brand = new AuthifyBrandOptions();
         configureBranding?.Invoke(brand);
         services.AddSingleton(brand);
 
+        var render = new AuthifyRenderOptions();
+        configureRender?.Invoke(render);
+        services.AddSingleton(render);
+        
         return services;
     }
 }

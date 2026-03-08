@@ -17,11 +17,13 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configureClient">Configures the base address and headers for the Authify API HttpClient.</param>
     /// <param name="configureBranding">Optional branding configuration (logo, theme colors, app name).</param>
+    /// <param name="configureRender"></param>
     public static IServiceCollection AddAuthifyWasmUI(this IServiceCollection services,
         Action<HttpClient> configureClient,
-        Action<AuthifyBrandOptions>? configureBranding = null)
+        Action<AuthifyBrandOptions>? configureBranding = null,
+        Action<AuthifyRenderOptions>? configureRender = null)
     {
-        services.AddAuthifyUI(configureBranding);
+        services.AddAuthifyUI(configureBranding, configureRender);
         
         services.AddHttpClient<IAuthRefreshService, AuthRefreshService>(client => 
         {
