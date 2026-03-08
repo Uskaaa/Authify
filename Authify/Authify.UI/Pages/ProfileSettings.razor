@@ -81,7 +81,7 @@
                 </div>
 
                 <div class="auth-px-8 auth-py-8">
-                    <EditForm Model="@_profileModel" OnValidSubmit="SaveProfile">
+                    <EditForm Model="@_profileModel" OnValidSubmit="SaveProfile" FormName="ProfileForm" method="post">
                         <DataAnnotationsValidator/>
 
                         <div class="auth-grid auth-grid-cols-1 auth-gap-y-6 auth-gap-x-8 lg:auth-grid-cols-2">

@@ -64,7 +64,7 @@
             </div>
             
             <div class="auth-px-8 auth-py-8">
-                <EditForm Model="@_passwordModel" OnValidSubmit="UpdatePassword">
+                <EditForm Model="@_passwordModel" OnValidSubmit="UpdatePassword" FormName="PasswordForm" method="post">
                     <DataAnnotationsValidator />
                     
                     <div class="auth-grid auth-grid-cols-1 auth-gap-y-6 auth-gap-x-8 lg:auth-grid-cols-2">

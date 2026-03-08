@@ -19,7 +19,7 @@
                 <p>@Loc["Subtitle_EnterCode"]</p>
             </div>
             
-            <EditForm Model="this" OnValidSubmit="HandleValidSubmit">
+            <EditForm Model="this" OnValidSubmit="HandleValidSubmit" FormName="OtpForm" method="post">
                 <div class="auth-stack">
                     
                     <input type="hidden" @bind="OtpCode" />
