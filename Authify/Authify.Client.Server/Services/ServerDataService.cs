@@ -1,44 +1,133 @@
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text.Json;
 using Authify.Application.Data;
 using Authify.Core.Common;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace Authify.Client.Server.Services;
 
 public class ServerDataService<TUser> : IAuthifyDataService where TUser : ApplicationUser, new()
 {
-    private readonly IAuthServiceCookie _authServiceCookie;
     private readonly IUserService _userService;
     private readonly IUserAccountService _userAccountService;
     private readonly IUserProfileService _userProfileService;
     private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IExternalLoginManagementService _externalLoginManagementService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<ServerDataService<TUser>> _logger;
+
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public ServerDataService(
-        IAuthServiceCookie authServiceCookie,
         IUserService userService,
         IUserAccountService userAccountService,
         IUserProfileService userProfileService,
         ITwoFactorClaimService twoFactorClaimService,
         IExternalLoginManagementService externalLoginManagementService,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHttpClientFactory httpClientFactory,
+        ILogger<ServerDataService<TUser>> logger)
     {
-        _authServiceCookie = authServiceCookie;
         _userService = userService;
         _userAccountService = userAccountService;
         _userProfileService = userProfileService;
         _twoFactorClaimService = twoFactorClaimService;
         _externalLoginManagementService = externalLoginManagementService;
         _httpContextAccessor = httpContextAccessor;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
     private string? GetCurrentUserId()
     {
         return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
+
+    // ---- HTTP proxy helpers for cookie-setting operations ----
+
+    /// <summary>
+    /// Creates an HttpClient for same-server calls. UseCookies is disabled so that
+    /// Set-Cookie headers are accessible on the response and can be forwarded to the browser.
+    /// </summary>
+    private HttpClient CreateLocalClient()
+    {
+        var httpCtx = _httpContextAccessor.HttpContext
+            ?? throw new InvalidOperationException("HTTP context is unavailable.");
+
+        var client = _httpClientFactory.CreateClient("AuthifyServerLocal");
+        client.BaseAddress = new Uri($"{httpCtx.Request.Scheme}://{httpCtx.Request.Host}");
+
+        // Forward the caller's cookies so the controller has full auth context if needed
+        var existingCookies = httpCtx.Request.Headers.Cookie.ToString();
+        if (!string.IsNullOrEmpty(existingCookies))
+        {
+            client.DefaultRequestHeaders.Remove("Cookie");
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", existingCookies);
+        }
+
+        return client;
+    }
+
+    /// <summary>
+    /// Copies Set-Cookie headers from an internal HTTP response back to the browser's response.
+    /// This only works when the current HTTP response has not yet started (i.e. SSR / form-POST context).
+    /// In Interactive Server mode the WebSocket handshake has already been sent, so headers are skipped.
+    /// </summary>
+    private void ForwardSetCookieHeaders(HttpResponseMessage internalResponse)
+    {
+        var httpCtx = _httpContextAccessor.HttpContext;
+        if (httpCtx is null || httpCtx.Response.HasStarted)
+            return;
+
+        if (internalResponse.Headers.TryGetValues("Set-Cookie", out var cookies))
+        {
+            foreach (var cookie in cookies)
+                httpCtx.Response.Headers.Append("Set-Cookie", cookie);
+        }
+    }
+
+    private async Task<OperationResult<T>> PostToAuthEndpointAsync<T>(string path, object body)
+    {
+        try
+        {
+            using var client = CreateLocalClient();
+            var response = await client.PostAsJsonAsync(path, body, JsonOptions);
+            ForwardSetCookieHeaders(response);
+
+            var result = await response.Content.ReadFromJsonAsync<OperationResult<T>>(JsonOptions);
+            return result ?? OperationResult<T>.Fail("Failed to deserialize auth response.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling auth endpoint {Path}", path);
+            return OperationResult<T>.Fail(ex.Message);
+        }
+    }
+
+    private async Task<OperationResult> PostToAuthEndpointAsync(string path, object? body = null)
+    {
+        try
+        {
+            using var client = CreateLocalClient();
+            var response = body is null
+                ? await client.PostAsync(path, content: null)
+                : await client.PostAsJsonAsync(path, body, JsonOptions);
+            ForwardSetCookieHeaders(response);
+
+            var result = await response.Content.ReadFromJsonAsync<OperationResult>(JsonOptions);
+            return result ?? OperationResult.Fail("Failed to deserialize auth response.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error calling auth endpoint {Path}", path);
+            return OperationResult.Fail(ex.Message);
+        }
     }
 
     // ---- Auth ----
@@ -63,63 +152,33 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         return OperationResult<string>.Ok(loginResult.Data?.CookieName ?? string.Empty);
     }
 
-    public async Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request)
-    {
-        var http = _httpContextAccessor.HttpContext;
-        if (http != null)
-        {
-            request.DeviceName ??= http.Request.Headers["Device-Name"].FirstOrDefault() ?? "Unknown";
-            request.IpAddress ??= http.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-        }
+    /// <summary>
+    /// Delegates to <see cref="CookieAuthController"/> via a real HTTP POST so that
+    /// ASP.NET Core Identity's SignInManager can write the HttpOnly auth cookie
+    /// to the HTTP response (required – cookies cannot be set over a WebSocket).
+    /// </summary>
+    public Task<OperationResult<LoginResponseDto>> LoginAsync(LoginRequest request)
+        => PostToAuthEndpointAsync<LoginResponseDto>("api/server-auth/login", request);
 
-        var cookieResult = await _authServiceCookie.LoginAsync(request);
-        if (!cookieResult.Success)
-            return OperationResult<LoginResponseDto>.Fail(cookieResult.ErrorMessage ?? "Login failed.");
+    /// <summary>
+    /// Delegates OTP verification to <see cref="CookieAuthController"/> via HTTP so the
+    /// auth cookie is written to a real HTTP response.
+    /// </summary>
+    public Task<OperationResult<OtpResponseDto>> JwtVerifyOtpAsync(OtpVerificationRequest request)
+        => PostToAuthEndpointAsync<OtpResponseDto>("api/server-auth/verify-otp", request);
 
-        if (string.IsNullOrEmpty(cookieResult.Data))
-        {
-            return OperationResult<LoginResponseDto>.Ok(new LoginResponseDto
-            {
-                ResultKind = LoginResultKind.Cookie,
-                CookieSet = true,
-                Message = "Cookie authentication succeeded."
-            });
-        }
-
-        // OTP required – Data contains the temporary OTP token
-        return OperationResult<LoginResponseDto>.Ok(new LoginResponseDto
-        {
-            ResultKind = LoginResultKind.Cookie,
-            Message = "OTP required.",
-            AccessToken = cookieResult.Data
-        });
-    }
-
-    public async Task<OperationResult<OtpResponseDto>> JwtVerifyOtpAsync(OtpVerificationRequest request)
-    {
-        var result = await _authServiceCookie.VerifyOtpAsync(request);
-        if (!result.Success)
-            return OperationResult<OtpResponseDto>.Fail(result.ErrorMessage ?? "OTP verification failed.");
-
-        // Cookie-based: no JWT tokens – return empty DTO to indicate success
-        return OperationResult<OtpResponseDto>.Ok(new OtpResponseDto());
-    }
-
-    public async Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request)
-    {
-        var result = await _authServiceCookie.VerifyOtpAsync(request);
-        return result.Success
-            ? OperationResult<string>.Ok("Cookie set successfully.")
-            : OperationResult<string>.Fail(result.ErrorMessage ?? "OTP verification failed.");
-    }
+    public Task<OperationResult<string>> CookieVerifyOtpAsync(OtpVerificationRequest request)
+        => PostToAuthEndpointAsync<string>("api/server-auth/verify-otp", request);
 
     public Task<OperationResult> ResendOtpAsync(ResendOtpRequest request)
-        => _authServiceCookie.ResendOtpAsync(request);
+        => PostToAuthEndpointAsync("api/server-auth/resend-otp", request);
 
-    /// <summary>Cookie-based logout. In server mode there is no JWT to invalidate.</summary>
-    public Task<OperationResult> JwtLogoutAsync() => _authServiceCookie.LogoutAsync();
+    /// <summary>Cookie-based logout via HTTP so Identity can clear the HttpOnly cookie.</summary>
+    public Task<OperationResult> JwtLogoutAsync()
+        => PostToAuthEndpointAsync("api/server-auth/logout");
 
-    public Task<OperationResult> CookieLogoutAsync() => _authServiceCookie.LogoutAsync();
+    public Task<OperationResult> CookieLogoutAsync()
+        => PostToAuthEndpointAsync("api/server-auth/logout");
 
     // ---- External Auth token helpers (no-ops in cookie mode) ----
 

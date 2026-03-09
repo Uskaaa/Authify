@@ -39,6 +39,16 @@ public static class ServiceCollectionExtensions
         // ensure HttpContextAccessor is available for ServerDataService
         services.AddHttpContextAccessor();
 
+        // Named HttpClient used by ServerDataService to call local cookie-setting endpoints.
+        // UseCookies=false is required so that Set-Cookie headers are accessible on the
+        // HttpResponseMessage and can be forwarded back to the browser's HTTP response.
+        services.AddHttpClient("AuthifyServerLocal")
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                UseCookies = false,
+                AllowAutoRedirect = false
+            });
+
         // register server-side implementation of IAuthifyDataService
         services.AddScoped<IAuthifyDataService, ServerDataService<TUser>>();
 

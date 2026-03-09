@@ -199,7 +199,9 @@
             if (cookieResult.Success)
             {
                 _error = false;
-                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
+                // forceLoad:true ensures a full HTTP round-trip so the HttpOnly auth cookie
+                // forwarded by ServerDataService is picked up by the browser.
+                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
             }
             else
             {

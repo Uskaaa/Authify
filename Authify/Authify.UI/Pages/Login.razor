@@ -160,7 +160,7 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
+                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
                 }
             }
             else if (loginResponse.ResultKind == LoginResultKind.Cookie)
@@ -174,7 +174,9 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: !string.IsNullOrEmpty(_returnUrl));
+                    // forceLoad:true is required so the browser makes a full HTTP request
+                    // and the server can attach the HttpOnly authentication cookie to the response.
+                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
                 }
             }
         }
