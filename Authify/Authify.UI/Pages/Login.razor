@@ -165,7 +165,16 @@
             }
             else if (loginResponse.ResultKind == LoginResultKind.Cookie)
             {
-                if (!loginResponse.CookieSet && !string.IsNullOrEmpty(loginResponse.AccessToken))
+                if (!string.IsNullOrEmpty(loginResponse.RedirectUrl))
+                {
+                    // Redirect to the complete-login HTTP endpoint so SignInManager can
+                    // write the HttpOnly auth cookie to a real HTTP response (not WebSocket).
+                    var redirectUrl = loginResponse.RedirectUrl;
+                    if (!string.IsNullOrEmpty(_returnUrl))
+                        redirectUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                    NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
+                }
+                else if (!loginResponse.CookieSet && !string.IsNullOrEmpty(loginResponse.AccessToken))
                 {
                     var otpUrl = "/otp?token=" + loginResponse.AccessToken;
                     if (!string.IsNullOrEmpty(_returnUrl))
@@ -174,8 +183,6 @@
                 }
                 else
                 {
-                    // forceLoad:true is required so the browser makes a full HTTP request
-                    // and the server can attach the HttpOnly authentication cookie to the response.
                     NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
                 }
             }

@@ -28,61 +28,111 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
         _userAccountService = userAccountService;
     }
 
-    public async Task<OperationResult<string>> LoginAsync(LoginRequest request)
+    // ---- Core validation logic (no SignInAsync) ----
+
+    public async Task<OperationResult<PendingLoginResult>> ValidateCredentialsAsync(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.UsernameOrEmail);
         if (user == null)
-            return OperationResult<string>.Fail("Invalid login attempt.");
+            return OperationResult<PendingLoginResult>.Fail("Invalid login attempt.");
 
         if (!await _userManager.IsEmailConfirmedAsync(user))
-            return OperationResult<string>.Fail("Please confirm your E-Mail first.");
+            return OperationResult<PendingLoginResult>.Fail("Please confirm your E-Mail first.");
 
         var deactivation = await _userAccountService.GetDeactivationStatusAsync(user.Id);
         if (deactivation.Data != null && deactivation.Data.IsDeactivated)
-            return OperationResult<string>.Fail("Your account is deactivated. Please contact support!");
+            return OperationResult<PendingLoginResult>.Fail("Your account is deactivated. Please contact support!");
 
-        var resultCheckSignIn =
-            await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+        var checkResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+        if (!checkResult.Succeeded)
+            return OperationResult<PendingLoginResult>.Fail("Ungültige Anmeldedaten!");
 
-        if (!resultCheckSignIn.Succeeded)
-            return OperationResult<string>.Fail("Ungültige Anmeldedaten!");
-
-        // 2FA prüfen
+        // Check 2-FA
         var preferredResult = await _twoFactorClaimService.GetPreferredAsync(user.Id);
         if (preferredResult.Success && preferredResult.Data != null)
         {
-            // Bevorzugte Methode auswählen
             var method = preferredResult.Data.Method;
             await _otpService.GenerateAndSendOtpAsync(user, method);
+            var otpToken = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe, method);
 
-            var token = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe, preferredResult.Data.Method);
-            return OperationResult<string>.Ok(token);
+            return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
+            {
+                RequiresOtp = true,
+                OtpToken = otpToken
+            });
         }
 
-        await _signInManager.SignInAsync(user, isPersistent: request.RememberMe);
-        return OperationResult<string>.Ok(null!);
+        return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
+        {
+            UserId = user.Id,
+            IsPersistent = request.RememberMe
+        });
     }
 
-    public async Task<OperationResult<string>> VerifyOtpAsync(OtpVerificationRequest request)
+    public async Task<OperationResult<PendingLoginResult>> ValidateOtpAsync(OtpVerificationRequest request)
     {
         var (email, rememberMe, method) = _otpService.ValidateToken(request.Token);
 
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
-            return OperationResult<string>.Fail("Benutzer nicht gefunden.");
+            return OperationResult<PendingLoginResult>.Fail("Benutzer nicht gefunden.");
 
         var isValid = await _otpService.ValidateOtpAsync(user, method, request.OtpCode);
         if (!isValid)
-            return OperationResult<string>.Fail("Invalid OTP code.");
+            return OperationResult<PendingLoginResult>.Fail("Invalid OTP code.");
 
-        await _signInManager.SignInAsync(user, isPersistent: rememberMe);
+        return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
+        {
+            UserId = user.Id,
+            IsPersistent = rememberMe
+        });
+    }
+
+    public async Task<OperationResult> CompleteSignInAsync(string userId, bool isPersistent)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return OperationResult.Fail("User not found.");
+
+        await _signInManager.SignInAsync(user, isPersistent: isPersistent);
+        return OperationResult.Ok();
+    }
+
+    // ---- Legacy methods (kept for backward compatibility) ----
+
+    [System.Obsolete("Use ValidateCredentialsAsync + CompleteSignInAsync for the HTTP redirect pattern.")]
+    public async Task<OperationResult<string>> LoginAsync(LoginRequest request)
+    {
+        var pending = await ValidateCredentialsAsync(request);
+        if (!pending.Success)
+            return OperationResult<string>.Fail(pending.ErrorMessage!);
+
+        if (pending.Data!.RequiresOtp)
+            return OperationResult<string>.Ok(pending.Data.OtpToken!);
+
+        await _signInManager.SignInAsync(
+            (await _userManager.FindByIdAsync(pending.Data.UserId!))!,
+            isPersistent: pending.Data.IsPersistent);
+
+        return OperationResult<string>.Ok(null!);
+    }
+
+    [System.Obsolete("Use ValidateOtpAsync + CompleteSignInAsync for the HTTP redirect pattern.")]
+    public async Task<OperationResult<string>> VerifyOtpAsync(OtpVerificationRequest request)
+    {
+        var pending = await ValidateOtpAsync(request);
+        if (!pending.Success)
+            return OperationResult<string>.Fail(pending.ErrorMessage!);
+
+        await _signInManager.SignInAsync(
+            (await _userManager.FindByIdAsync(pending.Data!.UserId!))!,
+            isPersistent: pending.Data.IsPersistent);
 
         return OperationResult<string>.Ok(null!);
     }
 
     public async Task<OperationResult> ResendOtpAsync(ResendOtpRequest request)
     {
-        // Token validieren (optional, abhängig von deiner Logik)
         var (email, rememberMe, method) = _otpService.ValidateToken(request.Token);
 
         if (!string.Equals(email, request.UsernameOrEmail, StringComparison.OrdinalIgnoreCase))
@@ -91,10 +141,8 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
             return OperationResult.Fail("Benutzer nicht gefunden.");
-        
-        // OTP senden mit gewünschter Methode
-        await _otpService.GenerateAndSendOtpAsync(user, request.TwoFactorMethod);
 
+        await _otpService.GenerateAndSendOtpAsync(user, request.TwoFactorMethod);
         return OperationResult.Ok();
     }
 
@@ -102,7 +150,7 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
     {
         try
         {
-            await _signInManager.SignOutAsync(); // beendet die Session und löscht das Auth-Cookie
+            await _signInManager.SignOutAsync();
             return OperationResult.Ok();
         }
         catch (Exception ex)

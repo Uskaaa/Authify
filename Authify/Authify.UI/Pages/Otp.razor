@@ -190,7 +190,20 @@
         if (jwtResult.Success)
         {
             _error = false;
-            NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+
+            var redirectUrl = jwtResult.Data?.RedirectUrl;
+            if (!string.IsNullOrEmpty(redirectUrl))
+            {
+                // Cookie auth: navigate to the complete-otp endpoint so SignInManager
+                // can write the HttpOnly cookie on a real HTTP response, then return here.
+                if (!string.IsNullOrEmpty(_returnUrl))
+                    redirectUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
+                NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
+            }
+            else
+            {
+                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+            }
         }
         else
         {
@@ -199,8 +212,6 @@
             if (cookieResult.Success)
             {
                 _error = false;
-                // forceLoad:true ensures a full HTTP round-trip so the HttpOnly auth cookie
-                // forwarded by ServerDataService is picked up by the browser.
                 NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
             }
             else

@@ -24,5 +24,12 @@ public class LoginResponseDto
 
     // Generic
     public string? Message { get; set; }
+
+    /// <summary>
+    /// When set, the client must perform a full-page navigation (forceLoad) to this URL
+    /// to complete the cookie-based authentication. The URL is a signed, time-limited
+    /// endpoint that calls SignInAsync inside a real HTTP request context.
+    /// </summary>
+    public string? RedirectUrl { get; set; }
 }
 

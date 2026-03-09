@@ -49,11 +49,12 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         return _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
-    // ---- HTTP proxy helpers for cookie-setting operations ----
+    // ---- HTTP proxy helpers for auth operations ----
 
     /// <summary>
-    /// Creates an HttpClient for same-server calls. UseCookies is disabled so that
-    /// Set-Cookie headers are accessible on the response and can be forwarded to the browser.
+    /// Creates an HttpClient pointing to this same server.
+    /// Used to call the local Cookie auth controllers which need a real HTTP context
+    /// to write Set-Cookie headers.
     /// </summary>
     private HttpClient CreateLocalClient()
     {
@@ -63,7 +64,7 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         var client = _httpClientFactory.CreateClient("AuthifyServerLocal");
         client.BaseAddress = new Uri($"{httpCtx.Request.Scheme}://{httpCtx.Request.Host}");
 
-        // Forward the caller's cookies so the controller has full auth context if needed
+        // Forward the caller's cookies so the controller has auth context if needed
         var existingCookies = httpCtx.Request.Headers.Cookie.ToString();
         if (!string.IsNullOrEmpty(existingCookies))
         {
@@ -74,32 +75,12 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         return client;
     }
 
-    /// <summary>
-    /// Copies Set-Cookie headers from an internal HTTP response back to the browser's response.
-    /// This only works when the current HTTP response has not yet started (i.e. SSR / form-POST context).
-    /// In Interactive Server mode the WebSocket handshake has already been sent, so headers are skipped.
-    /// </summary>
-    private void ForwardSetCookieHeaders(HttpResponseMessage internalResponse)
-    {
-        var httpCtx = _httpContextAccessor.HttpContext;
-        if (httpCtx is null || httpCtx.Response.HasStarted)
-            return;
-
-        if (internalResponse.Headers.TryGetValues("Set-Cookie", out var cookies))
-        {
-            foreach (var cookie in cookies)
-                httpCtx.Response.Headers.Append("Set-Cookie", cookie);
-        }
-    }
-
     private async Task<OperationResult<T>> PostToAuthEndpointAsync<T>(string path, object body)
     {
         try
         {
             using var client = CreateLocalClient();
             var response = await client.PostAsJsonAsync(path, body, JsonOptions);
-            ForwardSetCookieHeaders(response);
-
             var result = await response.Content.ReadFromJsonAsync<OperationResult<T>>(JsonOptions);
             return result ?? OperationResult<T>.Fail("Failed to deserialize auth response.");
         }
@@ -118,8 +99,6 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
             var response = body is null
                 ? await client.PostAsync(path, content: null)
                 : await client.PostAsJsonAsync(path, body, JsonOptions);
-            ForwardSetCookieHeaders(response);
-
             var result = await response.Content.ReadFromJsonAsync<OperationResult>(JsonOptions);
             return result ?? OperationResult.Fail("Failed to deserialize auth response.");
         }
