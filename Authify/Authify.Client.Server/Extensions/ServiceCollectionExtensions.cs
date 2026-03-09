@@ -23,7 +23,6 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configureOptions">Infrastructure options (DB, OAuth providers, …).</param>
     /// <param name="configureBranding">Optional branding configuration (logo, theme colors, app name).</param>
-    /// <param name="configureRender"></param>
     public static IServiceCollection AddAuthifyServerUI<TDbContext, TUser>(this IServiceCollection services,
         Action<InfrastructureOptions> configureOptions,
         Action<AuthifyBrandOptions>? configureBranding = null)
@@ -32,6 +31,8 @@ public static class ServiceCollectionExtensions
     {
         var options = new InfrastructureOptions();
         configureOptions(options);
+        
+        services.AddAuthifyUI(configureBranding);
         
         services.AddAuthifyApplication<TDbContext, TUser>(configureOptions);
 
