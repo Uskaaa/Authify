@@ -61,28 +61,41 @@
                         </label>
                         <InputText @bind-Value="_createRequest.Email" type="email" placeholder="max@unternehmen.de"
                                    class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
-                        <p class="auth-text-xs auth-text-slate-400">Leer lassen für allgemeine Einladungen.</p>
+                        @if (!string.IsNullOrWhiteSpace(_createRequest.Email))
+                        {
+                            <div class="auth-flex auth-items-center auth-gap-1.5 auth-text-xs auth-text-primary-600 dark:auth-text-primary-400 auth-mt-1">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Der Einladungslink wird direkt an diese E-Mail-Adresse gesendet. Der Link kann nur einmal verwendet werden.</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="auth-text-xs auth-text-slate-400">Leer lassen für einen allgemeinen Link, den du selbst weitergibst.</p>
+                        }
                     </div>
 
-                    <div class="auth-space-y-1.5">
-                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
-                            Maximale Verwendungen
-                        </label>
-                        <div class="auth-flex auth-items-center auth-gap-3">
-                            <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
-                                <input type="checkbox" @bind="_unlimited" class="auth-rounded" />
-                                <span class="auth-text-sm auth-text-slate-600 dark:auth-text-slate-400">Unbegrenzt</span>
+                    @if (string.IsNullOrWhiteSpace(_createRequest.Email))
+                    {
+                        <div class="auth-space-y-1.5">
+                            <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                                Maximale Verwendungen
                             </label>
-                            @if (!_unlimited)
-                            {
-                                <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10"
-                                             class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
-                            }
+                            <div class="auth-flex auth-items-center auth-gap-3">
+                                <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
+                                    <input type="checkbox" @bind="_unlimited" class="auth-rounded" />
+                                    <span class="auth-text-sm auth-text-slate-600 dark:auth-text-slate-400">Unbegrenzt</span>
+                                </label>
+                                @if (!_unlimited)
+                                {
+                                    <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10"
+                                                 class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                                }
+                            </div>
+                            <p class="auth-text-xs auth-text-slate-400">
+                                Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
+                            </p>
                         </div>
-                        <p class="auth-text-xs auth-text-slate-400">
-                            Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
-                        </p>
-                    </div>
+                    }
 
                     <div class="auth-space-y-1.5">
                         <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
@@ -98,7 +111,7 @@
                     <button type="submit" disabled="@_isSaving"
                             class="auth-px-5 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
                         @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
-                        Einladung erstellen
+                        @(string.IsNullOrWhiteSpace(_createRequest.Email) ? "Einladungslink erstellen" : "Einladung senden")
                     </button>
                     <button type="button" @onclick="() => { _showCreateForm = false; _errorMessage = null; }"
                             class="auth-px-4 auth-py-2.5 auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-text-slate-600 dark:auth-text-slate-300 auth-rounded-xl auth-text-sm auth-font-medium auth-transition-colors hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800">
@@ -119,18 +132,30 @@
         <div class="auth-bg-green-50 dark:auth-bg-green-900/20 auth-border auth-border-green-200 dark:auth-border-green-800 auth-rounded-2xl auth-p-5 auth-mb-6">
             <div class="auth-flex auth-items-center auth-gap-2 auth-mb-2">
                 <i class="fa-solid fa-check-circle auth-text-green-500"></i>
-                <span class="auth-text-sm auth-font-semibold auth-text-green-700 dark:auth-text-green-300">Einladung erstellt!</span>
+                <span class="auth-text-sm auth-font-semibold auth-text-green-700 dark:auth-text-green-300">
+                    @(_newInvitationSentByEmail ? "Einladung per E-Mail gesendet!" : "Einladungslink erstellt!")
+                </span>
             </div>
-            <p class="auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 auth-mb-2">Teile diesen Link mit der Person, die du einladen möchtest:</p>
-            <div class="auth-flex auth-items-center auth-gap-2">
-                <code class="auth-flex-1 auth-bg-white dark:auth-bg-slate-800 auth-px-3 auth-py-2 auth-rounded-lg auth-text-xs auth-text-slate-700 dark:auth-text-slate-300 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-break-all">
-                    @_newInvitationLink
-                </code>
-                <button @onclick="CopyLink"
-                        class="auth-flex-shrink-0 auth-px-3 auth-py-2 auth-bg-white dark:auth-bg-slate-800 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-rounded-lg auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 hover:auth-bg-slate-50 dark:hover:auth-bg-slate-700 auth-transition-colors">
-                    @(_copied ? "✓ Kopiert" : "Kopieren")
-                </button>
-            </div>
+            @if (_newInvitationSentByEmail)
+            {
+                <p class="auth-text-xs auth-text-slate-600 dark:auth-text-slate-400">
+                    Die Einladung wurde direkt an <strong>@_newInvitationEmail</strong> gesendet.
+                    Der Link kann nur einmal verwendet werden und ist nur für diese E-Mail-Adresse gültig.
+                </p>
+            }
+            else
+            {
+                <p class="auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 auth-mb-2">Teile diesen Link mit der Person, die du einladen möchtest:</p>
+                <div class="auth-flex auth-items-center auth-gap-2">
+                    <code class="auth-flex-1 auth-bg-white dark:auth-bg-slate-800 auth-px-3 auth-py-2 auth-rounded-lg auth-text-xs auth-text-slate-700 dark:auth-text-slate-300 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-break-all">
+                        @_newInvitationLink
+                    </code>
+                    <button @onclick="CopyLink"
+                            class="auth-flex-shrink-0 auth-px-3 auth-py-2 auth-bg-white dark:auth-bg-slate-800 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-rounded-lg auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 hover:auth-bg-slate-50 dark:hover:auth-bg-slate-700 auth-transition-colors">
+                        @(_copied ? "✓ Kopiert" : "Kopieren")
+                    </button>
+                </div>
+            }
         </div>
     }
 
@@ -220,6 +245,8 @@
     private bool _copied;
     private string? _errorMessage;
     private string? _newInvitationLink;
+    private bool _newInvitationSentByEmail;
+    private string? _newInvitationEmail;
 
     private CreateInvitationRequest _createRequest = new() { ExpirationDays = 7 };
 
@@ -250,8 +277,14 @@
         _isSaving = true;
         _errorMessage = null;
         _newInvitationLink = null;
+        _newInvitationSentByEmail = false;
+        _newInvitationEmail = null;
 
-        if (_unlimited) _createRequest.MaxUses = null;
+        // Bei persönlicher Einladung MaxUses ignorieren (Server erzwingt 1)
+        if (!string.IsNullOrWhiteSpace(_createRequest.Email))
+            _createRequest.MaxUses = null;
+        else if (_unlimited)
+            _createRequest.MaxUses = null;
 
         var result = await TeamDataService.CreateInvitationAsync(_createRequest);
         _isSaving = false;
@@ -260,10 +293,18 @@
         {
             _invitations.Insert(0, result.Data);
             _showCreateForm = false;
+            var sentEmail = _createRequest.Email;
             _createRequest = new() { ExpirationDays = 7 };
             _unlimited = false;
+
             var baseUrl = NavigationManager.BaseUri.TrimEnd('/');
             _newInvitationLink = $"{baseUrl}/accept-invitation?token={result.Data.Token}";
+
+            if (!string.IsNullOrWhiteSpace(sentEmail))
+            {
+                _newInvitationSentByEmail = true;
+                _newInvitationEmail = sentEmail;
+            }
         }
         else
         {
