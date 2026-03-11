@@ -404,6 +404,109 @@ Call order matters: always call the Teams extension **after** the base UI extens
 
 ---
 
+## LDAP / Active Directory Integration (optional)
+
+LDAP support is an optional add-on that allows a team admin to connect a corporate Active Directory / LDAP server so that employees can log in with their domain credentials.
+
+### How it works (Just-in-Time Provisioning)
+
+No bulk import — users are **created on first login**:
+
+1. User enters `hans@company.com` + domain password on the Authify login page
+2. Authify extracts the domain (`company.com`) and looks up an active `LdapConfiguration` for that domain
+3. If found: Authify performs a **Search-Bind** against the configured domain controller
+   - Service account binds with `BindDn` + `BindPassword`
+   - Searches for the user's DN via `SearchFilter` (e.g. `(&(objectClass=user)(mail={0}))`)
+   - Re-binds with the found DN + the user's actual password
+4. On success: a local ASP.NET Identity user is created (`IsLdapUser=true`, no password hash) and automatically assigned to the team via the `LdapConfiguration.TeamId`
+5. On subsequent logins the existing local user is found and LDAP bind is re-verified
+
+The `BindPassword` is stored encrypted using the ASP.NET Data Protection API — it is never returned in API responses.
+
+### Setup — Blazor Server with LDAP
+
+#### 1. Extend your DbContext (add `ILdapDbContext`)
+
+```csharp
+public class MyDbContext : DbContext, IAuthifyDbContext, ITeamDbContext, ILdapDbContext
+{
+    public DbSet<ApplicationUser> Users { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<TeamMember> TeamMembers { get; set; }
+    public DbSet<InvitationLink> InvitationLinks { get; set; }
+    public DbSet<LdapConfiguration> LdapConfigurations { get; set; }  // ← add this
+}
+```
+
+#### 2. Register services (`Program.cs`)
+
+```csharp
+builder.Services
+    .AddAuthifyServer<MyDbContext, ApplicationUser>(options =>
+    {
+        options.ConnectionString = builder.Configuration.GetConnectionString("Default")!;
+    })
+    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>()
+    .AddAuthifyServerLdap<MyDbContext, ApplicationUser>();   // ← add this
+
+builder.Services
+    .AddAuthifyUI()
+    .AddAuthifyUITeams()
+    .AddAuthifyUILdap();                                     // ← add this
+```
+
+#### 3. Add & run the migration
+
+```bash
+dotnet ef migrations add AddLdap --project YourDataProject
+dotnet ef database update
+```
+
+### Setup — Blazor WebAssembly + separate API with LDAP
+
+#### Backend (`Program.cs`)
+
+```csharp
+builder.Services
+    .AddAuthifyServer<MyDbContext, ApplicationUser>(options => { ... })
+    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>()
+    .AddAuthifyServerLdap<MyDbContext, ApplicationUser>();   // ← add this
+```
+
+#### Frontend (`Program.cs` of the WASM project)
+
+```csharp
+builder.Services
+    .AddAuthifyWasm(options => { options.BaseApiUrl = "https://your-api.com"; })
+    .AddAuthifyWasmTeams(options => { options.BaseApiUrl = "https://your-api.com"; })
+    .AddAuthifyWasmLdap(options => { options.BaseApiUrl = "https://your-api.com"; }); // ← add this
+
+builder.Services
+    .AddAuthifyUI()
+    .AddAuthifyUITeams()
+    .AddAuthifyUILdap();
+```
+
+### Using the LDAP admin UI
+
+Once enabled, team admins see a new **"LDAP / Active Directory"** entry in the Admin Settings section of the profile navigation. From there they can:
+
+- Create one or more LDAP configurations (multiple domains supported)
+- Set the domain (e.g. `company.com`), DC host, port, Base DN, Bind DN, search filter
+- Toggle SSL / LDAPS
+- Test the connection with a live button (shows found entries)
+- Enable / disable individual configurations without deleting them
+
+### Modularity guarantee
+
+If `AddAuthifyServerLdap` / `AddAuthifyWasmLdap` and `AddAuthifyUILdap` are **not** called:
+
+- `NullLdapService` is registered — `GetConfigurationForDomainAsync` always returns `null`
+- Login flow skips LDAP entirely with zero overhead
+- The LDAP nav item and admin page are hidden from all users
+
+---
+
 ## Project Structure
 
 ```
