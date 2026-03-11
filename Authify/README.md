@@ -264,6 +264,146 @@ A built-in `applyTheme` script restores the user's last preference from `localSt
 
 ---
 
+## Team Account Features (optional)
+
+Team features are **opt-in**. When disabled (the default), nothing changes for solo-account apps — the UI pages and nav items simply don't appear. Enable them per project by following the steps below.
+
+### What you get when enabled
+
+| Route | Page |
+|---|---|
+| `/admin/team-settings` | Create / edit / delete your company team |
+| `/admin/team-members` | List employees, add new member accounts |
+| `/admin/team-invitations` | Generate invitation links (single-person or multi-use) |
+| `/accept-invitation?token=…` | Public registration page for invited users |
+
+The profile sidebar automatically shows an **Admin-Einstellungen** section for the team admin. Non-admin team members see a restricted nav (no Privacy / Billing items, no admin section).
+
+---
+
+### Setup — Blazor Server with Teams
+
+#### 1. Extend your DbContext
+
+Your `AppDbContext` must implement **both** `IAuthifyDbContext` and `ITeamDbContext`:
+
+```csharp
+using Authify.Application.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+public class AppDbContext : IdentityDbContext<AppUser>, IAuthifyDbContext, ITeamDbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    // ITeamDbContext
+    public DbSet<Team> Teams { get; set; } = null!;
+    public DbSet<TeamMember> TeamMembers { get; set; } = null!;
+    public DbSet<TeamInvitation> TeamInvitations { get; set; } = null!;
+}
+```
+
+#### 2. Register services (`Program.cs`)
+
+Call `AddAuthifyServerTeams` **after** `AddAuthifyServerUI`:
+
+```csharp
+// Base auth (unchanged)
+builder.Services.AddAuthifyServerUI<AppDbContext, AppUser>(options => { /* … */ });
+
+// Enable team features
+builder.Services.AddAuthifyServerTeams<AppDbContext, AppUser>();
+```
+
+#### 3. Add & run the migration
+
+```bash
+dotnet ef migrations add AddTeamFeatures --project YourHostProject
+dotnet ef database update
+```
+
+---
+
+### Setup — Blazor WebAssembly + separate API with Teams
+
+#### 1. Backend — extend DbContext (same as above)
+
+```csharp
+public class AppDbContext : IdentityDbContext<AppUser>, IAuthifyDbContext, ITeamDbContext
+{
+    public DbSet<Team> Teams { get; set; } = null!;
+    public DbSet<TeamMember> TeamMembers { get; set; } = null!;
+    public DbSet<TeamInvitation> TeamInvitations { get; set; } = null!;
+}
+```
+
+#### 2. Backend — register services (`Program.cs`)
+
+```csharp
+// Base (unchanged)
+builder.Services.AddAuthifyApplication<AppDbContext, AppUser>(options => { /* … */ });
+
+// Enable team features on the API side
+builder.Services.AddAuthifyTeams<AppDbContext, AppUser>();
+```
+
+#### 3. Frontend — register services (`Program.cs` of the WASM project)
+
+Call `AddAuthifyWasmTeams` **after** `AddAuthifyWasmUI`:
+
+```csharp
+// Base (unchanged)
+builder.Services.AddAuthifyWasmUI(client =>
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+// Enable team features in the UI
+builder.Services.AddAuthifyWasmTeams(client =>
+    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+```
+
+#### 4. Add & run the migration
+
+```bash
+dotnet ef migrations add AddTeamFeatures --project YourApiProject
+dotnet ef database update
+```
+
+---
+
+### How the invitation flow works
+
+1. Admin opens **Admin-Einstellungen → Einladungslinks** and creates a link
+   - Optional: restrict to a specific e-mail address (single-person invite)
+   - Optional: set a maximum number of uses (e.g. `10`) or leave unlimited
+   - Optional: set an expiry (days) — default 7 days
+2. Authify generates a **256-bit cryptographically random token** (URL-safe Base64, ~43 chars) — not guessable
+3. The generated link looks like: `https://yourapp.com/accept-invitation?token=<token>`
+4. The invited person opens the link, fills in their name, e-mail and password, and clicks **Team beitreten**
+5. After success they are redirected to `/reset-password?…&invited=true` to confirm their password
+
+---
+
+### How admin-created member accounts work
+
+The admin can also create accounts directly (**Mitarbeiter → Mitarbeiter hinzufügen**):
+- Requires only **Full Name** and **E-Mail**
+- A secure temporary password is auto-generated server-side
+- The account is created with `EmailConfirmed = true` (no confirmation e-mail needed)
+- The member logs in normally — they should use **Security Settings** to change their password
+
+---
+
+### Modularity guarantee
+
+| Scenario | Behaviour |
+|---|---|
+| `AddAuthifyServerTeams` / `AddAuthifyWasmTeams` **not called** | `TeamFeatureOptions.IsEnabled = false`; all admin pages return early, nav items hidden, `NullTeamDataService` registered as fallback — no DI errors |
+| `AddAuthifyServerTeams` / `AddAuthifyWasmTeams` **called** | `TeamFeatureOptions.IsEnabled = true`; all pages and nav items active |
+
+Call order matters: always call the Teams extension **after** the base UI extension.
+
+---
+
 ## Project Structure
 
 ```
