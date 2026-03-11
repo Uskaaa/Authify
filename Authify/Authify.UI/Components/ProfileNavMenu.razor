@@ -33,7 +33,7 @@
         </div>
     }
 
-    @if (TeamFeature.IsEnabled && _isTeamAdmin)
+    @if (TeamFeature.IsEnabled && !_isTeamMember)
     {
         <div>
             <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
