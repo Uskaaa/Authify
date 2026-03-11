@@ -1,5 +1,6 @@
 using Authify.Application.Data;
 using Authify.Core.Common;
+using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.Core.Models.Teams;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +13,16 @@ public class TeamService<TUser> : ITeamService
 {
     private readonly ITeamDbContext _db;
     private readonly UserManager<TUser> _userManager;
+    private readonly IEmailSender _emailSender;
+    private readonly InfrastructureOptions _options;
 
-    public TeamService(ITeamDbContext db, UserManager<TUser> userManager)
+    public TeamService(ITeamDbContext db, UserManager<TUser> userManager,
+        IEmailSender emailSender, InfrastructureOptions options)
     {
         _db = db;
         _userManager = userManager;
+        _emailSender = emailSender;
+        _options = options;
     }
 
     public async Task<OperationResult<TeamDto>> CreateTeamAsync(string adminUserId, CreateTeamRequest request)
@@ -157,18 +163,18 @@ public class TeamService<TUser> : ITeamService
                 return OperationResult<TeamMemberDto>.Fail("Dieser Nutzer ist bereits Mitglied des Teams.");
         }
 
-        // Temporäres Passwort generieren wenn nicht angegeben
         var tempPassword = request.TemporaryPassword ?? GenerateTemporaryPassword();
+        bool isNewUser = existingUser == null;
 
         TUser? user;
-        if (existingUser == null)
+        if (isNewUser)
         {
             user = new TUser
             {
                 FullName = request.FullName,
                 UserName = request.Email,
                 Email = request.Email,
-                EmailConfirmed = true // Admin-erstellte Accounts brauchen keine E-Mail-Bestätigung
+                EmailConfirmed = true
             };
 
             var createResult = await _userManager.CreateAsync(user, tempPassword);
@@ -190,6 +196,34 @@ public class TeamService<TUser> : ITeamService
         _db.TeamMembers.Add(member);
         await _db.SaveChangesAsync();
 
+        // Passwort-Reset-Link generieren und per E-Mail senden
+        string? returnedPassword = null;
+        if (isNewUser)
+        {
+            try
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var encodedToken = Uri.EscapeDataString(resetToken);
+                var encodedEmail = Uri.EscapeDataString(user.Email!);
+                var resetLink = $"{_options.Domain.TrimEnd('/')}/reset-password?email={encodedEmail}&token={encodedToken}&invited=true";
+
+                var html = $"""
+                    <p>Hallo {user.FullName},</p>
+                    <p>Du wurdest dem Team <strong>{team.Name}</strong> hinzugefügt.</p>
+                    <p>Bitte klicke auf den folgenden Link um dein Passwort festzulegen:</p>
+                    <p><a href="{resetLink}">{resetLink}</a></p>
+                    <p>Der Link ist 24 Stunden gültig.</p>
+                    """;
+
+                await _emailSender.SendEmailAsync(user.Email!, $"Du wurdest zu {team.Name} hinzugefügt", html);
+            }
+            catch
+            {
+                // E-Mail-Versand fehlgeschlagen – Admin erhält das Passwort zur manuellen Weitergabe
+                returnedPassword = tempPassword;
+            }
+        }
+
         return OperationResult<TeamMemberDto>.Ok(new TeamMemberDto
         {
             Id = member.Id,
@@ -197,7 +231,8 @@ public class TeamService<TUser> : ITeamService
             FullName = user.FullName ?? request.FullName,
             Email = user.Email ?? request.Email,
             Role = member.Role,
-            JoinedAt = member.JoinedAt
+            JoinedAt = member.JoinedAt,
+            TemporaryPassword = returnedPassword
         });
     }
 

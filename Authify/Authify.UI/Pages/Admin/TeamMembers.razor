@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 <p class="auth-mt-3 auth-text-xs auth-text-slate-400 dark:auth-text-slate-500">
-                    Ein temporäres Passwort wird automatisch generiert. Der Mitarbeiter kann es beim ersten Login ändern.
+                    Der Mitarbeiter erhält automatisch eine E-Mail mit einem Link zum Passwort festlegen.
                 </p>
                 <div class="auth-flex auth-gap-3 auth-mt-4">
                     <button type="submit" disabled="@_isSaving"
@@ -85,11 +85,35 @@
                 {
                     <div class="auth-mt-3 auth-text-sm auth-text-red-500">@_errorMessage</div>
                 }
-                @if (!string.IsNullOrEmpty(_successMessage))
-                {
-                    <div class="auth-mt-3 auth-text-sm auth-text-green-600 dark:auth-text-green-400">@_successMessage</div>
-                }
             </EditForm>
+        </div>
+    }
+
+    <!-- Erfolgs-/Passwort-Banner -->
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="auth-bg-@(_newMemberTempPassword != null ? "amber" : "green")-50 dark:auth-bg-@(_newMemberTempPassword != null ? "amber" : "green")-900/20 auth-border auth-border-@(_newMemberTempPassword != null ? "amber" : "green")-200 dark:auth-border-@(_newMemberTempPassword != null ? "amber" : "green")-800 auth-rounded-2xl auth-p-5 auth-mb-6">
+            <div class="auth-flex auth-items-center auth-gap-2 auth-mb-2">
+                <i class="fa-solid @(_newMemberTempPassword != null ? "fa-triangle-exclamation auth-text-amber-500" : "fa-check-circle auth-text-green-500")"></i>
+                <span class="auth-text-sm auth-font-semibold @(_newMemberTempPassword != null ? "auth-text-amber-700 dark:auth-text-amber-300" : "auth-text-green-700 dark:auth-text-green-300")">@_successMessage</span>
+            </div>
+            @if (_newMemberTempPassword != null)
+            {
+                <div class="auth-flex auth-items-center auth-gap-2 auth-mt-2">
+                    <code class="auth-flex-1 auth-bg-white dark:auth-bg-slate-800 auth-px-3 auth-py-2 auth-rounded-lg auth-text-sm auth-font-mono auth-text-slate-800 dark:auth-text-slate-200 auth-border auth-border-amber-200 dark:auth-border-amber-700">
+                        @_newMemberTempPassword
+                    </code>
+                    <button @onclick="() => _newMemberTempPassword = null"
+                            class="auth-flex-shrink-0 auth-p-2 auth-text-slate-400 hover:auth-text-slate-600 dark:hover:auth-text-slate-200 auth-transition-colors"
+                            title="Schließen">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <p class="auth-mt-2 auth-text-xs auth-text-amber-600 dark:auth-text-amber-400">
+                    <i class="fa-solid fa-info-circle auth-mr-1"></i>
+                    Dieses Passwort wird nur einmalig angezeigt. Bitte sicher aufbewahren und dem Mitarbeiter mitteilen.
+                </p>
+            }
         </div>
     }
 
@@ -151,6 +175,7 @@
     private bool _hasTeam = true;
     private string? _errorMessage;
     private string? _successMessage;
+    private string? _newMemberTempPassword; // nur befüllt wenn E-Mail-Versand fehlschlug
 
     private CreateTeamMemberRequest _createRequest = new();
 
@@ -182,17 +207,28 @@
         _isSaving = true;
         _errorMessage = null;
         _successMessage = null;
+        _newMemberTempPassword = null;
         var result = await TeamDataService.CreateMemberAsync(_createRequest);
         _isSaving = false;
 
         if (result.Success && result.Data != null)
         {
             _members.Add(result.Data);
-            _successMessage = $"Mitarbeiter \"{result.Data.FullName}\" wurde erfolgreich angelegt.";
             _createRequest = new();
             _showAddForm = false;
-            await Task.Delay(3000);
-            _successMessage = null;
+
+            if (!string.IsNullOrEmpty(result.Data.TemporaryPassword))
+            {
+                // E-Mail konnte nicht gesendet werden – Passwort dem Admin anzeigen
+                _newMemberTempPassword = result.Data.TemporaryPassword;
+                _successMessage = $"Mitarbeiter \"{result.Data.FullName}\" wurde angelegt. E-Mail-Versand fehlgeschlagen – bitte Passwort manuell weitergeben:";
+            }
+            else
+            {
+                _successMessage = $"Mitarbeiter \"{result.Data.FullName}\" wurde angelegt. Eine E-Mail mit dem Passwort-Reset-Link wurde gesendet.";
+                await Task.Delay(4000);
+                _successMessage = null;
+            }
         }
         else
         {
