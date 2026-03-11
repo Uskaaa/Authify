@@ -2,11 +2,13 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
+@using Authify.Core.Features
 
 @inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @inject IStringLocalizer<Login> Loc
+@inject TeamFeatureOptions TeamFeature
 
 <RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
@@ -90,6 +92,13 @@
             <p class="auth-footer">
                 @Loc["Footer_NoAccount"] <a href="register">@Loc["Link_Register"]</a>
             </p>
+
+            @if (TeamFeature.IsEnabled)
+            {
+                <p class="auth-footer" style="margin-top: 0.5rem;">
+                    <a href="admin/team-settings" style="font-size:0.8em; color: var(--auth-color-muted);">Team-Account erstellen</a>
+                </p>
+            }
         </div>
     </div>
 </div>

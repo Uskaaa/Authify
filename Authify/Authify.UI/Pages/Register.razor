@@ -2,10 +2,12 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
+@using Authify.Core.Features
 @inject IAuthifyDataService DataService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @inject IStringLocalizer<Register> Loc
+@inject TeamFeatureOptions TeamFeature
 
 <RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
@@ -130,6 +132,17 @@
         var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
         _returnUrl = queryParams.GetValueOrDefault("returnUrl").ToString();
         if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
+
+        // Einladungstoken: Wenn vorhanden, zur AcceptInvitation-Seite weiterleiten
+        if (TeamFeature.IsEnabled)
+        {
+            var invitationToken = queryParams.GetValueOrDefault("token").ToString();
+            if (!string.IsNullOrEmpty(invitationToken))
+            {
+                NavigationManager.NavigateTo($"/accept-invitation?token={Uri.EscapeDataString(invitationToken)}");
+                return;
+            }
+        }
 
         if (uri.Fragment.Length > 1)
         {

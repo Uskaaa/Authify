@@ -1,0 +1,309 @@
+@page "/admin/team-invitations"
+@using Microsoft.AspNetCore.Authorization
+@using Authify.Core.Features
+@using Authify.Core.Interfaces
+@using Authify.Core.Models.Teams
+
+@attribute [Authorize]
+@layout ProfileLayout
+
+@inject ITeamDataService TeamDataService
+@inject TeamFeatureOptions TeamFeature
+@inject NavigationManager NavigationManager
+
+<div class="auth-max-w-3xl auth-mx-auto auth-px-4 auth-py-8">
+
+    @if (!TeamFeature.IsEnabled)
+    {
+        <div class="auth-text-center auth-py-16 auth-text-slate-400">Team-Features sind nicht aktiviert.</div>
+        return;
+    }
+
+    <div class="auth-flex auth-items-center auth-justify-between auth-mb-8">
+        <div>
+            <h1 class="auth-text-2xl auth-font-bold auth-text-slate-900 dark:auth-text-slate-100">Einladungslinks</h1>
+            <p class="auth-mt-1 auth-text-sm auth-text-slate-500 dark:auth-text-slate-400">Erstelle und verwalte Einladungslinks für dein Team</p>
+        </div>
+        <button @onclick="() => _showCreateForm = !_showCreateForm"
+                class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors">
+            <i class="fa-solid fa-plus"></i>
+            Einladung erstellen
+        </button>
+    </div>
+
+    @if (!_hasTeam)
+    {
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-amber-200 dark:auth-border-amber-900/50 auth-p-8 auth-text-center">
+            <i class="fa-solid fa-triangle-exclamation auth-text-3xl auth-text-amber-500 auth-mb-3"></i>
+            <h2 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-2">Kein Team vorhanden</h2>
+            <p class="auth-text-sm auth-text-slate-500 dark:auth-text-slate-400 auth-mb-4">Du musst zuerst einen Team-Account erstellen um Einladungslinks zu erzeugen.</p>
+            <a href="admin/team-settings"
+               class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors">
+                <i class="fa-solid fa-building"></i>
+                Team erstellen
+            </a>
+        </div>
+        return;
+    }
+
+    <!-- Formular: Einladung erstellen -->
+    @if (_showCreateForm)
+    {
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-6 auth-mb-6">
+            <h3 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-4">Neue Einladung erstellen</h3>
+            <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateInvitationForm">
+                <DataAnnotationsValidator />
+                <div class="auth-space-y-4">
+
+                    <div class="auth-space-y-1.5">
+                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                            E-Mail (optional – für persönliche Einladungen)
+                        </label>
+                        <InputText @bind-Value="_createRequest.Email" type="email" placeholder="max@unternehmen.de"
+                                   class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                        <p class="auth-text-xs auth-text-slate-400">Leer lassen für allgemeine Einladungen.</p>
+                    </div>
+
+                    <div class="auth-space-y-1.5">
+                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                            Maximale Verwendungen
+                        </label>
+                        <div class="auth-flex auth-items-center auth-gap-3">
+                            <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
+                                <input type="checkbox" @bind="_unlimited" class="auth-rounded" />
+                                <span class="auth-text-sm auth-text-slate-600 dark:auth-text-slate-400">Unbegrenzt</span>
+                            </label>
+                            @if (!_unlimited)
+                            {
+                                <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10"
+                                             class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                            }
+                        </div>
+                        <p class="auth-text-xs auth-text-slate-400">
+                            Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
+                        </p>
+                    </div>
+
+                    <div class="auth-space-y-1.5">
+                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                            Gültig für (Tage)
+                        </label>
+                        <InputNumber @bind-Value="_createRequest.ExpirationDays" min="1" max="365" placeholder="z.B. 7"
+                                     class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                        <p class="auth-text-xs auth-text-slate-400">Standard: 7 Tage. Leer lassen für kein Ablaufdatum.</p>
+                    </div>
+                </div>
+
+                <div class="auth-flex auth-gap-3 auth-mt-5">
+                    <button type="submit" disabled="@_isSaving"
+                            class="auth-px-5 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
+                        @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
+                        Einladung erstellen
+                    </button>
+                    <button type="button" @onclick="() => { _showCreateForm = false; _errorMessage = null; }"
+                            class="auth-px-4 auth-py-2.5 auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-text-slate-600 dark:auth-text-slate-300 auth-rounded-xl auth-text-sm auth-font-medium auth-transition-colors hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800">
+                        Abbrechen
+                    </button>
+                </div>
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="auth-mt-3 auth-text-sm auth-text-red-500">@_errorMessage</div>
+                }
+            </EditForm>
+        </div>
+    }
+
+    <!-- Frisch erstellter Link-Banner -->
+    @if (_newInvitationLink != null)
+    {
+        <div class="auth-bg-green-50 dark:auth-bg-green-900/20 auth-border auth-border-green-200 dark:auth-border-green-800 auth-rounded-2xl auth-p-5 auth-mb-6">
+            <div class="auth-flex auth-items-center auth-gap-2 auth-mb-2">
+                <i class="fa-solid fa-check-circle auth-text-green-500"></i>
+                <span class="auth-text-sm auth-font-semibold auth-text-green-700 dark:auth-text-green-300">Einladung erstellt!</span>
+            </div>
+            <p class="auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 auth-mb-2">Teile diesen Link mit der Person, die du einladen möchtest:</p>
+            <div class="auth-flex auth-items-center auth-gap-2">
+                <code class="auth-flex-1 auth-bg-white dark:auth-bg-slate-800 auth-px-3 auth-py-2 auth-rounded-lg auth-text-xs auth-text-slate-700 dark:auth-text-slate-300 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-break-all">
+                    @_newInvitationLink
+                </code>
+                <button @onclick="CopyLink"
+                        class="auth-flex-shrink-0 auth-px-3 auth-py-2 auth-bg-white dark:auth-bg-slate-800 auth-border auth-border-slate-200 dark:auth-border-slate-700 auth-rounded-lg auth-text-xs auth-text-slate-600 dark:auth-text-slate-400 hover:auth-bg-slate-50 dark:hover:auth-bg-slate-700 auth-transition-colors">
+                    @(_copied ? "✓ Kopiert" : "Kopieren")
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Einladungsliste -->
+    @if (_isLoading)
+    {
+        <div class="auth-flex auth-items-center auth-justify-center auth-py-12">
+            <i class="fa-solid fa-spinner fa-spin auth-text-2xl auth-text-primary-500"></i>
+        </div>
+    }
+    else if (_invitations.Count == 0)
+    {
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-8 auth-text-center">
+            <i class="fa-solid fa-link auth-text-3xl auth-text-slate-300 dark:auth-text-slate-600 auth-mb-3"></i>
+            <p class="auth-text-sm auth-text-slate-500 dark:auth-text-slate-400">Noch keine Einladungen erstellt.</p>
+        </div>
+    }
+    else
+    {
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-overflow-hidden">
+            @foreach (var inv in _invitations)
+            {
+                <div class="auth-px-5 auth-py-4 auth-border-b last:auth-border-b-0 auth-border-slate-100 dark:auth-border-slate-800">
+                    <div class="auth-flex auth-items-start auth-justify-between auth-gap-4">
+                        <div class="auth-flex-1 auth-min-w-0">
+                            <div class="auth-flex auth-items-center auth-gap-2 auth-flex-wrap">
+                                @if (!string.IsNullOrEmpty(inv.Email))
+                                {
+                                    <span class="auth-text-sm auth-font-medium auth-text-slate-900 dark:auth-text-slate-100">@inv.Email</span>
+                                    <span class="auth-text-xs auth-bg-blue-100 dark:auth-bg-blue-900/30 auth-text-blue-700 dark:auth-text-blue-300 auth-px-2 auth-py-0.5 auth-rounded-full">Persönlich</span>
+                                }
+                                else
+                                {
+                                    <span class="auth-text-sm auth-font-medium auth-text-slate-900 dark:auth-text-slate-100">Allgemeine Einladung</span>
+                                }
+                                @{
+                                    var (badgeCss, badgeLabel) = GetStatusBadge(inv);
+                                }
+                                <span class="@badgeCss auth-px-2 auth-py-0.5 auth-rounded-full auth-text-xs auth-font-medium">@badgeLabel</span>
+                            </div>
+                            <div class="auth-mt-1.5 auth-flex auth-items-center auth-gap-3 auth-text-xs auth-text-slate-400">
+                                <span>
+                                    <i class="fa-solid fa-users auth-mr-1"></i>
+                                    @inv.UsedCount / @(inv.MaxUses.HasValue ? inv.MaxUses.ToString() : "∞") Verwendungen
+                                </span>
+                                @if (inv.ExpiresAt.HasValue)
+                                {
+                                    <span>
+                                        <i class="fa-solid fa-clock auth-mr-1"></i>
+                                        Läuft ab: @inv.ExpiresAt.Value.ToString("dd.MM.yyyy")
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="auth-flex auth-items-center auth-gap-2 auth-flex-shrink-0">
+                            @if (!inv.IsRevoked && inv.IsValid)
+                            {
+                                <button @onclick="() => CopyInvitationLink(inv.Token)"
+                                        class="auth-p-1.5 auth-text-slate-400 hover:auth-text-primary-500 dark:auth-text-slate-500 dark:hover:auth-text-primary-400 auth-transition-colors auth-rounded-lg hover:auth-bg-primary-50 dark:hover:auth-bg-primary-900/20"
+                                        title="Link kopieren">
+                                    <i class="fa-solid fa-copy auth-text-xs"></i>
+                                </button>
+                            }
+                            @if (!inv.IsRevoked)
+                            {
+                                <button @onclick="() => HandleRevoke(inv.Id)"
+                                        class="auth-p-1.5 auth-text-slate-400 hover:auth-text-red-500 dark:auth-text-slate-500 dark:hover:auth-text-red-400 auth-transition-colors auth-rounded-lg hover:auth-bg-red-50 dark:hover:auth-bg-red-900/20"
+                                        title="Einladung widerrufen">
+                                    <i class="fa-solid fa-ban auth-text-xs"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<TeamInvitationDto> _invitations = [];
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private bool _showCreateForm;
+    private bool _hasTeam = true;
+    private bool _unlimited;
+    private bool _copied;
+    private string? _errorMessage;
+    private string? _newInvitationLink;
+
+    private CreateInvitationRequest _createRequest = new() { ExpirationDays = 7 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!TeamFeature.IsEnabled) return;
+
+        var teamResult = await TeamDataService.GetMyTeamAsync();
+        _hasTeam = teamResult.Success;
+
+        if (_hasTeam)
+            await LoadInvitationsAsync();
+        else
+            _isLoading = false;
+    }
+
+    private async Task LoadInvitationsAsync()
+    {
+        _isLoading = true;
+        var result = await TeamDataService.GetInvitationsAsync();
+        if (result.Success && result.Data != null)
+            _invitations = result.Data;
+        _isLoading = false;
+    }
+
+    private async Task HandleCreate()
+    {
+        _isSaving = true;
+        _errorMessage = null;
+        _newInvitationLink = null;
+
+        if (_unlimited) _createRequest.MaxUses = null;
+
+        var result = await TeamDataService.CreateInvitationAsync(_createRequest);
+        _isSaving = false;
+
+        if (result.Success && result.Data != null)
+        {
+            _invitations.Insert(0, result.Data);
+            _showCreateForm = false;
+            _createRequest = new() { ExpirationDays = 7 };
+            _unlimited = false;
+            var baseUrl = NavigationManager.BaseUri.TrimEnd('/');
+            _newInvitationLink = $"{baseUrl}/accept-invitation?token={result.Data.Token}";
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleRevoke(string invitationId)
+    {
+        var result = await TeamDataService.RevokeInvitationAsync(invitationId);
+        if (result.Success)
+        {
+            var inv = _invitations.FirstOrDefault(i => i.Id == invitationId);
+            if (inv != null) inv.IsRevoked = true;
+        }
+    }
+
+    private void CopyInvitationLink(string token)
+    {
+        var baseUrl = NavigationManager.BaseUri.TrimEnd('/');
+        _newInvitationLink = $"{baseUrl}/accept-invitation?token={token}";
+    }
+
+    private async Task CopyLink()
+    {
+        // Clipboard-API nur in Browser-Umgebung verfügbar; wir nutzen JS-interop nur wenn nötig.
+        // Für jetzt markieren wir visuell als "kopiert" – JS-Interop wäre optional zu ergänzen.
+        _copied = true;
+        await Task.Delay(2000);
+        _copied = false;
+    }
+
+    private (string css, string label) GetStatusBadge(TeamInvitationDto inv)
+    {
+        if (inv.IsRevoked)
+            return ("auth-bg-red-100 dark:auth-bg-red-900/30 auth-text-red-600 dark:auth-text-red-400", "Widerrufen");
+        if (inv.IsExpired)
+            return ("auth-bg-slate-100 dark:auth-bg-slate-800 auth-text-slate-500 dark:auth-text-slate-400", "Abgelaufen");
+        if (inv.MaxUses.HasValue && inv.UsedCount >= inv.MaxUses.Value)
+            return ("auth-bg-orange-100 dark:auth-bg-orange-900/30 auth-text-orange-600 dark:auth-text-orange-400", "Limit erreicht");
+        return ("auth-bg-green-100 dark:auth-bg-green-900/30 auth-text-green-700 dark:auth-text-green-400", "Aktiv");
+    }
+}

@@ -4,6 +4,7 @@ using Authify.Application.Interfaces;
 using Authify.Application.Services;
 using Authify.Client.Server.Services;
 using Authify.Core.Extensions;
+using Authify.Core.Features;
 using Authify.Core.Interfaces;
 using Authify.UI.Extensions;
 using Authify.UI.Models.Branding;
@@ -93,6 +94,20 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IExternalAuthService, ExternalAuthServiceCookie<TUser>>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// Aktiviert Team-Account-Features für die Server-seitige Blazor-App.
+    /// Muss nach <see cref="AddAuthifyServerUI{TDbContext,TUser}"/> aufgerufen werden.
+    /// TDbContext muss zusätzlich <see cref="Application.Data.ITeamDbContext"/> implementieren.
+    /// </summary>
+    public static IServiceCollection AddAuthifyServerTeams<TDbContext, TUser>(this IServiceCollection services)
+        where TDbContext : DbContext, IAuthifyDbContext, Application.Data.ITeamDbContext
+        where TUser : ApplicationUser, new()
+    {
+        services.AddAuthifyTeams<TDbContext, TUser>();
+        services.AddScoped<ITeamDataService, ServerTeamDataService>();
         return services;
     }
 }

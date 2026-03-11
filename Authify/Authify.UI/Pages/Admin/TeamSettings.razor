@@ -1,0 +1,293 @@
+@page "/admin/team-settings"
+@using Microsoft.AspNetCore.Authorization
+@using Authify.Core.Features
+@using Authify.Core.Interfaces
+@using Authify.Core.Models.Teams
+
+@attribute [Authorize]
+@layout ProfileLayout
+
+@inject ITeamDataService TeamDataService
+@inject TeamFeatureOptions TeamFeature
+@inject NavigationManager NavigationManager
+
+<div class="auth-max-w-2xl auth-mx-auto auth-px-4 auth-py-8">
+
+    @if (!TeamFeature.IsEnabled)
+    {
+        <div class="auth-text-center auth-py-16 auth-text-slate-400">Team-Features sind nicht aktiviert.</div>
+        return;
+    }
+
+    <div class="auth-mb-8">
+        <h1 class="auth-text-2xl auth-font-bold auth-text-slate-900 dark:auth-text-slate-100">Team-Account</h1>
+        <p class="auth-mt-1 auth-text-sm auth-text-slate-500 dark:auth-text-slate-400">Verwalte dein Unternehmensteam</p>
+    </div>
+
+    @if (_isLoading)
+    {
+        <div class="auth-flex auth-items-center auth-justify-center auth-py-16">
+            <i class="fa-solid fa-spinner fa-spin auth-text-2xl auth-text-primary-500"></i>
+        </div>
+    }
+    else if (_team == null)
+    {
+        <!-- Kein Team vorhanden -->
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-8 auth-text-center">
+            <div class="auth-w-16 auth-h-16 auth-bg-primary-100 dark:auth-bg-primary-900/30 auth-rounded-2xl auth-flex auth-items-center auth-justify-center auth-mx-auto auth-mb-4">
+                <i class="fa-solid fa-building auth-text-2xl auth-text-primary-600 dark:auth-text-primary-400"></i>
+            </div>
+            <h2 class="auth-text-lg auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-2">Noch kein Team erstellt</h2>
+            <p class="auth-text-sm auth-text-slate-500 dark:auth-text-slate-400 auth-mb-6">
+                Erstelle einen Team-Account um Mitarbeiter einzuladen und gemeinsam zu arbeiten.
+            </p>
+            <button @onclick="() => _showCreateForm = true"
+                    class="auth-inline-flex auth-items-center auth-gap-2 auth-px-5 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors">
+                <i class="fa-solid fa-plus"></i>
+                Team erstellen
+            </button>
+        </div>
+
+        @if (_showCreateForm)
+        {
+            <div class="auth-mt-6 auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-6">
+                <h3 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-4">Neues Team erstellen</h3>
+                <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateTeamForm">
+                    <DataAnnotationsValidator />
+                    @FormFields(_createRequest)
+                    <div class="auth-flex auth-gap-3 auth-mt-4">
+                        <button type="submit" disabled="@_isSaving"
+                                class="auth-flex-1 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
+                            @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
+                            Team erstellen
+                        </button>
+                        <button type="button" @onclick="() => _showCreateForm = false"
+                                class="auth-px-4 auth-py-2.5 auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-text-slate-600 dark:auth-text-slate-300 auth-rounded-xl auth-text-sm auth-font-medium auth-transition-colors hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800">
+                            Abbrechen
+                        </button>
+                    </div>
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="auth-mt-3 auth-text-sm auth-text-red-500">@_errorMessage</div>
+                    }
+                </EditForm>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- Team vorhanden – Bearbeiten -->
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-6 auth-mb-4">
+            <div class="auth-flex auth-items-center auth-justify-between auth-mb-4">
+                <h2 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100">Team-Informationen</h2>
+                <span class="auth-text-xs auth-text-slate-400">@_team.MemberCount Mitglied(er)</span>
+            </div>
+            <EditForm Model="_updateRequest" OnValidSubmit="HandleUpdate" FormName="UpdateTeamForm">
+                <DataAnnotationsValidator />
+                @FormFields(_updateRequest)
+                <div class="auth-flex auth-gap-3 auth-mt-4">
+                    <button type="submit" disabled="@_isSaving"
+                            class="auth-flex-1 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
+                        @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
+                        Speichern
+                    </button>
+                </div>
+                @if (!string.IsNullOrEmpty(_successMessage))
+                {
+                    <div class="auth-mt-3 auth-text-sm auth-text-green-600 dark:auth-text-green-400">@_successMessage</div>
+                }
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="auth-mt-3 auth-text-sm auth-text-red-500">@_errorMessage</div>
+                }
+            </EditForm>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-red-200 dark:auth-border-red-900/50 auth-p-6">
+            <h3 class="auth-text-sm auth-font-semibold auth-text-red-600 dark:auth-text-red-400 auth-mb-2">Gefahrenbereich</h3>
+            <p class="auth-text-xs auth-text-slate-500 dark:auth-text-slate-400 auth-mb-4">
+                Das Löschen des Teams entfernt alle Mitglieder und Einladungen unwiderruflich.
+            </p>
+            @if (!_showDeleteConfirm)
+            {
+                <button @onclick="() => _showDeleteConfirm = true"
+                        class="auth-px-4 auth-py-2 auth-bg-red-50 hover:auth-bg-red-100 dark:auth-bg-red-900/20 dark:hover:auth-bg-red-900/40 auth-text-red-600 dark:auth-text-red-400 auth-rounded-lg auth-text-sm auth-font-medium auth-transition-colors auth-border auth-border-red-200 dark:auth-border-red-800">
+                    Team löschen
+                </button>
+            }
+            else
+            {
+                <div class="auth-space-y-3">
+                    <p class="auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">Bist du sicher? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                    <div class="auth-flex auth-gap-3">
+                        <button @onclick="HandleDelete" disabled="@_isSaving"
+                                class="auth-px-4 auth-py-2 auth-bg-red-600 hover:auth-bg-red-700 auth-text-white auth-rounded-lg auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
+                            @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
+                            Ja, Team löschen
+                        </button>
+                        <button @onclick="() => _showDeleteConfirm = false"
+                                class="auth-px-4 auth-py-2 auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-text-slate-600 dark:auth-text-slate-300 auth-rounded-lg auth-text-sm auth-font-medium auth-transition-colors hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800">
+                            Abbrechen
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private TeamDto? _team;
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private bool _showCreateForm;
+    private bool _showDeleteConfirm;
+    private string? _errorMessage;
+    private string? _successMessage;
+
+    private CreateTeamRequest _createRequest = new();
+    private UpdateTeamRequest _updateRequest = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!TeamFeature.IsEnabled) return;
+        await LoadTeamAsync();
+    }
+
+    private async Task LoadTeamAsync()
+    {
+        _isLoading = true;
+        var result = await TeamDataService.GetMyTeamAsync();
+        if (result.Success && result.Data != null)
+        {
+            _team = result.Data;
+            _updateRequest = new UpdateTeamRequest
+            {
+                Name = _team.Name,
+                Description = _team.Description,
+                CompanyAddress = _team.CompanyAddress,
+                Website = _team.Website
+            };
+        }
+        _isLoading = false;
+    }
+
+    private async Task HandleCreate()
+    {
+        _isSaving = true;
+        _errorMessage = null;
+        var result = await TeamDataService.CreateTeamAsync(_createRequest);
+        _isSaving = false;
+        if (result.Success)
+        {
+            _showCreateForm = false;
+            await LoadTeamAsync();
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleUpdate()
+    {
+        _isSaving = true;
+        _errorMessage = null;
+        _successMessage = null;
+        var result = await TeamDataService.UpdateTeamAsync(_updateRequest);
+        _isSaving = false;
+        if (result.Success)
+        {
+            _team = result.Data;
+            _successMessage = "Team erfolgreich gespeichert.";
+            await Task.Delay(3000);
+            _successMessage = null;
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleDelete()
+    {
+        _isSaving = true;
+        var result = await TeamDataService.DeleteTeamAsync();
+        _isSaving = false;
+        if (result.Success)
+        {
+            _team = null;
+            _showDeleteConfirm = false;
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private RenderFragment FormFields(object model) => __builder =>
+    {
+        var name = model is CreateTeamRequest c ? c.Name : ((UpdateTeamRequest)model).Name;
+        <div class="auth-space-y-4">
+            <div class="auth-space-y-1.5">
+                <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">Teamname *</label>
+                @if (model is CreateTeamRequest cr)
+                {
+                    <InputText @bind-Value="cr.Name" placeholder="Mein Unternehmen GmbH"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                    <ValidationMessage For="@(() => cr.Name)" />
+                }
+                else
+                {
+                    var ur = (UpdateTeamRequest)model;
+                    <InputText @bind-Value="ur.Name" placeholder="Mein Unternehmen GmbH"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                    <ValidationMessage For="@(() => ur.Name)" />
+                }
+            </div>
+            <div class="auth-space-y-1.5">
+                <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">Beschreibung</label>
+                @if (model is CreateTeamRequest cr2)
+                {
+                    <InputTextArea @bind-Value="cr2.Description" rows="3" placeholder="Kurze Beschreibung des Unternehmens..."
+                                   class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500 auth-resize-none" />
+                }
+                else
+                {
+                    var ur2 = (UpdateTeamRequest)model;
+                    <InputTextArea @bind-Value="ur2.Description" rows="3" placeholder="Kurze Beschreibung des Unternehmens..."
+                                   class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500 auth-resize-none" />
+                }
+            </div>
+            <div class="auth-space-y-1.5">
+                <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">Unternehmensadresse</label>
+                @if (model is CreateTeamRequest cr3)
+                {
+                    <InputText @bind-Value="cr3.CompanyAddress" placeholder="Musterstraße 1, 12345 Musterstadt"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                }
+                else
+                {
+                    var ur3 = (UpdateTeamRequest)model;
+                    <InputText @bind-Value="ur3.CompanyAddress" placeholder="Musterstraße 1, 12345 Musterstadt"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                }
+            </div>
+            <div class="auth-space-y-1.5">
+                <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">Website</label>
+                @if (model is CreateTeamRequest cr4)
+                {
+                    <InputText @bind-Value="cr4.Website" placeholder="https://mein-unternehmen.de"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                }
+                else
+                {
+                    var ur4 = (UpdateTeamRequest)model;
+                    <InputText @bind-Value="ur4.Website" placeholder="https://mein-unternehmen.de"
+                               class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                }
+            </div>
+        </div>
+    };
+}

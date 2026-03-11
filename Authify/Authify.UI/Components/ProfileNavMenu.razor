@@ -1,6 +1,9 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
+@using Authify.Core.Features
 @inject IJSRuntime JS
+@inject TeamFeatureOptions TeamFeature
+@inject ITeamDataService TeamDataService
 
 <div class="auth-flex-1 auth-py-6 auth-px-4 auth-space-y-8 auth-overflow-y-auto custom-scrollbar">
     
@@ -11,18 +14,38 @@
         <div class="auth-space-y-0.5">
             @NavItem("profile-settings", "fa-solid fa-user", "Profile")
             @NavItem("security-settings", "fa-solid fa-shield-halved", "Security")
-            @NavItem("privacy-settings", "fa-solid fa-lock", "Privacy")
+            @if (!_isTeamMember)
+            {
+                @NavItem("privacy-settings", "fa-solid fa-lock", "Privacy")
+            }
         </div>
     </div>
 
-    <div>
-        <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
-            Subscription
+    @if (!_isTeamMember)
+    {
+        <div>
+            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
+                Subscription
+            </div>
+            <div class="auth-space-y-0.5">
+                @NavItem("billing-overview", "fa-solid fa-receipt", "Billing & Usage")
+            </div>
         </div>
-        <div class="auth-space-y-0.5">
-            @NavItem("billing-overview", "fa-solid fa-receipt", "Billing & Usage")
+    }
+
+    @if (TeamFeature.IsEnabled && _isTeamAdmin)
+    {
+        <div>
+            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
+                Admin-Einstellungen
+            </div>
+            <div class="auth-space-y-0.5">
+                @NavItem("admin/team-settings", "fa-solid fa-building", "Team-Account")
+                @NavItem("admin/team-members", "fa-solid fa-users", "Mitarbeiter")
+                @NavItem("admin/team-invitations", "fa-solid fa-envelope-open-text", "Einladungslinks")
+            </div>
         </div>
-    </div>
+    }
 
 </div>
 
@@ -34,6 +57,29 @@
 </div>
 
 @code {
+    private bool _isTeamAdmin;
+    private bool _isTeamMember;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TeamFeature.IsEnabled)
+        {
+            try
+            {
+                var adminResult = await TeamDataService.IsTeamAdminAsync();
+                _isTeamAdmin = adminResult.Success && adminResult.Data;
+
+                var memberResult = await TeamDataService.IsTeamMemberAsync();
+                // "Mitglied" im Sinne von: nicht-admin Mitglied eines Teams
+                _isTeamMember = memberResult.Success && memberResult.Data && !_isTeamAdmin;
+            }
+            catch
+            {
+                // Ignorieren falls Service nicht verfügbar
+            }
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
