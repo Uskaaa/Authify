@@ -423,9 +423,11 @@ No bulk import — users are **created on first login**:
 
 The `BindPassword` is stored encrypted using the ASP.NET Data Protection API — it is never returned in API responses.
 
-### Setup — Blazor Server with LDAP
+### Setup — Blazor Server with Teams + LDAP
 
-#### 1. Extend your DbContext (add `ILdapDbContext`)
+LDAP ist automatisch Teil von Teams — kein separater Aufruf nötig.
+
+#### 1. Extend your DbContext
 
 ```csharp
 public class MyDbContext : DbContext, IAuthifyDbContext, ITeamDbContext, ILdapDbContext
@@ -434,7 +436,7 @@ public class MyDbContext : DbContext, IAuthifyDbContext, ITeamDbContext, ILdapDb
     public DbSet<Team> Teams { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
     public DbSet<InvitationLink> InvitationLinks { get; set; }
-    public DbSet<LdapConfiguration> LdapConfigurations { get; set; }  // ← add this
+    public DbSet<LdapConfiguration> LdapConfigurations { get; set; }
 }
 ```
 
@@ -446,31 +448,27 @@ builder.Services
     {
         options.ConnectionString = builder.Configuration.GetConnectionString("Default")!;
     })
-    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>()
-    .AddAuthifyServerLdap<MyDbContext, ApplicationUser>();   // ← add this
+    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>();  // LDAP wird automatisch mitaktiviert
 
 builder.Services
-    .AddAuthifyUI()
-    .AddAuthifyUITeams()
-    .AddAuthifyUILdap();                                     // ← add this
+    .AddAuthifyUI();
 ```
 
 #### 3. Add & run the migration
 
 ```bash
-dotnet ef migrations add AddLdap --project YourDataProject
+dotnet ef migrations add AddTeamsAndLdap --project YourDataProject
 dotnet ef database update
 ```
 
-### Setup — Blazor WebAssembly + separate API with LDAP
+### Setup — Blazor WebAssembly + separate API with Teams + LDAP
 
 #### Backend (`Program.cs`)
 
 ```csharp
 builder.Services
     .AddAuthifyServer<MyDbContext, ApplicationUser>(options => { ... })
-    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>()
-    .AddAuthifyServerLdap<MyDbContext, ApplicationUser>();   // ← add this
+    .AddAuthifyServerTeams<MyDbContext, ApplicationUser>();  // LDAP inklusive
 ```
 
 #### Frontend (`Program.cs` of the WASM project)
@@ -478,18 +476,15 @@ builder.Services
 ```csharp
 builder.Services
     .AddAuthifyWasm(options => { options.BaseApiUrl = "https://your-api.com"; })
-    .AddAuthifyWasmTeams(options => { options.BaseApiUrl = "https://your-api.com"; })
-    .AddAuthifyWasmLdap(options => { options.BaseApiUrl = "https://your-api.com"; }); // ← add this
+    .AddAuthifyWasmTeams(options => { options.BaseApiUrl = "https://your-api.com"; }); // LDAP inklusive
 
 builder.Services
-    .AddAuthifyUI()
-    .AddAuthifyUITeams()
-    .AddAuthifyUILdap();
+    .AddAuthifyUI();
 ```
 
 ### Using the LDAP admin UI
 
-Once enabled, team admins see a new **"LDAP / Active Directory"** entry in the Admin Settings section of the profile navigation. From there they can:
+Once Teams are enabled, team admins see a new **"LDAP / Active Directory"** entry in the Admin Settings section of the profile navigation. From there they can:
 
 - Create one or more LDAP configurations (multiple domains supported)
 - Set the domain (e.g. `company.com`), DC host, port, Base DN, Bind DN, search filter
@@ -499,7 +494,7 @@ Once enabled, team admins see a new **"LDAP / Active Directory"** entry in the A
 
 ### Modularity guarantee
 
-If `AddAuthifyServerLdap` / `AddAuthifyWasmLdap` and `AddAuthifyUILdap` are **not** called:
+If `AddAuthifyServerTeams` / `AddAuthifyWasmTeams` are **not** called:
 
 - `NullLdapService` is registered — `GetConfigurationForDomainAsync` always returns `null`
 - Login flow skips LDAP entirely with zero overhead

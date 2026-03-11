@@ -47,33 +47,20 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Aktiviert Team-Account-Features für die WASM-App.
+    /// Aktiviert Team-Account-Features (inkl. LDAP) für die WASM-App.
     /// Muss nach <see cref="AddAuthifyWasmUI"/> aufgerufen werden.
     /// </summary>
     public static IServiceCollection AddAuthifyWasmTeams(this IServiceCollection services,
         Action<HttpClient> configureClient)
     {
-        // Überschreibt den deaktivierten Default
         services.AddSingleton(new TeamFeatureOptions { IsEnabled = true });
+        services.AddSingleton(new LdapFeatureOptions { IsEnabled = true });
 
-        // Authentifizierter HttpClient für Team-Operationen
         services.AddHttpClient<Authify.Core.Interfaces.ITeamDataService, WasmTeamDataService>(client =>
             {
                 configureClient(client);
             })
             .AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Aktiviert LDAP-Features für die WASM-App.
-    /// Muss nach <see cref="AddAuthifyWasmTeams"/> aufgerufen werden.
-    /// </summary>
-    public static IServiceCollection AddAuthifyWasmLdap(this IServiceCollection services,
-        Action<HttpClient> configureClient)
-    {
-        services.AddSingleton(new LdapFeatureOptions { IsEnabled = true });
 
         services.AddHttpClient<Authify.Core.Interfaces.ILdapDataService, WasmLdapDataService>(client =>
             {
