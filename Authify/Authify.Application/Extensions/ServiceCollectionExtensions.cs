@@ -3,10 +3,12 @@ using System.Net.Mail;
 using Authify.Application.Data;
 using Authify.Application.Services;
 using Authify.Core.Extensions;
+using Authify.Core.Features;
 using Authify.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Authify.Application.Extensions;
 
@@ -36,6 +38,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService<TUser>>();
         services.AddScoped<IAuthServiceJwt, JwtAuthService<TUser>>();
         services.AddScoped<IAuthServiceCookie, CookieAuthService<TUser>>();
+        services.TryAddScoped<ILdapService, NullLdapService>();
+        services.TryAddSingleton(new LdapFeatureOptions { IsEnabled = false });
         services.AddDataProtection();
         services.AddMemoryCache();
 

@@ -15,23 +15,57 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
     private readonly UserManager<TUser> _userManager;
     private readonly ITwoFactorClaimService _twoFactorClaimService;
     private readonly IUserAccountService _userAccountService;
+    private readonly ILdapService _ldapService;
 
     public CookieAuthService(IOtpService<TUser> otpService, SignInManager<TUser> signInManager,
         ITwoFactorClaimService twoFactorClaimService,
         UserManager<TUser> userManager,
-        IUserAccountService userAccountService)
+        IUserAccountService userAccountService,
+        ILdapService ldapService)
     {
         _signInManager = signInManager;
         _otpService = otpService;
         _userManager = userManager;
         _twoFactorClaimService = twoFactorClaimService;
         _userAccountService = userAccountService;
+        _ldapService = ldapService;
     }
 
     // ---- Core validation logic (no SignInAsync) ----
 
     public async Task<OperationResult<PendingLoginResult>> ValidateCredentialsAsync(LoginRequest request)
     {
+        // ── LDAP-Intercept: Domain prüfen bevor Identity-Lookup ──────────────
+        var domain = ExtractDomain(request.UsernameOrEmail);
+        if (domain != null)
+        {
+            var ldapConfig = await _ldapService.GetConfigurationForDomainAsync(domain);
+            if (ldapConfig != null)
+            {
+                var (ldapSuccess, displayName, ldapError) =
+                    await _ldapService.AuthenticateAsync(request.UsernameOrEmail, request.Password, ldapConfig);
+
+                if (!ldapSuccess)
+                    return OperationResult<PendingLoginResult>.Fail(ldapError ?? "Ungültige Anmeldedaten!");
+
+                var provisionResult = await _ldapService.EnsureUserProvisionedAsync(
+                    request.UsernameOrEmail, displayName, ldapConfig);
+                if (!provisionResult.Success)
+                    return OperationResult<PendingLoginResult>.Fail(provisionResult.ErrorMessage!);
+
+                var ldapUser = await _userManager.FindByIdAsync(provisionResult.Data!);
+                if (ldapUser == null)
+                    return OperationResult<PendingLoginResult>.Fail("LDAP-Benutzer konnte nicht geladen werden.");
+
+                var deactivationLdap = await _userAccountService.GetDeactivationStatusAsync(ldapUser.Id);
+                if (deactivationLdap.Data != null && deactivationLdap.Data.IsDeactivated)
+                    return OperationResult<PendingLoginResult>.Fail("Ihr Konto ist deaktiviert. Bitte wenden Sie sich an den Support.");
+
+                return await BuildPendingResultAsync(ldapUser, request.RememberMe);
+            }
+        }
+
+        // ── Normaler Identity-Login ───────────────────────────────────────────
         var user = await _userManager.FindByEmailAsync(request.UsernameOrEmail);
         if (user == null)
             return OperationResult<PendingLoginResult>.Fail("Invalid login attempt.");
@@ -47,26 +81,7 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
         if (!checkResult.Succeeded)
             return OperationResult<PendingLoginResult>.Fail("Ungültige Anmeldedaten!");
 
-        // Check 2-FA
-        var preferredResult = await _twoFactorClaimService.GetPreferredAsync(user.Id);
-        if (preferredResult.Success && preferredResult.Data != null)
-        {
-            var method = preferredResult.Data.Method;
-            await _otpService.GenerateAndSendOtpAsync(user, method);
-            var otpToken = _otpService.GenerateToken(request.UsernameOrEmail, request.RememberMe, method);
-
-            return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
-            {
-                RequiresOtp = true,
-                OtpToken = otpToken
-            });
-        }
-
-        return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
-        {
-            UserId = user.Id,
-            IsPersistent = request.RememberMe
-        });
+        return await BuildPendingResultAsync(user, request.RememberMe);
     }
 
     public async Task<OperationResult<PendingLoginResult>> ValidateOtpAsync(OtpVerificationRequest request)
@@ -157,5 +172,35 @@ public class CookieAuthService<TUser> : IAuthServiceCookie
         {
             return OperationResult.Fail($"Logout failed: {ex.Message}");
         }
+    }
+
+    // ── Hilfsmethoden ────────────────────────────────────────────────────────
+
+    private async Task<OperationResult<PendingLoginResult>> BuildPendingResultAsync(TUser user, bool rememberMe)
+    {
+        var preferredResult = await _twoFactorClaimService.GetPreferredAsync(user.Id);
+        if (preferredResult.Success && preferredResult.Data != null)
+        {
+            var method = preferredResult.Data.Method;
+            await _otpService.GenerateAndSendOtpAsync(user, method);
+            var otpToken = _otpService.GenerateToken(user.Email!, rememberMe, method);
+            return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
+            {
+                RequiresOtp = true,
+                OtpToken = otpToken
+            });
+        }
+
+        return OperationResult<PendingLoginResult>.Ok(new PendingLoginResult
+        {
+            UserId = user.Id,
+            IsPersistent = rememberMe
+        });
+    }
+
+    private static string? ExtractDomain(string email)
+    {
+        var atIndex = email.IndexOf('@');
+        return atIndex > 0 ? email[(atIndex + 1)..].ToLowerInvariant() : null;
     }
 }

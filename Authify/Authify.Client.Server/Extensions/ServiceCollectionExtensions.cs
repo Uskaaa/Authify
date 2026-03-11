@@ -110,4 +110,18 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITeamDataService, ServerTeamDataService>();
         return services;
     }
+
+    /// <summary>
+    /// Aktiviert LDAP-Features für die Server-seitige Blazor-App.
+    /// Muss nach <see cref="AddAuthifyServerTeams{TDbContext,TUser}"/> aufgerufen werden.
+    /// TDbContext muss zusätzlich <see cref="Application.Data.ILdapDbContext"/> implementieren.
+    /// </summary>
+    public static IServiceCollection AddAuthifyServerLdap<TDbContext, TUser>(this IServiceCollection services)
+        where TDbContext : DbContext, IAuthifyDbContext, Application.Data.ITeamDbContext, Application.Data.ILdapDbContext
+        where TUser : ApplicationUser, new()
+    {
+        services.AddAuthifyLdap<TDbContext, TUser>();
+        services.AddScoped<Authify.Core.Interfaces.ILdapDataService, ServerLdapDataService>();
+        return services;
+    }
 }

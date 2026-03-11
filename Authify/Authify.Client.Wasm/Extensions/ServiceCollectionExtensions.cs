@@ -65,4 +65,22 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Aktiviert LDAP-Features für die WASM-App.
+    /// Muss nach <see cref="AddAuthifyWasmTeams"/> aufgerufen werden.
+    /// </summary>
+    public static IServiceCollection AddAuthifyWasmLdap(this IServiceCollection services,
+        Action<HttpClient> configureClient)
+    {
+        services.AddSingleton(new LdapFeatureOptions { IsEnabled = true });
+
+        services.AddHttpClient<Authify.Core.Interfaces.ILdapDataService, WasmLdapDataService>(client =>
+            {
+                configureClient(client);
+            })
+            .AddHttpMessageHandler<AuthenticatedHttpClientHandler>();
+
+        return services;
+    }
 }

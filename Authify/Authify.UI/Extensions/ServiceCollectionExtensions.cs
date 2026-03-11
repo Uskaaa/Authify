@@ -28,6 +28,12 @@ public static class ServiceCollectionExtensions
         // Fallback NullTeamDataService – wird durch AddAuthifyWasmTeams / AddAuthifyServerTeams ersetzt.
         services.TryAddScoped<ITeamDataService, NullTeamDataService>();
 
+        // Standard: LDAP-Feature deaktiviert. Wird durch AddAuthifyLdap überschrieben.
+        services.TryAddSingleton(new LdapFeatureOptions { IsEnabled = false });
+
+        // Fallback NullLdapDataService – wird durch AddAuthifyWasmLdap / AddAuthifyServerLdap ersetzt.
+        services.TryAddScoped<ILdapDataService, NullLdapDataService>();
+
         return services;
     }
 }

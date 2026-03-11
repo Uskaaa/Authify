@@ -3,6 +3,7 @@
 @using Authify.Core.Features
 @inject IJSRuntime JS
 @inject TeamFeatureOptions TeamFeature
+@inject LdapFeatureOptions LdapFeature
 @inject ITeamDataService TeamDataService
 
 <div class="auth-flex-1 auth-py-6 auth-px-4 auth-space-y-8 auth-overflow-y-auto custom-scrollbar">
@@ -41,8 +42,15 @@
             </div>
             <div class="auth-space-y-0.5">
                 @NavItem("admin/team-settings", "fa-solid fa-building", "Team-Account")
-                @NavItem("admin/team-members", "fa-solid fa-users", "Mitarbeiter")
-                @NavItem("admin/team-invitations", "fa-solid fa-envelope-open-text", "Einladungslinks")
+                @if (_isTeamAdmin)
+                {
+                    @NavItem("admin/team-members", "fa-solid fa-users", "Mitarbeiter")
+                    @NavItem("admin/team-invitations", "fa-solid fa-envelope-open-text", "Einladungslinks")
+                    @if (LdapFeature.IsEnabled)
+                    {
+                        @NavItem("admin/ldap", "fa-solid fa-server", "LDAP / Active Directory")
+                    }
+                }
             </div>
         </div>
     }
