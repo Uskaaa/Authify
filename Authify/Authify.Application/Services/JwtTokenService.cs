@@ -15,11 +15,13 @@ public class JwtTokenService<TUser> : IJwtTokenService where TUser : Application
 {
     private readonly IConfiguration _config;
     private readonly UserManager<TUser> _userManager;
+    private readonly ITeamService? _teamService;
 
-    public JwtTokenService(IConfiguration config, UserManager<TUser> userManager)
+    public JwtTokenService(IConfiguration config, UserManager<TUser> userManager, IServiceProvider serviceProvider)
     {
         _config = config;
         _userManager = userManager;
+        _teamService = serviceProvider.GetService(typeof(ITeamService)) as ITeamService;
     }
 
     public async Task<string> GenerateTokenAsync(string userId)
@@ -34,6 +36,22 @@ public class JwtTokenService<TUser> : IJwtTokenService where TUser : Application
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Name, user.FullName ?? "") 
         };
+
+        // 1.1 Team Claims
+        if (_teamService != null)
+        {
+            var isMemberResult = await _teamService.IsTeamMemberAsync(userId);
+            if (isMemberResult.Success && isMemberResult.Data)
+            {
+                claims.Add(new Claim("is_team_member", "true"));
+                
+                var isAdminResult = await _teamService.IsTeamAdminAsync(userId);
+                if (isAdminResult.Success && isAdminResult.Data)
+                {
+                    claims.Add(new Claim("is_team_admin", "true"));
+                }
+            }
+        }
 
         // 2. Claims aus der Datenbank laden (z.B. user-spezifische Claims)
         var userClaims = await _userManager.GetClaimsAsync(user);
