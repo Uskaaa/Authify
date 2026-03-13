@@ -18,6 +18,7 @@ public class OidcProviderController : ControllerBase
     private readonly IConfiguration _config;
     private readonly IJwtTokenService _jwtService;
     private readonly IMemoryCache _cache;
+    private readonly ITeamService _teamService;
 
 
     private static readonly RSA _rsa = RSA.Create(2048);
@@ -26,11 +27,13 @@ public class OidcProviderController : ControllerBase
     public OidcProviderController(
         IConfiguration config, 
         IJwtTokenService jwtService,
-        IMemoryCache cache)
+        IMemoryCache cache,
+        ITeamService teamService)
     {
         _config = config;
         _jwtService = jwtService;
         _cache = cache;
+        _teamService = teamService;
     }
 
     [HttpGet(".well-known/openid-configuration")]
@@ -133,7 +136,7 @@ public class OidcProviderController : ControllerBase
 
     [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpGet("authorize-api")] 
-    public IActionResult AuthorizeApi(
+    public async Task<IActionResult> AuthorizeApi(
         [FromQuery] string? redirect_uri, 
         [FromQuery] string? state, 
         [FromQuery] string? nonce,
@@ -144,12 +147,16 @@ public class OidcProviderController : ControllerBase
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(redirect_uri)) 
             return BadRequest("Fehlende Parameter.");
 
-        // Erwartete Client-ID für diesen Nutzer:
-        var expectedClientId = $"privateai-client-{userId}";
+        // Erwartete Client-IDs für diesen Nutzer:
+        var personalClientId = $"privateai-client-{userId}";
+        
+        // Prüfen ob Nutzer in einem Team ist
+        var teamResult = await _teamService.GetTeamByMemberAsync(userId);
+        var teamClientId = teamResult.Success ? $"privateai-client-{teamResult.Data!.Id}" : null;
 
-        if (client_id != expectedClientId)
+        if (client_id != personalClientId && (teamClientId == null || client_id != teamClientId))
         {
-            return StatusCode(403, "Zugriff verweigert! Du bist nicht der Besitzer dieser Instanz.");
+            return StatusCode(403, "Zugriff verweigert! Du bist nicht der Besitzer oder Mitglied des Teams dieser Instanz.");
         }
         
         var code = Guid.NewGuid().ToString("N");
@@ -193,7 +200,7 @@ public class OidcProviderController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Issuer = _config["Jwt:Issuer"] ?? domain,
-            Audience = "privateai-client", 
+            Audience = clientId, 
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(5),
             SigningCredentials = new SigningCredentials(_rsaKey, SecurityAlgorithms.RsaSha256) 
