@@ -9,64 +9,58 @@
 
 <RedirectToHomeIfAuthenticated />
 
-<div class="confirm-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
+<div class="auth-fixed auth-inset-0 auth-flex auth-items-center auth-justify-center auth-z-[1000] auth-overflow-y-auto" style="background: var(--bg); color: var(--text-primary);">
+    <div class="auth-w-full auth-max-w-sm auth-p-4">
+        <div class="auth-bg-token-surface auth-border auth-border-token auth-rounded-lg auth-p-8 auth-shadow-md auth-transition-transform hover:auth--translate-y-1">
             
             @switch (_status)
             {
                 case ConfirmStatus.Instruction:
-                    <div class="status-content">
-                        <div class="icon-wrapper info">
+                    <div class="auth-text-center">
+                        <div class="auth-text-4xl auth-mb-4" style="color: var(--text-primary);">
                             <i class="fas fa-envelope"></i>
                         </div>
-                        <h1>@Loc["Title_VerifyEmail"]</h1>
-                        <p>
+                        <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_VerifyEmail"]</h1>
+                        <p class="auth-text-sm auth-mb-3" style="color: var(--text-secondary);">
                             @Loc["Text_SentTo"] <br />
-                            <span class="email-highlight">@_email</span>
+                            <span class="auth-font-medium" style="color: var(--text-primary);">@_email</span>
                         </p>
-                        <p class="sub-text">
+                        <p class="auth-text-xs auth-mb-6" style="color: var(--text-muted);">
                             @Loc["Text_Instruction"]
                         </p>
-                        <div class="auth-stack">
-                            <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))" class="btn btn-outline">@Loc["Btn_BackToLogin"]</a>
-                        </div>
+                        <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))" class="auth-btn-ghost auth-w-full">@Loc["Btn_BackToLogin"]</a>
                     </div>
                     break;
 
                 case ConfirmStatus.Verifying:
-                    <div class="status-content">
-                        <div class="icon-wrapper loading">
+                    <div class="auth-text-center auth-py-8">
+                        <div class="auth-text-4xl auth-mb-4" style="color: var(--text-primary);">
                             <i class="fas fa-spinner fa-spin"></i>
                         </div>
-                        <h1>@Loc["Title_Verifying"]</h1>
-                        <p>@Loc["Text_Verifying"]</p>
+                        <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_Verifying"]</h1>
+                        <p class="auth-text-sm" style="color: var(--text-secondary);">@Loc["Text_Verifying"]</p>
                     </div>
                     break;
 
                 case ConfirmStatus.Success:
-                    <div class="status-content">
-                        <div class="icon-wrapper success">
+                    <div class="auth-text-center auth-py-8">
+                        <div class="auth-text-4xl auth-mb-4" style="color: #10b981;">
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <h1>@Loc["Title_Success"]</h1>
-                        <p>@Loc["Text_Success"]</p>
-                        <div class="auth-stack">
-                            <button class="btn btn-primary" @onclick="NavigateToLogin">@Loc["Btn_GoToLogin"]</button>
-                        </div>
+                        <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_Success"]</h1>
+                        <p class="auth-text-sm auth-mb-6" style="color: var(--text-secondary);">@Loc["Text_Success"]</p>
+                        <button class="auth-btn-primary auth-w-full" @onclick="NavigateToLogin">@Loc["Btn_GoToLogin"]</button>
                     </div>
                     break;
 
                 case ConfirmStatus.Error:
-                    <div class="status-content">
-                        <div class="icon-wrapper error">
+                    <div class="auth-text-center auth-py-8">
+                        <div class="auth-text-4xl auth-mb-4" style="color: #ef4444;">
                             <i class="fas fa-times-circle"></i>
                         </div>
-                        <h1>@Loc["Title_Error"]</h1>
-                        <p>@Loc["Text_Error"]</p>
-                        <div class="auth-stack">
-                            <a href="register" class="btn btn-primary">@Loc["Btn_RetryRegister"]</a>
-                        </div>
+                        <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_Error"]</h1>
+                        <p class="auth-text-sm auth-mb-6" style="color: var(--text-secondary);">@Loc["Text_Error"]</p>
+                        <a href="register" class="auth-btn-primary auth-w-full auth-inline-block">@Loc["Btn_RetryRegister"]</a>
                     </div>
                     break;
             }

@@ -11,17 +11,17 @@
 
 <RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
-<div class="register-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>@Loc["Title_CreateAccount"]</h1>
-                <p>@Loc["Subtitle_FillDetails"]</p>
+<div class="auth-fixed auth-inset-0 auth-flex auth-items-center auth-justify-center auth-z-[1000] auth-overflow-y-auto" style="background: var(--bg); color: var(--text-primary);">
+    <div class="auth-w-full auth-max-w-sm auth-p-4">
+        <div class="auth-bg-token-surface auth-border auth-border-token auth-rounded-lg auth-p-8 auth-shadow-md auth-transition-transform hover:auth--translate-y-1">
+            <div class="auth-text-center auth-mb-8">
+                <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_CreateAccount"]</h1>
+                <p class="auth-text-sm" style="color: var(--text-secondary);">@Loc["Subtitle_FillDetails"]</p>
             </div>
             
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
-                <div class="alert alert-danger">
+                <div class="auth-bg-red-500/10 auth-border auth-border-red-500 auth-text-red-600 auth-rounded-lg auth-p-3 auth-mb-6 auth-text-sm">
                     @_errorMessage
                 </div>
             }
@@ -29,61 +29,65 @@
             <EditForm Model="_request" OnValidSubmit="HandleValidSubmit" FormName="RegisterForm">
                 <DataAnnotationsValidator />
                 
-                <div class="auth-stack">
+                <div class="auth-flex auth-flex-col auth-gap-4">
                     
-                    <div class="form-group">
-                        <label for="fullName">@Loc["Label_FullName"]</label>
-                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="@Loc["Placeholder_FullName"]" />
-                        <div class="validation-wrapper">
+                    <div class="auth-flex auth-flex-col auth-gap-1">
+                        <label for="fullName" class="auth-text-sm auth-font-medium" style="color: var(--text-primary);">@Loc["Label_FullName"]</label>
+                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="@Loc["Placeholder_FullName"]" class="auth-input-field" />
+                        <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
                             <ValidationMessage For="@(() => _request.FullName)" />
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="email">@Loc["Label_Email"]</label>
-                        <InputText id="email" @bind-Value="_request.Email" placeholder="@Loc["Placeholder_Email"]" />
-                        <div class="validation-wrapper">
+                    <div class="auth-flex auth-flex-col auth-gap-1">
+                        <label for="email" class="auth-text-sm auth-font-medium" style="color: var(--text-primary);">@Loc["Label_Email"]</label>
+                        <InputText id="email" @bind-Value="_request.Email" placeholder="@Loc["Placeholder_Email"]" class="auth-input-field" />
+                        <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
                             <ValidationMessage For="@(() => _request.Email)" />
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="password">@Loc["Label_Password"]</label>
-                        <div class="password-input">
-                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="@Loc["Placeholder_Password"]" />
-                            <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
+                    <div class="auth-flex auth-flex-col auth-gap-1">
+                        <label for="password" class="auth-text-sm auth-font-medium" style="color: var(--text-primary);">@Loc["Label_Password"]</label>
+                        <div class="auth-relative auth-w-full">
+                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="@Loc["Placeholder_Password"]" class="auth-input-field" />
+                            <button type="button" class="auth-absolute auth-right-3 auth-top-1/2 auth--translate-y-1/2 auth-bg-transparent auth-border-none" 
+                                    style="color: var(--text-secondary); cursor: pointer; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center;"
+                                    @onclick="TogglePasswordVisibility" tabindex="-1">
                                 <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
                         </div>
-                        <div class="validation-wrapper">
+                        <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
                             <ValidationMessage For="@(() => _request.Password)" />
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="confirmPassword">@Loc["Label_ConfirmPassword"]</label>
-                        <div class="password-input">
-                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="@Loc["Placeholder_ConfirmPassword"]" />
-                            <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
+                    <div class="auth-flex auth-flex-col auth-gap-1">
+                        <label for="confirmPassword" class="auth-text-sm auth-font-medium" style="color: var(--text-primary);">@Loc["Label_ConfirmPassword"]</label>
+                        <div class="auth-relative auth-w-full">
+                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="@Loc["Placeholder_ConfirmPassword"]" class="auth-input-field" />
+                            <button type="button" class="auth-absolute auth-right-3 auth-top-1/2 auth--translate-y-1/2 auth-bg-transparent auth-border-none" 
+                                    style="color: var(--text-secondary); cursor: pointer; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center;"
+                                    @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
                                 <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
                         </div>
-                        <div class="validation-wrapper">
+                        <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
                             <ValidationMessage For="@(() => _request.ConfirmPassword)" />
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="terms">
-                            <InputCheckbox @bind-Value="_request.TermsAccepted" />
-                            <span>@Loc["Text_AgreeTo"] <a href="#">@Loc["Link_Terms"]</a> @Loc["Text_And"] <a href="#">@Loc["Link_Privacy"]</a></span>
+                    <div class="auth-flex auth-items-start auth-gap-2">
+                        <InputCheckbox id="terms" @bind-Value="_request.TermsAccepted" class="auth-mt-1" />
+                        <label for="terms" class="auth-text-xs" style="color: var(--text-secondary);">
+                            <span>@Loc["Text_AgreeTo"] <a href="#" class="auth-text-primary auth-no-underline hover:auth-underline">@Loc["Link_Terms"]</a> @Loc["Text_And"] <a href="#" class="auth-text-primary auth-no-underline hover:auth-underline">@Loc["Link_Privacy"]</a></span>
                         </label>
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.TermsAccepted)" />
-                        </div>
+                    </div>
+                    <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
+                        <ValidationMessage For="@(() => _request.TermsAccepted)" />
                     </div>
                     
-                    <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
+                    <button type="submit" class="auth-btn-primary auth-w-full auth-mt-2" disabled="@(_isLoading)">
                         @if (_isLoading)
                         {
                             <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Register_Loading"]</span>
@@ -94,25 +98,28 @@
                         }
                     </button>
                     
-                </div> </EditForm>
+                </div>
+            </EditForm>
             
-            <div class="divider">
-                <span>@Loc["Divider_Or"]</span>
+            <div class="auth-flex auth-items-center auth-gap-3 auth-my-6" style="color: var(--text-muted);">
+                <div style="flex: 1; border-bottom: 1px solid var(--border);"></div>
+                <span class="auth-text-xs">@Loc["Divider_Or"]</span>
+                <div style="flex: 1; border-bottom: 1px solid var(--border);"></div>
             </div>
             
-            <div class="oauth-buttons">
-                <button class="btn btn-oauth google" @onclick="GoogleOAuth">
+            <div class="auth-flex auth-flex-col auth-gap-3">
+                <button type="button" class="auth-btn-ghost auth-w-full auth-flex auth-gap-2" @onclick="GoogleOAuth">
                     <i class="fab fa-google"></i>
                     <span>@Loc["Btn_Google"]</span>
                 </button>
-                <button class="btn btn-oauth github" @onclick="GitHubOAuth">
+                <button type="button" class="auth-btn-ghost auth-w-full auth-flex auth-gap-2" @onclick="GitHubOAuth">
                     <i class="fab fa-github"></i>
                     <span>@Loc["Btn_GitHub"]</span>
                 </button>
             </div>
             
-            <p class="auth-footer">
-                @Loc["Footer_HaveAccount"] <a href="login">@Loc["Link_Login"]</a>
+            <p class="auth-text-center auth-mt-6 auth-text-sm" style="color: var(--text-secondary);">
+                @Loc["Footer_HaveAccount"] <a href="login" class="auth-font-medium auth-no-underline auth-transition-colors hover:auth-underline" style="color: var(--text-primary);">@Loc["Link_Login"]</a>
             </p>
         </div>
     </div>

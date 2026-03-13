@@ -11,56 +11,59 @@
 
 <RedirectToHomeIfAuthenticated />
 
-<div @ref="_otpContainer" class="otp-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>@Loc["Title_VerifyEmail"]</h1>
-                <p>@Loc["Subtitle_EnterCode"]</p>
+<div @ref="_otpContainer" class="auth-fixed auth-inset-0 auth-flex auth-items-center auth-justify-center auth-z-[1000] auth-overflow-y-auto" style="background: var(--bg); color: var(--text-primary);">
+    <div class="auth-w-full auth-max-w-sm auth-p-4">
+        <div class="auth-bg-token-surface auth-border auth-border-token auth-rounded-lg auth-p-8 auth-shadow-md auth-transition-transform hover:auth--translate-y-1">
+            <div class="auth-text-center auth-mb-8">
+                <h1 class="auth-heading-2 auth-mb-2">@Loc["Title_VerifyEmail"]</h1>
+                <p class="auth-text-sm" style="color: var(--text-secondary);">@Loc["Subtitle_EnterCode"]</p>
             </div>
             
             <EditForm Model="this" OnValidSubmit="HandleValidSubmit" FormName="OtpForm" method="post">
-                <div class="auth-stack">
+                <div class="auth-flex auth-flex-col auth-gap-4">
                     
                     <input type="hidden" @bind="OtpCode" />
 
-                    <div class="otp-inputs">
+                    <div class="auth-flex auth-gap-2 auth-justify-center">
                         @for (int i = 0; i < 6; i++)
                         {
-                            <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" />
+                            <input class="auth-w-12 auth-h-12 auth-text-center auth-text-2xl auth-font-bold auth-bg-token-elevated auth-border auth-border-token auth-rounded-lg focus:auth-border-text-primary focus:auth-outline-none" 
+                                   maxlength="1" inputmode="numeric" pattern="[0-9]" style="color: var(--text-primary);" />
                         }
                     </div>
                     
-                    <div class="validation-wrapper">
+                    <div class="auth-min-h-4 auth-text-xs" style="color: var(--text-muted);">
                         <ValidationMessage For="@(() => OtpCode)" />
                         @if (_error)
                         {
-                            <div class="validation-message">@Loc["Error_VerificationFailed"]</div>
+                            <div style="color: #ef4444;">@Loc["Error_VerificationFailed"]</div>
                         }
                     </div>
 
-                    <div class="otp-timer-section">
+                    <div class="auth-text-center auth-text-sm" style="color: var(--text-secondary);">
                         @if (_timeLeft > 0)
                         {
-                            <span class="timer-text">@Loc["Text_ResendCodeIn"] <span class="time-value">@FormatTime(_timeLeft)</span></span>
+                            <span>@Loc["Text_ResendCodeIn"] <span class="auth-font-medium">@FormatTime(_timeLeft)</span></span>
                         }
                         else
                         {
-                            <span class="timer-text">@Loc["Text_NoCode"]</span>
-                            <button type="button" class="btn-link" @onclick="ResendOtp" disabled="@_isResending">
-                                @if (_isResending)
-                                {
-                                    <span>@Loc["Btn_Sending"]</span>
-                                }
-                                else
-                                {
-                                    <span>@Loc["Btn_Resend"]</span>
-                                }
-                            </button>
+                            <div class="auth-flex auth-flex-col auth-gap-2">
+                                <span>@Loc["Text_NoCode"]</span>
+                                <button type="button" class="auth-text-primary auth-font-medium auth-no-underline hover:auth-underline" @onclick="ResendOtp" disabled="@_isResending">
+                                    @if (_isResending)
+                                    {
+                                        <span>@Loc["Btn_Sending"]</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Loc["Btn_Resend"]</span>
+                                    }
+                                </button>
+                            </div>
                         }
                     </div>
 
-                    <button type="submit" class="btn btn-primary" disabled="@(_isVerifying || OtpCode?.Length != 6)">
+                    <button type="submit" class="auth-btn-primary auth-w-full auth-mt-2" disabled="@(_isVerifying || OtpCode?.Length != 6)">
                         @if (_isVerifying) 
                         { 
                             <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Verifying"]</span>
@@ -71,10 +74,11 @@
                         }
                     </button>
                     
-                </div> </EditForm>
+                </div>
+            </EditForm>
             
-            <p class="auth-footer">
-                <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))">@Loc["Link_BackToLogin"]</a>
+            <p class="auth-text-center auth-mt-6 auth-text-sm" style="color: var(--text-secondary);">
+                <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))" class="auth-text-primary auth-no-underline hover:auth-underline">@Loc["Link_BackToLogin"]</a>
             </p>
         </div>
     </div>
