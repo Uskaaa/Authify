@@ -1,3 +1,320 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ================================================================
+   GLOBAL — prevent horizontal scroll
+   ================================================================ */
+body { overflow-x: hidden; }
+
+/* ================================================================
+   DESIGN TOKENS — CSS Custom Properties
+   Dark mode is DEFAULT. Light mode via [data-theme="light"].
+   Matches SimpliAI host application for consistent theming.
+   ================================================================ */
+@layer base {
+  :root {
+    /* === DARK MODE (default) === */
+    --bg:              #080808;
+    --bg-surface:      #111111;
+    --bg-elevated:     #1A1A1A;
+    --text-primary:    #F2F2F2;
+    --text-secondary:  #888888;
+    --text-muted:      #444444;
+    --accent:          #F2F2F2;
+    --accent-subtle:   rgba(242, 242, 242, 0.06);
+    --border:          rgba(255, 255, 255, 0.08);
+    --outline:         rgba(255, 255, 255, 0.12);
+    --bg-rgb:          8, 8, 8;
+  }
+
+  [data-theme="light"] {
+    /* === LIGHT MODE === */
+    --bg:              #F5F5F2;
+    --bg-surface:      #FFFFFF;
+    --bg-elevated:     #ECECEA;
+    --text-primary:    #0A0A0A;
+    --text-secondary:  #666666;
+    --text-muted:      #AAAAAA;
+    --accent:          #0A0A0A;
+    --accent-subtle:   rgba(0, 0, 0, 0.04);
+    --border:          rgba(0, 0, 0, 0.08);
+    --outline:         rgba(0, 0, 0, 0.12);
+    --bg-rgb:          245, 245, 242;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:              #F5F5F2;
+      --bg-surface:      #FFFFFF;
+      --bg-elevated:     #ECECEA;
+      --text-primary:    #0A0A0A;
+      --text-secondary:  #666666;
+      --text-muted:      #AAAAAA;
+      --accent:          #0A0A0A;
+      --accent-subtle:   rgba(0, 0, 0, 0.04);
+      --border:          rgba(0, 0, 0, 0.08);
+      --outline:         rgba(0, 0, 0, 0.12);
+      --bg-rgb:          245, 245, 242;
+    }
+  }
+
+  /* ================================================================
+     GLOBAL RESET & BASE
+     ================================================================ */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Syne', sans-serif;
+  }
+
+  p, li, span, a, button, input, textarea, select {
+    text-wrap: pretty;
+  }
+
+  /* ================================================================
+     ACCESSIBILITY — Reduced Motion
+     ================================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus visible */
+  *:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* ================================================================
+   TYPOGRAPHY
+   ================================================================ */
+@layer base {
+  .heading-display {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 8vw, 5rem);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+  }
+
+  .heading-2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    font-weight: 350;
+    line-height: 1;
+    max-width: 22ch;
+  }
+
+  .heading-3 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .body-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(0.9375rem, 1.5vw, 1rem);
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .label-caption {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+}
+
+/* ================================================================
+   COMPONENTS — Forms & Inputs
+   ================================================================ */
+@layer components {
+  .input-field {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.875rem 1.25rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    font-size: 0.9375rem;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .input-field::placeholder {
+    color: var(--text-muted);
+  }
+  .input-field:focus {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+  }
+
+  /* Range (slider) inputs */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-elevated);
+    outline: none;
+    cursor: pointer;
+    border: none;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-elevated);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    cursor: pointer;
+    margin-top: -7px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px var(--accent-subtle);
+  }
+  input[type="range"]::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-elevated);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    border: none;
+    cursor: pointer;
+  }
+}
+
+/* ================================================================
+   COMPONENTS — Buttons
+   ================================================================ */
+@layer components {
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg);
+    border: none;
+    padding: 0.875rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px rgba(242, 242, 242, 0.15);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.875rem 1.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .btn-ghost:hover {
+    background: var(--accent-subtle);
+    border-color: var(--outline);
+    transform: translateY(-2px);
+  }
+}
+
+/* ================================================================
+   COMPONENTS — Cards & Containers
+   ================================================================ */
+@layer components {
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .card:hover {
+    border-color: var(--outline);
+    transform: translateY(-4px);
+  }
+
+  .card-surface {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+}
+
+/* ================================================================
+   ANIMATIONS — SCROLL TRIGGERED
+   (outside @layer to prevent Tailwind purging)
+   ================================================================ */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+[data-animate].in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================================================================
+   UTILITIES — Accessibility
+   ================================================================ */
+@layer utilities {
+  .text-token-primary   { color: var(--text-primary); }
+  .text-token-secondary { color: var(--text-secondary); }
+  .text-token-muted     { color: var(--text-muted); }
+  .bg-token-base        { background: var(--bg); }
+  .bg-token-surface     { background: var(--bg-surface); }
+  .bg-token-elevated    { background: var(--bg-elevated); }
+  .border-token         { border-color: var(--border); }
+}
