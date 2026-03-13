@@ -7,7 +7,7 @@
         <RootNamespace>Authify.Application</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>carefreeerror20</Authors>
-        <Version>1.4.6</Version>
+        <Version>1.4.8</Version>
     </PropertyGroup>
 
     <ItemGroup>

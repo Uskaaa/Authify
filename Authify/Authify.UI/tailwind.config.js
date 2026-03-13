@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    prefix: 'auth-',           // kannst du behalten (wenn du Isolation brauchst)
-    darkMode: ['class', '[class~="dark"]'],        // ← wichtig: genau wie im Host
+    prefix: 'auth-',
+    darkMode: ['selector', ':root:not([data-theme="light"])'],
     content: ['./**/*.{razor,html,cs}'],
     theme: {
         extend: {

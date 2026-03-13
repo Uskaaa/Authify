@@ -15,7 +15,6 @@
     @if (!LdapFeature.IsEnabled)
     {
         <div class="auth-text-center auth-py-16 auth-text-slate-400">LDAP-Features sind nicht aktiviert.</div>
-        return;
     }
 
     <div class="auth-mb-8">
@@ -30,7 +29,6 @@
         <div class="auth-flex auth-items-center auth-justify-center auth-py-16">
             <i class="fa-solid fa-spinner fa-spin auth-text-2xl auth-text-primary-500"></i>
         </div>
-        return;
     }
 
     @if (!_hasTeam)
@@ -43,7 +41,6 @@
                 Team erstellen
             </button>
         </div>
-        return;
     }
 
     @if (!string.IsNullOrEmpty(_successMessage))
