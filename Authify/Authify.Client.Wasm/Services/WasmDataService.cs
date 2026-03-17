@@ -280,4 +280,16 @@ public class WasmDataService : IAuthifyDataService
 
     public async Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request) =>
         await PostAsync("api/externallogin/connect", request);
+
+    public Task<OperationResult<CreatePersonalAccessTokenResponse>> CreatePersonalAccessTokenAsync(CreatePersonalAccessTokenRequest request) =>
+        PostAsync<CreatePersonalAccessTokenResponse>("api/personalaccesstoken/create", request);
+
+    public Task<OperationResult<List<PersonalAccessTokenDto>>> GetPersonalAccessTokensAsync() =>
+        GetAsync<List<PersonalAccessTokenDto>>("api/personalaccesstoken/mine");
+
+    public Task<OperationResult> RevokePersonalAccessTokenAsync(Guid id) =>
+        PostAsync($"api/personalaccesstoken/revoke/{id}", new { });
+
+    public Task<OperationResult<ResolvePersonalAccessTokenResponse>> ResolvePersonalAccessTokenAsync(string token) =>
+        GetAsync<ResolvePersonalAccessTokenResponse>($"api/personalaccesstoken/resolve?token={Uri.EscapeDataString(token)}");
 }

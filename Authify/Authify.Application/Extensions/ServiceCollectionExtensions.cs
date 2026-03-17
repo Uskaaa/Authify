@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService<TUser>>();
         services.AddScoped<IAuthServiceJwt, JwtAuthService<TUser>>();
         services.AddScoped<IAuthServiceCookie, CookieAuthService<TUser>>();
+        services.AddScoped<IPersonalAccessTokenService, PersonalAccessTokenService>();
         services.TryAddScoped<ILdapService, NullLdapService>();
         services.TryAddSingleton(new LdapFeatureOptions { IsEnabled = false });
         services.AddDataProtection();

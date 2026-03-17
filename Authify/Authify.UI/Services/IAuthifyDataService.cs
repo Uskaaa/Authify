@@ -61,4 +61,10 @@ public interface IAuthifyDataService
     Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync();
     Task<OperationResult> DisconnectProviderAsync(string provider);
     Task<OperationResult> ConnectProviderAsync(ConnectExternalLoginRequest request);
+
+    // Personal Access Tokens (PAT)
+    Task<OperationResult<CreatePersonalAccessTokenResponse>> CreatePersonalAccessTokenAsync(CreatePersonalAccessTokenRequest request);
+    Task<OperationResult<List<PersonalAccessTokenDto>>> GetPersonalAccessTokensAsync();
+    Task<OperationResult> RevokePersonalAccessTokenAsync(Guid id);
+    Task<OperationResult<ResolvePersonalAccessTokenResponse>> ResolvePersonalAccessTokenAsync(string token);
 }

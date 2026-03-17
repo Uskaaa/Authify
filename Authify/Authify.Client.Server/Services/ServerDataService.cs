@@ -360,4 +360,42 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
 
         return _externalLoginManagementService.ConnectProviderAsync(userId, request);
     }
+
+    public Task<OperationResult<CreatePersonalAccessTokenResponse>> CreatePersonalAccessTokenAsync(CreatePersonalAccessTokenRequest request)
+        => PostToAuthEndpointAsync<CreatePersonalAccessTokenResponse>("api/personalaccesstoken/create", request);
+
+    public async Task<OperationResult<List<PersonalAccessTokenDto>>> GetPersonalAccessTokensAsync()
+    {
+        try
+        {
+            using var client = CreateLocalClient();
+            var response = await client.GetAsync("api/personalaccesstoken/mine");
+            var result = await response.Content.ReadFromJsonAsync<OperationResult<List<PersonalAccessTokenDto>>>(JsonOptions);
+            return result ?? OperationResult<List<PersonalAccessTokenDto>>.Fail("Failed to deserialize PAT list response.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading PAT list.");
+            return OperationResult<List<PersonalAccessTokenDto>>.Fail(ex.Message);
+        }
+    }
+
+    public Task<OperationResult> RevokePersonalAccessTokenAsync(Guid id)
+        => PostToAuthEndpointAsync($"api/personalaccesstoken/revoke/{id}");
+
+    public async Task<OperationResult<ResolvePersonalAccessTokenResponse>> ResolvePersonalAccessTokenAsync(string token)
+    {
+        try
+        {
+            using var client = CreateLocalClient();
+            var response = await client.GetAsync($"api/personalaccesstoken/resolve?token={Uri.EscapeDataString(token)}");
+            var result = await response.Content.ReadFromJsonAsync<OperationResult<ResolvePersonalAccessTokenResponse>>(JsonOptions);
+            return result ?? OperationResult<ResolvePersonalAccessTokenResponse>.Fail("Failed to deserialize PAT resolve response.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resolving PAT.");
+            return OperationResult<ResolvePersonalAccessTokenResponse>.Fail(ex.Message);
+        }
+    }
 }

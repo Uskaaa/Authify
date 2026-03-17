@@ -12,6 +12,7 @@ public interface IAuthifyDbContext
     DbSet<UserDeactivationRequest> UserDeactivationRequests { get; set; }
     DbSet<UserDeletionRequest> UserDeletionRequests { get; set; }
     DbSet<RefreshToken> RefreshTokens { get; set; }
+    DbSet<PersonalAccessToken> PersonalAccessTokens { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
