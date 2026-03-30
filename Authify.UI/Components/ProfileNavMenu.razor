@@ -9,7 +9,7 @@
 <div class="auth-flex-1 auth-py-6 auth-px-4 auth-space-y-8 auth-overflow-y-auto custom-scrollbar">
     
     <div>
-        <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
+        <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
             Account Settings
         </div>
         <div class="auth-space-y-0.5">
@@ -25,7 +25,7 @@
     @if (!_isTeamMember)
     {
         <div>
-            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
+            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
                 Subscription
             </div>
             <div class="auth-space-y-0.5">
@@ -37,7 +37,7 @@
     @if (TeamFeature.IsEnabled && !_isTeamMember)
     {
         <div>
-            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider auth-text-slate-400/80 dark:auth-text-slate-500">
+            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
                 Admin-Einstellungen
             </div>
             <div class="auth-space-y-0.5">
@@ -57,10 +57,10 @@
 
 </div>
 
-<div class="auth-p-4 auth-border-t auth-border-slate-100 dark:auth-border-slate-800/50 auth-bg-white dark:auth-bg-slate-900">
-    <a href="/dashboard" class="auth-flex auth-items-center auth-gap-3 auth-p-2.5 auth-rounded-xl auth-text-sm auth-text-slate-500 hover:auth-text-slate-900 dark:auth-text-slate-400 dark:hover:auth-text-white hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800 auth-transition-colors auth-group">
+<div class="auth-p-4 auth-border-t" style="background:var(--bg-surface);border-color:var(--border);">
+    <a href="/dashboard" class="auth-flex auth-items-center auth-gap-3 auth-p-2.5 auth-rounded-xl auth-text-sm auth-font-medium auth-transition-colors auth-group" style="color:var(--text-secondary);text-decoration:none;">
         <i class="fa-solid fa-arrow-left auth-text-xs group-hover:-auth-translate-x-0.5 auth-transition-transform"></i>
-        <span class="auth-font-medium">Back to Dashboard</span>
+        <span>Back to Dashboard</span>
     </a>
 </div>
 
@@ -98,55 +98,37 @@
     
     private RenderFragment NavItem(string href, string icon, string text) => __builder =>
     {
-        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="auth-group auth-relative auth-flex auth-items-center auth-gap-3 auth-px-3 auth-py-2 auth-rounded-lg auth-text-sm auth-font-medium auth-text-slate-600 dark:auth-text-slate-400 auth-transition-all hover:auth-bg-slate-50 dark:hover:auth-bg-slate-800/50 hover:auth-text-slate-900 dark:hover:auth-text-slate-200">
-            
-            <i class="@icon auth-w-5 auth-text-center auth-text-slate-400/70 group-hover:auth-text-slate-600 dark:auth-text-slate-500 dark:group-hover:auth-text-slate-300 auth-transition-colors auth-text-xs"></i>
-            
+        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="nav-item auth-group auth-relative auth-flex auth-items-center auth-gap-3 auth-px-3 auth-py-2 auth-rounded-lg auth-text-sm auth-font-medium auth-transition-all" style="color:var(--text-secondary);text-decoration:none;">
+
+            <i class="@icon auth-w-5 auth-text-center auth-transition-colors auth-text-xs" style="color:var(--text-muted);"></i>
+
             <span class="auth-relative auth-z-10">@text</span>
-            
-            <div class="active-indicator auth-absolute auth-left-0 auth-top-1/2 auth--translate-y-1/2 auth-h-5 auth-w-1 auth-bg-primary-600 auth-rounded-r-full auth-opacity-0 auth-transition-opacity"></div>
+
+            <div class="active-indicator auth-absolute auth-left-0 auth-top-1/2 auth--translate-y-1/2 auth-h-5 auth-w-1 auth-rounded-r-full auth-opacity-0 auth-transition-opacity" style="background:var(--text-primary);"></div>
         </NavLink>
     };
 }
 
 <style>
-    /* =========================
-       ACTIVE STATE (LIGHT)
-    ========================== */
-
-    .active {
-        background-color: rgb(248 250 252); /* slate-50 */
-        color: rgb(15 23 42) !important;    /* slate-900 */
-    }
-    
-    .active:hover {
-        background-color: rgb(241 245 249); /* slate-100 */
+    .nav-item.active {
+        background-color: var(--bg-elevated);
+        color: var(--text-primary) !important;
     }
 
-    .active i {
-        color: rgb(79 70 229) !important;   /* primary-600 */
+    .nav-item.active i {
+        color: var(--text-primary) !important;
     }
-    
-    .active .active-indicator {
+
+    .nav-item.active .active-indicator {
         opacity: 1;
     }
 
-
-    /* =========================
-       ACTIVE STATE (DARK)
-       wichtig: :global wegen CSS-Isolation
-    ========================== */
-
-    .dark .active {
-        background-color: rgba(30, 41, 59, 0.5) !important;
-        color: rgb(241 245 249) !important;
+    .nav-item:hover {
+        background-color: var(--bg-elevated);
+        color: var(--text-primary) !important;
     }
 
-    .dark .active:hover {
-        background-color: rgba(30, 41, 59, 0.8) !important;
-    }
-
-    .dark .active i {
-        color: rgb(129 140 248) !important;
+    .nav-item:hover i {
+        color: var(--text-secondary) !important;
     }
 </style>

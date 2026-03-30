@@ -11,109 +11,111 @@
 
 <RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
 
-<div class="register-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>@Loc["Title_CreateAccount"]</h1>
-                <p>@Loc["Subtitle_FillDetails"]</p>
+<div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
+    <div style="width:min(420px,100%);">
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:2rem;">
+
+            <div style="margin-bottom:1.75rem;">
+                <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0 0 0.25rem;">@Loc["Title_CreateAccount"]</h1>
+                <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">@Loc["Subtitle_FillDetails"]</p>
             </div>
-            
+
             @if (!string.IsNullOrEmpty(_errorMessage))
             {
-                <div class="alert alert-danger">
+                <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1.25rem;">
                     @_errorMessage
                 </div>
             }
-            
+
             <EditForm Model="_request" OnValidSubmit="HandleValidSubmit" FormName="RegisterForm">
                 <DataAnnotationsValidator />
-                
-                <div class="auth-stack">
-                    
-                    <div class="form-group">
-                        <label for="fullName">@Loc["Label_FullName"]</label>
-                        <InputText id="fullName" @bind-Value="_request.FullName" placeholder="@Loc["Placeholder_FullName"]" />
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.FullName)" />
-                        </div>
+
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+
+                    <div>
+                        <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">@Loc["Label_FullName"]</label>
+                        <InputText id="fullName" @bind-Value="_request.FullName"
+                                   style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                        <ValidationMessage For="@(() => _request.FullName)" />
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="email">@Loc["Label_Email"]</label>
-                        <InputText id="email" @bind-Value="_request.Email" placeholder="@Loc["Placeholder_Email"]" />
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.Email)" />
-                        </div>
+
+                    <div>
+                        <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">@Loc["Label_Email"]</label>
+                        <InputText id="email" @bind-Value="_request.Email"
+                                   style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                        <ValidationMessage For="@(() => _request.Email)" />
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="password">@Loc["Label_Password"]</label>
-                        <div class="password-input">
-                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")" placeholder="@Loc["Placeholder_Password"]" />
-                            <button type="button" class="toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
+
+                    <div>
+                        <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">@Loc["Label_Password"]</label>
+                        <div style="position:relative;">
+                            <InputText id="password" @bind-Value="_request.Password" type="@(_showPassword ? "text" : "password")"
+                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 3rem 0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                            <button type="button" @onclick="TogglePasswordVisibility" tabindex="-1"
+                                    style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;line-height:1;">
                                 <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
                         </div>
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.Password)" />
-                        </div>
+                        <ValidationMessage For="@(() => _request.Password)" />
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="confirmPassword">@Loc["Label_ConfirmPassword"]</label>
-                        <div class="password-input">
-                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")" placeholder="@Loc["Placeholder_ConfirmPassword"]" />
-                            <button type="button" class="toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
+
+                    <div>
+                        <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">@Loc["Label_ConfirmPassword"]</label>
+                        <div style="position:relative;">
+                            <InputText id="confirmPassword" @bind-Value="_request.ConfirmPassword" type="@(_showConfirmPassword ? "text" : "password")"
+                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 3rem 0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                            <button type="button" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1"
+                                    style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;line-height:1;">
                                 <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
                             </button>
                         </div>
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.ConfirmPassword)" />
-                        </div>
+                        <ValidationMessage For="@(() => _request.ConfirmPassword)" />
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="terms">
-                            <InputCheckbox @bind-Value="_request.TermsAccepted" />
-                            <span>@Loc["Text_AgreeTo"] <a href="#">@Loc["Link_Terms"]</a> @Loc["Text_And"] <a href="#">@Loc["Link_Privacy"]</a></span>
+
+                    <div>
+                        <label style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.875rem;color:var(--text-secondary);cursor:pointer;">
+                            <InputCheckbox @bind-Value="_request.TermsAccepted" style="width:1rem;height:1rem;accent-color:var(--text-primary);margin-top:0.125rem;flex-shrink:0;" />
+                            <span>@Loc["Text_AgreeTo"] <a href="#" style="color:var(--text-primary);text-decoration:none;">@Loc["Link_Terms"]</a> @Loc["Text_And"] <a href="#" style="color:var(--text-primary);text-decoration:none;">@Loc["Link_Privacy"]</a></span>
                         </label>
-                        <div class="validation-wrapper">
-                            <ValidationMessage For="@(() => _request.TermsAccepted)" />
-                        </div>
+                        <ValidationMessage For="@(() => _request.TermsAccepted)" />
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary" disabled="@(_isLoading)">
+
+                    <button type="submit" disabled="@_isLoading"
+                            style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;opacity:@(_isLoading ? "0.6" : "1");">
                         @if (_isLoading)
                         {
-                            <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Register_Loading"]</span>
+                            <i class="fas fa-spinner fa-spin"></i>
                         }
-                        else
-                        {
-                            <span>@Loc["Btn_Register"]</span>
-                        }
+                        <span>@(_isLoading ? Loc["Btn_Register_Loading"] : Loc["Btn_Register"])</span>
                     </button>
-                    
-                </div> </EditForm>
-            
-            <div class="divider">
-                <span>@Loc["Divider_Or"]</span>
+
+                </div>
+            </EditForm>
+
+            <div style="display:flex;align-items:center;gap:0.75rem;margin:1.5rem 0;">
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+                <span style="font-size:0.75rem;color:var(--text-muted);">@Loc["Divider_Or"]</span>
+                <div style="flex:1;height:1px;background:var(--border);"></div>
             </div>
-            
-            <div class="oauth-buttons">
-                <button class="btn btn-oauth google" @onclick="GoogleOAuth">
-                    <i class="fab fa-google"></i>
+
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                <button @onclick="GoogleOAuth"
+                        style="width:100%;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.625rem 1rem;font-size:0.875rem;color:var(--text-primary);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.625rem;">
+                    <i class="fab fa-google" style="font-size:1rem;"></i>
                     <span>@Loc["Btn_Google"]</span>
                 </button>
-                <button class="btn btn-oauth github" @onclick="GitHubOAuth">
-                    <i class="fab fa-github"></i>
+                <button @onclick="GitHubOAuth"
+                        style="width:100%;background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.625rem 1rem;font-size:0.875rem;color:var(--text-primary);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.625rem;">
+                    <i class="fab fa-github" style="font-size:1rem;"></i>
                     <span>@Loc["Btn_GitHub"]</span>
                 </button>
             </div>
-            
-            <p class="auth-footer">
-                @Loc["Footer_HaveAccount"] <a href="login">@Loc["Link_Login"]</a>
+
+            <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--text-secondary);">
+                @Loc["Footer_HaveAccount"] <a href="login" style="color:var(--text-primary);font-weight:500;text-decoration:none;">@Loc["Link_Login"]</a>
             </p>
+
         </div>
     </div>
 </div>
@@ -133,7 +135,6 @@
         _returnUrl = queryParams.GetValueOrDefault("returnUrl").ToString();
         if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
 
-        // Einladungstoken: Wenn vorhanden, zur AcceptInvitation-Seite weiterleiten
         if (TeamFeature.IsEnabled)
         {
             var invitationToken = queryParams.GetValueOrDefault("token").ToString();
@@ -146,7 +147,7 @@
 
         if (uri.Fragment.Length > 1)
         {
-            var fragmentString = uri.Fragment.Substring(1); 
+            var fragmentString = uri.Fragment.Substring(1);
             var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(fragmentString);
 
             var accessToken = query.GetValueOrDefault("access").ToString();
@@ -159,21 +160,21 @@
                     otpUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
                 NavigationManager.NavigateTo(otpUrl);
             }
-            
+
             if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
             {
                 await DataService.StoreTokensFromExternalAuth(accessToken, refreshToken);
-                
                 NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
             }
         }
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("applyTheme");
+        if (firstRender)
+            await JS.InvokeVoidAsync("applyTheme");
     }
-    
+
     private async Task HandleValidSubmit()
     {
         _isLoading = true;
@@ -189,20 +190,12 @@
         }
         else
         {
-            Console.WriteLine("Registration failed: " + (result.ErrorMessage ?? "Unknown error"));
             _errorMessage = result.ErrorMessage ?? Loc["Error_RegisterFailed"];
         }
     }
 
-    private void TogglePasswordVisibility()
-    {
-        _showPassword = !_showPassword;
-    }
-
-    private void ToggleConfirmPasswordVisibility()
-    {
-        _showConfirmPassword = !_showConfirmPassword;
-    }
+    private void TogglePasswordVisibility() => _showPassword = !_showPassword;
+    private void ToggleConfirmPasswordVisibility() => _showConfirmPassword = !_showConfirmPassword;
 
     private void GoogleOAuth()
     {

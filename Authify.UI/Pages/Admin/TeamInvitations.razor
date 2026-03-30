@@ -21,11 +21,11 @@
 
     <div class="auth-flex auth-items-center auth-justify-between auth-mb-8">
         <div>
-            <h1 class="auth-text-2xl auth-font-bold auth-text-slate-900 dark:auth-text-slate-100">Einladungslinks</h1>
-            <p class="auth-mt-1 auth-text-sm auth-text-slate-500 dark:auth-text-slate-400">Erstelle und verwalte Einladungslinks für dein Team</p>
+            <h1 class="auth-text-2xl auth-font-bold" style="color:var(--text-primary);">Einladungslinks</h1>
+            <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">Erstelle und verwalte Einladungslinks für dein Team</p>
         </div>
         <button @onclick="() => _showCreateForm = !_showCreateForm"
-                class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors">
+                class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors" style="background:var(--text-primary);color:var(--bg);">
             <i class="fa-solid fa-plus"></i>
             Einladung erstellen
         </button>
@@ -33,12 +33,12 @@
 
     @if (!_hasTeam)
     {
-        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-amber-200 dark:auth-border-amber-900/50 auth-p-8 auth-text-center">
+        <div class="auth-rounded-2xl auth-border auth-border-amber-200 dark:auth-border-amber-900/50 auth-p-8 auth-text-center" style="background:var(--bg-surface);">
             <i class="fa-solid fa-triangle-exclamation auth-text-3xl auth-text-amber-500 auth-mb-3"></i>
-            <h2 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-2">Kein Team vorhanden</h2>
-            <p class="auth-text-sm auth-text-slate-500 dark:auth-text-slate-400 auth-mb-4">Du musst zuerst einen Team-Account erstellen um Einladungslinks zu erzeugen.</p>
+            <h2 class="auth-text-base auth-font-semibold auth-mb-2" style="color:var(--text-primary);">Kein Team vorhanden</h2>
+            <p class="auth-text-sm auth-mb-4" style="color:var(--text-secondary);">Du musst zuerst einen Team-Account erstellen um Einladungslinks zu erzeugen.</p>
             <a href="admin/team-settings"
-               class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors">
+               class="auth-inline-flex auth-items-center auth-gap-2 auth-px-4 auth-py-2.5 auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors" style="background:var(--text-primary);color:var(--bg);">
                 <i class="fa-solid fa-building"></i>
                 Team erstellen
             </a>
@@ -49,18 +49,19 @@
     <!-- Formular: Einladung erstellen -->
     @if (_showCreateForm)
     {
-        <div class="auth-bg-white dark:auth-bg-slate-900 auth-rounded-2xl auth-border auth-border-slate-200 dark:auth-border-slate-800 auth-p-6 auth-mb-6">
-            <h3 class="auth-text-base auth-font-semibold auth-text-slate-900 dark:auth-text-slate-100 auth-mb-4">Neue Einladung erstellen</h3>
+        <div class="auth-rounded-2xl auth-border auth-p-6 auth-mb-6" style="background:var(--bg-surface);border-color:var(--border);">
+            <h3 class="auth-text-base auth-font-semibold auth-mb-4" style="color:var(--text-primary);">Neue Einladung erstellen</h3>
             <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateInvitationForm">
                 <DataAnnotationsValidator />
                 <div class="auth-space-y-4">
 
                     <div class="auth-space-y-1.5">
-                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                        <label class="auth-block auth-text-sm auth-font-medium" style="color:var(--text-secondary);">
                             E-Mail (optional – für persönliche Einladungen)
                         </label>
                         <InputText @bind-Value="_createRequest.Email" type="email" placeholder="max@unternehmen.de"
-                                   class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                                   class="auth-w-full auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500"
+                           style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);" />
                         @if (!string.IsNullOrWhiteSpace(_createRequest.Email))
                         {
                             <div class="auth-flex auth-items-center auth-gap-1.5 auth-text-xs auth-text-primary-600 dark:auth-text-primary-400 auth-mt-1">
@@ -70,14 +71,14 @@
                         }
                         else
                         {
-                            <p class="auth-text-xs auth-text-slate-400">Leer lassen für einen allgemeinen Link, den du selbst weitergibst.</p>
+                            <p class="auth-text-xs" style="color:var(--text-secondary);">Leer lassen für einen allgemeinen Link, den du selbst weitergibst.</p>
                         }
                     </div>
 
                     @if (string.IsNullOrWhiteSpace(_createRequest.Email))
                     {
                         <div class="auth-space-y-1.5">
-                            <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                            <label class="auth-block auth-text-sm auth-font-medium" style="color:var(--text-secondary);">
                                 Maximale Verwendungen
                             </label>
                             <div class="auth-flex auth-items-center auth-gap-3">
@@ -88,7 +89,8 @@
                                 @if (!_unlimited)
                                 {
                                     <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10"
-                                                 class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                                                 class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500"
+                                     style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);" />
                                 }
                             </div>
                             <p class="auth-text-xs auth-text-slate-400">
@@ -98,18 +100,19 @@
                     }
 
                     <div class="auth-space-y-1.5">
-                        <label class="auth-block auth-text-sm auth-font-medium auth-text-slate-700 dark:auth-text-slate-300">
+                        <label class="auth-block auth-text-sm auth-font-medium" style="color:var(--text-secondary);">
                             Gültig für (Tage)
                         </label>
                         <InputNumber @bind-Value="_createRequest.ExpirationDays" min="1" max="365" placeholder="z.B. 7"
-                                     class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-border-slate-300 dark:auth-border-slate-700 auth-bg-white dark:auth-bg-slate-800 auth-text-slate-900 dark:auth-text-slate-100 auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500" />
+                                     class="auth-w-32 auth-px-3 auth-py-2 auth-rounded-xl auth-border auth-text-sm focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-primary-500"
+                                     style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);" />
                         <p class="auth-text-xs auth-text-slate-400">Standard: 7 Tage. Leer lassen für kein Ablaufdatum.</p>
                     </div>
                 </div>
 
                 <div class="auth-flex auth-gap-3 auth-mt-5">
                     <button type="submit" disabled="@_isSaving"
-                            class="auth-px-5 auth-py-2.5 auth-bg-primary-600 hover:auth-bg-primary-700 auth-text-white auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50">
+                            class="auth-px-5 auth-py-2.5 auth-rounded-xl auth-text-sm auth-font-semibold auth-transition-colors disabled:auth-opacity-50" style="background:var(--text-primary);color:var(--bg);">
                         @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-2"></i> }
                         @(string.IsNullOrWhiteSpace(_createRequest.Email) ? "Einladungslink erstellen" : "Einladung senden")
                     </button>

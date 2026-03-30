@@ -11,71 +11,68 @@
 
 <RedirectToHomeIfAuthenticated />
 
-<div @ref="_otpContainer" class="otp-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>@Loc["Title_VerifyEmail"]</h1>
-                <p>@Loc["Subtitle_EnterCode"]</p>
+<div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
+    <div style="width:min(420px,100%);">
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:2rem;">
+
+            <div style="margin-bottom:1.75rem;">
+                <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0 0 0.25rem;">@Loc["Title_VerifyEmail"]</h1>
+                <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">@Loc["Subtitle_EnterCode"]</p>
             </div>
-            
+
             <EditForm Model="this" OnValidSubmit="HandleValidSubmit" FormName="OtpForm" method="post">
-                <div class="auth-stack">
-                    
+                <div @ref="_otpContainer" style="display:flex;flex-direction:column;gap:1rem;">
+
                     <input type="hidden" @bind="OtpCode" />
 
-                    <div class="otp-inputs">
+                    <div style="display:flex;gap:0.5rem;justify-content:center;">
                         @for (int i = 0; i < 6; i++)
                         {
-                            <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" />
-                        }
-                    </div>
-                    
-                    <div class="validation-wrapper">
-                        <ValidationMessage For="@(() => OtpCode)" />
-                        @if (_error)
-                        {
-                            <div class="validation-message">@Loc["Error_VerificationFailed"]</div>
+                            <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                                   style="width:3rem;height:3.5rem;text-align:center;font-size:1.5rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);outline:none;font-family:inherit;" />
                         }
                     </div>
 
-                    <div class="otp-timer-section">
+                    @if (_error)
+                    {
+                        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;text-align:center;">
+                            @Loc["Error_VerificationFailed"]
+                        </div>
+                    }
+
+                    <div style="text-align:center;font-size:0.875rem;color:var(--text-secondary);">
                         @if (_timeLeft > 0)
                         {
-                            <span class="timer-text">@Loc["Text_ResendCodeIn"] <span class="time-value">@FormatTime(_timeLeft)</span></span>
+                            <span>@Loc["Text_ResendCodeIn"] <span style="color:var(--text-primary);font-weight:500;">@FormatTime(_timeLeft)</span></span>
                         }
                         else
                         {
-                            <span class="timer-text">@Loc["Text_NoCode"]</span>
-                            <button type="button" class="btn-link" @onclick="ResendOtp" disabled="@_isResending">
-                                @if (_isResending)
-                                {
-                                    <span>@Loc["Btn_Sending"]</span>
-                                }
-                                else
-                                {
-                                    <span>@Loc["Btn_Resend"]</span>
-                                }
+                            <span>@Loc["Text_NoCode"] </span>
+                            <button type="button" @onclick="ResendOtp" disabled="@_isResending"
+                                    style="background:none;border:none;color:var(--text-primary);font-size:0.875rem;font-weight:500;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;">
+                                @(_isResending ? Loc["Btn_Sending"] : Loc["Btn_Resend"])
                             </button>
                         }
                     </div>
 
-                    <button type="submit" class="btn btn-primary" disabled="@(_isVerifying || OtpCode?.Length != 6)">
-                        @if (_isVerifying) 
-                        { 
-                            <i class="fas fa-spinner fa-spin"></i> <span>@Loc["Btn_Verifying"]</span>
-                        } 
-                        else 
-                        { 
-                            <span>@Loc["Btn_Verify"]</span> 
+                    <button type="submit" disabled="@(_isVerifying || OtpCode?.Length != 6)"
+                            style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;opacity:@((_isVerifying || OtpCode?.Length != 6) ? "0.6" : "1");">
+                        @if (_isVerifying)
+                        {
+                            <i class="fas fa-spinner fa-spin"></i>
                         }
+                        <span>@(_isVerifying ? Loc["Btn_Verifying"] : Loc["Btn_Verify"])</span>
                     </button>
-                    
-                </div> </EditForm>
-            
-            <p class="auth-footer">
-                <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))">@Loc["Link_BackToLogin"]</a>
+
+                </div>
+            </EditForm>
+
+            <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;">
+                <a href="@("login" + (!string.IsNullOrEmpty(_returnUrl) ? "?returnUrl=" + Uri.EscapeDataString(_returnUrl) : ""))"
+                   style="color:var(--text-secondary);text-decoration:none;">@Loc["Link_BackToLogin"]</a>
             </p>
+
         </div>
     </div>
 </div>
@@ -86,8 +83,6 @@
     private DotNetObjectReference<Otp>? _objRef;
     private System.Threading.Timer? _timer;
 
-    // DataAnnotations Attribute benötigen Konstanten, daher hier fest auf Deutsch (Default) gesetzt.
-    // Für volle dynamische Lokalisierung der ValidationAttributes wäre ein komplexerer DataAnnotationsLocalizerProvider nötig.
     [Required(ErrorMessage = "Der Code ist erforderlich.")]
     [StringLength(6, MinimumLength = 6, ErrorMessage = "Bitte geben Sie den vollständigen 6-stelligen Code ein.")]
     private string OtpCode { get; set; } = string.Empty;
@@ -96,7 +91,7 @@
     private bool _isVerifying = false;
     private bool _isResending = false;
     private bool _error = false;
-    private int _timeLeft = 60; // Sekunden für Countdown
+    private int _timeLeft = 60;
     private string? _returnUrl;
 
     protected override Task OnInitializedAsync()
@@ -106,25 +101,21 @@
         _request.Token = query.GetValueOrDefault("token")!;
         _returnUrl = query.GetValueOrDefault("returnUrl").ToString();
         if (string.IsNullOrEmpty(_returnUrl)) _returnUrl = null;
-        
+
         StartTimer();
-        
         return base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("applyTheme");
-        
         if (firstRender)
         {
-            try 
+            await JS.InvokeVoidAsync("applyTheme");
+            try
             {
                 _module = await JS.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/Authify.UI/js/otp.js");
-
                 _objRef = DotNetObjectReference.Create(this);
-
                 await _module.InvokeVoidAsync("initializeOtpHandler", _otpContainer, _objRef);
             }
             catch (Exception ex)
@@ -137,9 +128,8 @@
     [JSInvokable]
     public void OnOtpCompleted(string otp)
     {
-         // Optional: Auto-Submit wenn voll
-         OtpCode = otp;
-         StateHasChanged();
+        OtpCode = otp;
+        StateHasChanged();
     }
 
     private void StartTimer()
@@ -171,11 +161,7 @@
     private async Task ResendOtp()
     {
         _isResending = true;
-        
-        // Simuliere API Aufruf - hier würdest du DataService.ResendOtpAsync(_request.Token) aufrufen
-        await Task.Delay(1000); 
-        
-        // Reset Timer
+        await Task.Delay(1000);
         StartTimer();
         _isResending = false;
     }
@@ -184,18 +170,15 @@
     {
         _isVerifying = true;
         _request.OtpCode = OtpCode;
-        
+
         var jwtResult = await DataService.JwtVerifyOtpAsync(_request);
-        
+
         if (jwtResult.Success)
         {
             _error = false;
-
             var redirectUrl = jwtResult.Data?.RedirectUrl;
             if (!string.IsNullOrEmpty(redirectUrl))
             {
-                // Cookie auth: navigate to the complete-otp endpoint so SignInManager
-                // can write the HttpOnly cookie on a real HTTP response, then return here.
                 if (!string.IsNullOrEmpty(_returnUrl))
                     redirectUrl += "&returnUrl=" + Uri.EscapeDataString(_returnUrl);
                 NavigationManager.NavigateTo(redirectUrl, forceLoad: true);
@@ -208,7 +191,7 @@
         else
         {
             var cookieResult = await DataService.CookieVerifyOtpAsync(_request);
-            
+
             if (cookieResult.Success)
             {
                 _error = false;
@@ -219,7 +202,7 @@
                 _error = true;
             }
         }
-        
+
         _isVerifying = false;
     }
 
@@ -227,10 +210,8 @@
     {
         _timer?.Dispose();
         _objRef?.Dispose();
-        
+
         if (_module is not null)
-        {
             await _module.DisposeAsync();
-        }
     }
 }

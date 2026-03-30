@@ -1,85 +1,73 @@
 /* authify-theme.css
  *
- * Defines the default Authify color theme as CSS custom properties.
- * ─────────────────────────────────────────────────────────────────
- * Two variable groups are maintained:
+ * Mycelis-compatible design tokens.
+ * Dark mode is DEFAULT. Light mode via [data-theme="light"].
  *
- * 1. --auth-primary-NNN-rgb  (space-separated RGB integers)
- *    Consumed by Tailwind utility classes generated from tailwind.config.js
- *    e.g.  auth-bg-primary-600       → background-color: rgb(var(--auth-primary-600-rgb))
- *          auth-bg-primary-600/20    → background-color: rgb(var(--auth-primary-600-rgb) / 0.2)
- *
- * 2. --auth-*  (hex / shorthand values)
- *    Semantic variables used by scoped page styles and legacy class-based CSS.
- *
- * To override from a host project, use AuthifyThemeOptions when calling
- * AddAuthifyUI() / AddAuthifyWasmUI() / AddAuthifyServerUI().
- * The AuthifyThemeStyle component injects a <style> block that overrides
- * these variables at the :root level.
+ * The --auth-primary-NNN-rgb variables are kept for ProfileLayout
+ * Tailwind utility classes (auth-bg-primary-*, auth-text-primary-*).
+ * All other theming now uses the Mycelis CSS variable set so that
+ * Authify pages are visually consistent with the Mycelis dashboard.
  */
 
-/* ── Light Mode ─────────────────────────────────────────────────── */
+/* ── Dark Mode (default) ──────────────────────────────────────────── */
 :root {
-    /* Primary palette – RGB triplets for Tailwind CSS variable compatibility */
-    --auth-primary-50-rgb:  238 242 255;   /* #eef2ff */
-    --auth-primary-100-rgb: 224 231 255;   /* #e0e7ff */
-    --auth-primary-200-rgb: 199 210 254;   /* #c7d2fe */
-    --auth-primary-300-rgb: 165 180 252;   /* #a5b4fc */
-    --auth-primary-400-rgb: 129 140 248;   /* #818cf8 */
-    --auth-primary-500-rgb: 99 102 241;    /* #6366f1 */
-    --auth-primary-600-rgb: 79 70 229;     /* #4f46e5 */
-    --auth-primary-700-rgb: 67 56 202;     /* #4338ca */
-    --auth-primary-800-rgb: 55 48 163;     /* #3730a3 */
-    --auth-primary-900-rgb: 49 46 129;     /* #312e81 */
-    --auth-primary-950-rgb: 30 27 75;      /* #1e1b4b */
+    /* Mycelis design tokens */
+    --bg:             #101214;
+    --bg-surface:     #171a1f;
+    --bg-elevated:    #1f242b;
+    --text-primary:   #f5f7fb;
+    --text-secondary: #c2c9d4;
+    --text-muted:     #9aa3b2;
+    --accent:         #f5f7fb;
+    --accent-subtle:  rgba(245, 247, 251, 0.1);
+    --border:         rgba(255, 255, 255, 0.16);
+    --outline:        rgba(255, 255, 255, 0.28);
+    --error:          #ef4444;
+    --success:        #10b981;
 
-    /* Semantic variables – kept for backwards compatibility with scoped CSS */
-    --auth-primary:       #4f46e5;   /* primary-600 */
-    --auth-primary-hover: #4338ca;   /* primary-700 */
-
-    --auth-bg:       #eef2ff;   /* primary-50  */
-    --auth-card-bg:  #ffffff;
-
-    --auth-text:       #0f172a;   /* slate-900 */
-    --auth-text-muted: #64748b;   /* slate-500 */
-
-    --auth-input-bg: #ffffff;
-    --auth-border:   #e2e8f0;   /* slate-200 */
-
-    --auth-error:   #ef4444;
-    --auth-success: #10b981;
-
-    --auth-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-/* ── Dark Mode ──────────────────────────────────────────────────── */
-:root.dark {
-    /* Primary palette – same RGB triplets; dark-mode shade shift handled
-       by semantic vars below (primary-500 instead of primary-600) */
+    /* Primary palette – RGB triplets for Tailwind utility classes
+       (auth-bg-primary-600, auth-text-primary-400, etc.)           */
     --auth-primary-50-rgb:  238 242 255;
     --auth-primary-100-rgb: 224 231 255;
     --auth-primary-200-rgb: 199 210 254;
     --auth-primary-300-rgb: 165 180 252;
     --auth-primary-400-rgb: 129 140 248;
-    --auth-primary-500-rgb: 99 102 241;
-    --auth-primary-600-rgb: 79 70 229;
-    --auth-primary-700-rgb: 67 56 202;
-    --auth-primary-800-rgb: 55 48 163;
-    --auth-primary-900-rgb: 49 46 129;
-    --auth-primary-950-rgb: 30 27 75;
+    --auth-primary-500-rgb: 99  102 241;
+    --auth-primary-600-rgb: 79  70  229;
+    --auth-primary-700-rgb: 67  56  202;
+    --auth-primary-800-rgb: 55  48  163;
+    --auth-primary-900-rgb: 49  46  129;
+    --auth-primary-950-rgb: 30  27  75;
+}
 
-    /* Semantic overrides for dark mode */
-    --auth-primary:       #6366f1;   /* primary-500 – brighter on dark background */
-    --auth-primary-hover: #4f46e5;   /* primary-600 */
+/* ── Light Mode ───────────────────────────────────────────────────── */
+[data-theme="light"] {
+    --bg:             #F5F5F2;
+    --bg-surface:     #FFFFFF;
+    --bg-elevated:    #ECECEA;
+    --text-primary:   #0A0A0A;
+    --text-secondary: #666666;
+    --text-muted:     #AAAAAA;
+    --accent:         #0A0A0A;
+    --accent-subtle:  rgba(0, 0, 0, 0.04);
+    --border:         rgba(0, 0, 0, 0.08);
+    --outline:        rgba(0, 0, 0, 0.12);
+    --error:          #ef4444;
+    --success:        #10b981;
+}
 
-    --auth-bg:      #020617;   /* slate-950 */
-    --auth-card-bg: #0f172a;   /* slate-900 */
-
-    --auth-text:       #f8fafc;   /* slate-50  */
-    --auth-text-muted: #94a3b8;   /* slate-400 */
-
-    --auth-input-bg: #020617;   /* slate-950 */
-    --auth-border:   #1e293b;   /* slate-800 */
-
-    --auth-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+/* ── System preference fallback ───────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+        --bg:             #F5F5F2;
+        --bg-surface:     #FFFFFF;
+        --bg-elevated:    #ECECEA;
+        --text-primary:   #0A0A0A;
+        --text-secondary: #666666;
+        --text-muted:     #AAAAAA;
+        --accent:         #0A0A0A;
+        --accent-subtle:  rgba(0, 0, 0, 0.04);
+        --border:         rgba(0, 0, 0, 0.08);
+        --outline:        rgba(0, 0, 0, 0.12);
+    }
 }

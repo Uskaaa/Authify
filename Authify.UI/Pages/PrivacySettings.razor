@@ -10,21 +10,21 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PrivacySettings> Loc
 
-<header class="auth-bg-white dark:auth-bg-dark-card auth-border-b auth-border-gray-200 dark:auth-border-dark-border auth-pt-16 lg:auth-pt-0 auth-transition-colors auth-duration-300">
+<header class="auth-border-b auth-pt-16 lg:auth-pt-0 auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-bottom:1px solid var(--border);">
     <div class="auth-px-4 auth-py-6 sm:auth-px-6 lg:auth-px-8">
         <div class="auth-flex auth-flex-col lg:auth-flex-row lg:auth-items-center lg:auth-justify-between">
             <div>
-                <h1 class="auth-text-3xl auth-font-bold auth-leading-tight auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Page"]</h1>
-                <p class="auth-mt-2 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Subtitle_Page"]</p>
+                <h1 class="auth-text-3xl auth-font-bold auth-leading-tight" style="color:var(--text-primary);">@Loc["Title_Page"]</h1>
+                <p class="auth-mt-2 auth-text-sm" style="color:var(--text-secondary);">@Loc["Subtitle_Page"]</p>
             </div>
             <div class="auth-flex auth-flex-col sm:auth-flex-row auth-items-start sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-mt-4 lg:auth-mt-0">
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-gray-700 dark:auth-text-gray-200 auth-bg-white dark:auth-bg-gray-800 auth-border auth-border-gray-300 dark:auth-border-gray-700 auth-rounded-lg hover:auth-bg-gray-50 dark:hover:auth-bg-gray-700 auth-transition-all">
+                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
                     <svg class="auth-w-4 auth-h-4 auth-mr-2 auth-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     @Loc["Btn_PrivacyPolicy"]
                 </button>
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-primary-600 auth-border auth-border-transparent auth-rounded-lg hover:auth-bg-primary-700 focus:auth-outline-none auth-shadow-sm auth-transition-all">
+                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-border-transparent auth-rounded-lg focus:auth-outline-none auth-shadow-sm auth-transition-all" style="background:var(--text-primary);color:var(--bg);">
                     @Loc["Btn_ContactSupport"]
                 </button>
             </div>
@@ -44,16 +44,16 @@
     </div>
 }
 
-<div class="auth-px-4 auth-py-8 sm:auth-px-6 lg:auth-px-8 auth-bg-gray-50 dark:auth-bg-dark-bg auth-min-h-screen">
+<div class="auth-px-4 auth-py-8 sm:auth-px-6 lg:auth-px-8 auth-min-h-screen" style="background:var(--bg);">
     <div class="auth-max-w-4xl auth-mx-auto">
         
-        <div class="auth-mb-8 auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-shadow-sm auth-border auth-border-gray-200 dark:auth-border-dark-border auth-overflow-hidden auth-transition-colors auth-duration-300">
-            
-            <div class="auth-px-8 auth-py-6 auth-border-b auth-border-gray-100 dark:auth-border-dark-border">
+        <div class="auth-mb-8 auth-rounded-xl auth-shadow-sm auth-border auth-overflow-hidden auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-color:var(--border);">
+
+            <div class="auth-px-8 auth-py-6 auth-border-b" style="border-color:var(--border);">
                 <div class="auth-flex auth-items-center auth-justify-between">
                     <div>
-                        <h3 class="auth-text-lg auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_MainCard"]</h3>
-                        <p class="auth-mt-1 auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_MainCardDesc"]</p>
+                        <h3 class="auth-text-lg auth-font-bold" style="color:var(--text-primary);">@Loc["Title_MainCard"]</h3>
+                        <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_MainCardDesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0">
                         <div class="auth-w-10 auth-h-10 auth-bg-emerald-50 dark:auth-bg-emerald-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
@@ -75,8 +75,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="auth-text-base auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Export"]</h4>
-                            <p class="auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_ExportDesc"]</p>
+                            <h4 class="auth-text-base auth-font-semibold" style="color:var(--text-primary);">@Loc["Title_Export"]</h4>
+                            <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_ExportDesc"]</p>
                         </div>
                     </div>
                     
@@ -112,7 +112,7 @@
                     </button>
                 </div>
 
-                <div class="auth-border-t auth-border-gray-100 dark:auth-border-dark-border"></div>
+                <div class="auth-border-t" style="border-color:var(--border);"></div>
 
                 <div class="auth-space-y-6">
                     <div class="auth-flex auth-items-center auth-space-x-3">
@@ -122,8 +122,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="auth-text-base auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Deactivate"]</h4>
-                            <p class="auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_DeactivateDesc"]</p>
+                            <h4 class="auth-text-base auth-font-semibold" style="color:var(--text-primary);">@Loc["Title_Deactivate"]</h4>
+                            <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_DeactivateDesc"]</p>
                         </div>
                     </div>
                     
@@ -152,7 +152,7 @@
                     </button>
                 </div>
 
-                <div class="auth-border-t auth-border-gray-100 dark:auth-border-dark-border"></div>
+                <div class="auth-border-t" style="border-color:var(--border);"></div>
 
                 <div class="auth-space-y-6">
                     <div class="auth-flex auth-items-center auth-space-x-3">
@@ -162,8 +162,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="auth-text-base auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_Delete"]</h4>
-                            <p class="auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">@Loc["Text_DeleteDesc"]</p>
+                            <h4 class="auth-text-base auth-font-semibold" style="color:var(--text-primary);">@Loc["Title_Delete"]</h4>
+                            <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_DeleteDesc"]</p>
                         </div>
                     </div>
                     
@@ -192,15 +192,15 @@
                     </button>
                 </div>
 
-                <div class="auth-pt-8 auth-border-t auth-border-gray-100 dark:auth-border-dark-border">
-                    <div class="auth-bg-gray-50 dark:auth-bg-gray-800 dark:auth-border dark:auth-border-dark-border auth-rounded-xl auth-p-5">
+                <div class="auth-pt-8 auth-border-t" style="border-color:var(--border);">
+                    <div class="auth-rounded-xl auth-p-5 auth-border" style="background:var(--bg-elevated);border-color:var(--border);">
                         <div class="auth-flex auth-items-center">
                             <svg class="auth-w-5 auth-h-5 auth-text-gray-400 auth-mr-3 dark:auth-text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <div>
-                                <h5 class="auth-text-sm auth-font-semibold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Title_NeedHelp"]</h5>
-                                <p class="auth-text-xs auth-text-gray-500 auth-mt-1 dark:auth-text-dark-muted">
+                                <h5 class="auth-text-sm auth-font-semibold" style="color:var(--text-primary);">@Loc["Title_NeedHelp"]</h5>
+                                <p class="auth-text-xs auth-mt-1" style="color:var(--text-secondary);">
                                     @Loc["Text_HelpDesc"] 
                                     <a href="#" class="auth-text-primary-600 hover:auth-text-primary-700 auth-font-medium dark:auth-text-primary-400 dark:hover:auth-text-primary-300">@Loc["Link_ContactSupport"]</a>
                                 </p>
@@ -219,8 +219,8 @@
         <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-pt-4 auth-px-4 auth-pb-20 auth-text-center sm:auth-block sm:auth-p-0">
             <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseDeactivateModal"></div>
             <span class="auth-hidden sm:auth-inline-block sm:auth-align-middle sm:auth-h-screen">&#8203;</span>
-            <div class="auth-inline-block auth-align-bottom auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border auth-border-gray-200 dark:auth-border-dark-border">
-                <div class="auth-bg-white dark:auth-bg-dark-card auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4">
+            <div class="auth-inline-block auth-align-bottom auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border" style="background:var(--bg-surface);border-color:var(--border);">
+                <div class="auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4" style="background:var(--bg-surface);">
                     <div class="sm:auth-flex sm:auth-items-start">
                         <div class="auth-mx-auto auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-12 auth-w-12 auth-rounded-full auth-bg-yellow-100 dark:auth-bg-yellow-900/30 sm:auth-mx-0 sm:auth-h-10 sm:auth-w-10">
                             <svg class="auth-h-6 auth-w-6 auth-text-yellow-600 dark:auth-text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,20 +228,20 @@
                             </svg>
                         </div>
                         <div class="auth-mt-3 auth-text-center sm:auth-mt-0 sm:auth-ml-4 sm:auth-text-left">
-                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Modal_Deactivate_Title"]</h3>
+                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold" style="color:var(--text-primary);">@Loc["Modal_Deactivate_Title"]</h3>
                             <div class="auth-mt-2">
-                                <p class="auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">
+                                <p class="auth-text-sm" style="color:var(--text-secondary);">
                                     @Loc["Modal_Deactivate_Text"]
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="auth-bg-gray-50 dark:auth-bg-gray-800/50 auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t auth-border-gray-100 dark:auth-border-dark-border">
+                <div class="auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t" style="background:var(--bg-elevated);border-color:var(--border);">
                     <button type="button" @onclick="ConfirmDeactivate" class="auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-transparent auth-shadow-sm auth-px-4 auth-py-2 auth-bg-yellow-600 auth-text-base auth-font-medium auth-text-white hover:auth-bg-yellow-700 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-yellow-500 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:focus:auth-ring-offset-gray-900">
                         @Loc["Modal_Btn_Deactivate"]
                     </button>
-                    <button type="button" @onclick="CloseDeactivateModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-gray-300 auth-shadow-sm auth-px-4 auth-py-2 auth-bg-white auth-text-base auth-font-medium auth-text-gray-700 hover:auth-bg-gray-50 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:auth-bg-gray-700 dark:auth-text-gray-200 dark:auth-border-gray-600 dark:hover:auth-bg-gray-600 dark:focus:auth-ring-offset-gray-900">
+                    <button type="button" @onclick="CloseDeactivateModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-shadow-sm auth-px-4 auth-py-2 auth-text-base auth-font-medium focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
                         @Loc["Modal_Btn_Cancel"]
                     </button>
                 </div>
@@ -256,8 +256,8 @@
         <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-pt-4 auth-px-4 auth-pb-20 auth-text-center sm:auth-block sm:auth-p-0">
             <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseDeleteModal"></div>
             <span class="auth-hidden sm:auth-inline-block sm:auth-align-middle sm:auth-h-screen">&#8203;</span>
-            <div class="auth-inline-block auth-align-bottom auth-bg-white dark:auth-bg-dark-card auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border auth-border-gray-200 dark:auth-border-dark-border">
-                <div class="auth-bg-white dark:auth-bg-dark-card auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4">
+            <div class="auth-inline-block auth-align-bottom auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border" style="background:var(--bg-surface);border-color:var(--border);">
+                <div class="auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4" style="background:var(--bg-surface);">
                     <div class="sm:auth-flex sm:auth-items-start">
                         <div class="auth-mx-auto auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-12 auth-w-12 auth-rounded-full auth-bg-red-100 dark:auth-bg-red-900/30 sm:auth-mx-0 sm:auth-h-10 sm:auth-w-10">
                             <svg class="auth-h-6 auth-w-6 auth-text-red-600 dark:auth-text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,20 +265,20 @@
                             </svg>
                         </div>
                         <div class="auth-mt-3 auth-text-center sm:auth-mt-0 sm:auth-ml-4 sm:auth-text-left">
-                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold auth-text-gray-900 dark:auth-text-dark-text">@Loc["Modal_Delete_Title"]</h3>
+                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold" style="color:var(--text-primary);">@Loc["Modal_Delete_Title"]</h3>
                             <div class="auth-mt-2">
-                                <p class="auth-text-sm auth-text-gray-500 dark:auth-text-dark-muted">
+                                <p class="auth-text-sm" style="color:var(--text-secondary);">
                                     @Loc["Modal_Delete_Text"]
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="auth-bg-gray-50 dark:auth-bg-gray-800/50 auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t auth-border-gray-100 dark:auth-border-dark-border">
+                <div class="auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t" style="background:var(--bg-elevated);border-color:var(--border);">
                     <button type="button" @onclick="ConfirmDelete" class="auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-transparent auth-shadow-sm auth-px-4 auth-py-2 auth-bg-red-600 auth-text-base auth-font-medium auth-text-white hover:auth-bg-red-700 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-red-500 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:focus:auth-ring-offset-gray-900">
                         @Loc["Modal_Btn_Delete"]
                     </button>
-                    <button type="button" @onclick="CloseDeleteModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-gray-300 auth-shadow-sm auth-px-4 auth-py-2 auth-bg-white auth-text-base auth-font-medium auth-text-gray-700 hover:auth-bg-gray-50 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:auth-bg-gray-700 dark:auth-text-gray-200 dark:auth-border-gray-600 dark:hover:auth-bg-gray-600 dark:focus:auth-ring-offset-gray-900">
+                    <button type="button" @onclick="CloseDeleteModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-shadow-sm auth-px-4 auth-py-2 auth-text-base auth-font-medium focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
                         @Loc["Modal_Btn_Cancel"]
                     </button>
                 </div>

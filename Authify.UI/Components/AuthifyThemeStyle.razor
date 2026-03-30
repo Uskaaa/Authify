@@ -39,7 +39,7 @@
         --auth-card-bg:       @lightCardBg;
     }
 
-    :root.dark {
+    :root:not([data-theme="light"]) {
         /* Primary palette in dark mode – same RGB values so utility classes
            keep consistent; dark-mode shift is handled by semantic vars below */
         --auth-primary-50-rgb:  @AuthifyThemeOptions.HexToRgb(theme.GetPrimaryHex(50));

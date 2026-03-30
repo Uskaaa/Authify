@@ -8,114 +8,114 @@
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
 
-<div class="login-container">
-    <div class="content-wrapper">
-        <div class="auth-card">
+<div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
+    <div style="width:min(420px,100%);">
+
+        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:2rem;">
 
             @if (!TeamFeature.IsEnabled)
             {
-                <div class="auth-header">
-                    <h1>Team-Features deaktiviert</h1>
+                <div style="margin-bottom:1.75rem;">
+                    <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0;">Team-Features deaktiviert</h1>
                 </div>
                 return;
             }
 
             @if (_isCheckingToken)
             {
-                <div class="auth-header">
-                    <h1>Einladung wird geprüft...</h1>
-                </div>
-                <div class="auth-flex auth-items-center auth-justify-center auth-py-8">
-                    <i class="fa-solid fa-spinner fa-spin auth-text-2xl auth-text-primary-500"></i>
+                <div style="text-align:center;padding:2rem 0;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;color:var(--text-muted);"></i>
+                    <p style="margin-top:1rem;font-size:0.875rem;color:var(--text-secondary);">Einladung wird geprüft...</p>
                 </div>
             }
             else if (_tokenError != null)
             {
-                <div class="auth-header">
-                    <h1>Ungültige Einladung</h1>
-                    <p>Dieser Einladungslink ist nicht mehr gültig.</p>
+                <div style="margin-bottom:1.75rem;">
+                    <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0 0 0.25rem;">Ungültige Einladung</h1>
+                    <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">Dieser Einladungslink ist nicht mehr gültig.</p>
                 </div>
-                <div class="alert alert-danger">@_tokenError</div>
-                <p class="auth-footer">
-                    <a href="login">Zur Anmeldung</a>
+                <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1.25rem;">
+                    @_tokenError
+                </div>
+                <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--text-secondary);">
+                    <a href="login" style="color:var(--text-primary);font-weight:500;text-decoration:none;">Zur Anmeldung</a>
                 </p>
             }
             else
             {
-                <div class="auth-header">
-                    <h1>Einladung annehmen</h1>
+                <div style="margin-bottom:1.75rem;">
+                    <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0 0 0.25rem;">Einladung annehmen</h1>
                     @if (_invitation != null)
                     {
-                        <p>Du wurdest eingeladen, dem Team <strong>@_invitation.TeamName</strong> beizutreten.</p>
+                        <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">Du wurdest eingeladen, dem Team <strong style="color:var(--text-primary);">@_invitation.TeamName</strong> beizutreten.</p>
                     }
                     else
                     {
-                        <p>Registriere dich um dem Team beizutreten.</p>
+                        <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">Registriere dich um dem Team beizutreten.</p>
                     }
                 </div>
 
                 @if (!string.IsNullOrEmpty(_errorMessage))
                 {
-                    <div class="alert alert-danger">@_errorMessage</div>
+                    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1.25rem;">
+                        @_errorMessage
+                    </div>
                 }
 
                 <EditForm Model="_acceptRequest" OnValidSubmit="HandleAccept" FormName="AcceptInvitationForm">
                     <DataAnnotationsValidator />
 
-                    <div class="auth-stack">
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
 
-                        <div class="form-group">
-                            <label for="fullName">Vollständiger Name</label>
-                            <InputText id="fullName" @bind-Value="_acceptRequest.FullName" placeholder="Max Mustermann" />
-                            <div class="validation-wrapper">
-                                <ValidationMessage For="@(() => _acceptRequest.FullName)" />
-                            </div>
+                        <div>
+                            <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Vollständiger Name</label>
+                            <InputText id="fullName" @bind-Value="_acceptRequest.FullName"
+                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                            <ValidationMessage For="@(() => _acceptRequest.FullName)" />
                         </div>
 
-                        <div class="form-group">
-                            <label for="email">E-Mail-Adresse</label>
+                        <div>
+                            <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">E-Mail-Adresse</label>
                             <InputText id="email" @bind-Value="_acceptRequest.Email" type="email"
                                        disabled="@(_emailPrefilled)"
-                                       placeholder="deine@email.de" />
-                            <div class="validation-wrapper">
-                                <ValidationMessage For="@(() => _acceptRequest.Email)" />
-                            </div>
+                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;opacity:@(_emailPrefilled ? "0.6" : "1");" />
+                            <ValidationMessage For="@(() => _acceptRequest.Email)" />
                         </div>
 
-                        <div class="form-group">
-                            <label for="password">Passwort</label>
-                            <div class="password-input">
+                        <div>
+                            <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Passwort</label>
+                            <div style="position:relative;">
                                 <InputText id="password" @bind-Value="_acceptRequest.Password"
                                            type="@(_showPassword ? "text" : "password")"
-                                           placeholder="Sicheres Passwort" />
-                                <button type="button" class="toggle-password" @onclick="() => _showPassword = !_showPassword" tabindex="-1">
+                                           style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 3rem 0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                                <button type="button" @onclick="() => _showPassword = !_showPassword" tabindex="-1"
+                                        style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;line-height:1;">
                                     <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                                 </button>
                             </div>
-                            <div class="validation-wrapper">
-                                <ValidationMessage For="@(() => _acceptRequest.Password)" />
-                            </div>
+                            <ValidationMessage For="@(() => _acceptRequest.Password)" />
                         </div>
 
-                        <div class="form-group">
-                            <label for="confirmPassword">Passwort bestätigen</label>
-                            <div class="password-input">
+                        <div>
+                            <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Passwort bestätigen</label>
+                            <div style="position:relative;">
                                 <InputText id="confirmPassword" @bind-Value="_acceptRequest.ConfirmPassword"
                                            type="@(_showConfirmPassword ? "text" : "password")"
-                                           placeholder="Passwort wiederholen" />
-                                <button type="button" class="toggle-password" @onclick="() => _showConfirmPassword = !_showConfirmPassword" tabindex="-1">
+                                           style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 3rem 0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
+                                <button type="button" @onclick="() => _showConfirmPassword = !_showConfirmPassword" tabindex="-1"
+                                        style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:0;line-height:1;">
                                     <i class="fas @(_showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
                                 </button>
                             </div>
-                            <div class="validation-wrapper">
-                                <ValidationMessage For="@(() => _acceptRequest.ConfirmPassword)" />
-                            </div>
+                            <ValidationMessage For="@(() => _acceptRequest.ConfirmPassword)" />
                         </div>
 
-                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                        <button type="submit" disabled="@_isSubmitting"
+                                style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;opacity:@(_isSubmitting ? "0.6" : "1");">
                             @if (_isSubmitting)
                             {
-                                <i class="fas fa-spinner fa-spin"></i> <span>Beitreten...</span>
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Beitreten...</span>
                             }
                             else
                             {
@@ -126,10 +126,11 @@
                     </div>
                 </EditForm>
 
-                <p class="auth-footer">
-                    Bereits ein Konto? <a href="login">Anmelden</a>
+                <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--text-secondary);">
+                    Bereits ein Konto? <a href="login" style="color:var(--text-primary);font-weight:500;text-decoration:none;">Anmelden</a>
                 </p>
             }
+
         </div>
     </div>
 </div>
@@ -178,7 +179,6 @@
 
         _invitation = result.Data;
 
-        // Bei persönlicher Einladung E-Mail vorbelegen
         if (!string.IsNullOrEmpty(_invitation.Email))
         {
             _acceptRequest.Email = _invitation.Email;
@@ -195,13 +195,8 @@
         _isSubmitting = false;
 
         if (result.Success && result.Data != null)
-        {
-            // result.Data enthält den Redirect-Pfad (z.B. "reset-password?email=...&token=...&invited=true")
             NavigationManager.NavigateTo("/" + result.Data, forceLoad: true);
-        }
         else
-        {
             _errorMessage = result.ErrorMessage ?? "Fehler beim Beitreten des Teams.";
-        }
     }
 }
