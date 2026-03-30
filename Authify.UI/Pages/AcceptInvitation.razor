@@ -78,7 +78,7 @@
                             <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">E-Mail-Adresse</label>
                             <InputText id="email" @bind-Value="_acceptRequest.Email" type="email"
                                        disabled="@(_emailPrefilled)"
-                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;opacity:@(_emailPrefilled ? "0.6" : "1");" />
+                                       style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" />
                             <ValidationMessage For="@(() => _acceptRequest.Email)" />
                         </div>
 
@@ -111,7 +111,7 @@
                         </div>
 
                         <button type="submit" disabled="@_isSubmitting"
-                                style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;opacity:@(_isSubmitting ? "0.6" : "1");">
+                                style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
                             @if (_isSubmitting)
                             {
                                 <i class="fas fa-spinner fa-spin"></i>
