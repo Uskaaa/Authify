@@ -73,6 +73,7 @@ public class OidcProviderController : ControllerBase
     }
 
     [HttpGet("authorize")]
+    [HttpGet("authorize/")]
     public IActionResult Authorize([FromQuery] string? redirect_uri, [FromQuery] string? state, [FromQuery] string? client_id, [FromQuery] string? nonce)
     {
         var html = $@"
