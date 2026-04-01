@@ -61,32 +61,13 @@ public class UserService<TUser> : IUserService
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
         var confirmationLink =
-            $"{_infrastructureOptions.Domain}confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            $"{_infrastructureOptions.Domain.TrimEnd("/")}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
-        string htmlContent = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: 'Segoe UI', sans-serif; background-color: #f4f4f5; padding: 20px; margin: 0; }}
-        .container {{ max-width: 500px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
-        .btn {{ display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }}
-        .text {{ color: #334155; line-height: 1.6; }}
-        .link-fallback {{ font-size: 12px; color: #64748b; word-break: break-all; }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <h2 style='color: #1e293b; text-align: center; margin-top: 0;'>Confirm your email</h2>
-        <p class='text'>Welcome to BrieflyAI!</p>
-        <p class='text'>Please confirm your email address to get started.</p>
-        <div style='text-align: center;'>
-            <a href='{confirmationLink}' class='btn' style='color: #ffffff;'>Verify Email Address</a>
-        </div>
-        <p class='link-fallback'>Or click here: <a href='{confirmationLink}' style='color: #4f46e5;'>{confirmationLink}</a></p>
-    </div>
-</body>
-</html>";
+        var htmlContent = MycelisEmailTemplate.BuildActionEmail(
+            title: "E-Mail bestätigen",
+            intro: "Willkommen bei Mycelis. Bitte bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren.",
+            actionLabel: "E-Mail bestätigen",
+            actionUrl: confirmationLink);
 
         await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", htmlContent);
 
@@ -114,33 +95,14 @@ public class UserService<TUser> : IUserService
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var resetLink =
-            $"{_infrastructureOptions.Domain}reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
+            $"{_infrastructureOptions.Domain.TrimEnd("/")}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
-        string htmlContent = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: 'Segoe UI', sans-serif; background-color: #f4f4f5; padding: 20px; margin: 0; }}
-        .container {{ max-width: 500px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
-        .btn {{ display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }}
-        .text {{ color: #334155; line-height: 1.6; }}
-        .link-fallback {{ font-size: 12px; color: #64748b; word-break: break-all; }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <h2 style='color: #1e293b; text-align: center; margin-top: 0;'>Reset your password</h2>
-        <p class='text'>Hello,</p>
-        <p class='text'>We received a request to reset your password. Click the button below to choose a new one:</p>
-        <div style='text-align: center;'>
-            <a href='{resetLink}' class='btn' style='color: #ffffff;'>Reset Password</a>
-        </div>
-        <p class='text' style='font-size: 14px;'>If you didn't ask to reset your password, you can safely ignore this email.</p>
-        <p class='link-fallback'>Or click here: <a href='{resetLink}' style='color: #4f46e5;'>{resetLink}</a></p>
-    </div>
-</body>
-</html>";
+        var htmlContent = MycelisEmailTemplate.BuildActionEmail(
+            title: "Passwort zurücksetzen",
+            intro: "Wir haben eine Anfrage zum Zurücksetzen deines Passworts erhalten.",
+            actionLabel: "Passwort zurücksetzen",
+            actionUrl: resetLink,
+            outro: "Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.");
 
         await _emailSender.SendEmailAsync(user.Email!, "Reset your password", htmlContent);
 

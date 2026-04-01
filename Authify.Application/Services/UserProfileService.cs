@@ -62,9 +62,14 @@ public class UserProfileService<TUser> : IUserProfileService
             user.EmailConfirmed = false;
             
             var confirmationLink =
-                $"https://{_infrastructureOptions.Domain}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
-            await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
-                $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>.");
+                $"{_infrastructureOptions.Domain.TrimEnd("/")}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            var htmlContent = MycelisEmailTemplate.BuildActionEmail(
+                title: "E-Mail bestätigen",
+                intro: "Bitte bestätige deine neue E-Mail-Adresse, um die Änderung abzuschließen.",
+                actionLabel: "E-Mail bestätigen",
+                actionUrl: confirmationLink);
+
+            await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", htmlContent);
         }
 
         await _userManager.UpdateAsync(user);

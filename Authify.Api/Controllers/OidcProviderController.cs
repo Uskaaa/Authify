@@ -82,18 +82,105 @@ public class OidcProviderController : ControllerBase
             <meta charset='utf-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1'>
             <title>Authenticating...</title>
+            <script>
+                // Theme: dark = default, light = [data-theme=""light""]
+                function resolveTheme() {{
+                    var saved = localStorage.getItem('color-theme');
+                    if (saved) return saved;
+                    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                }}
+
+                window.applyTheme = function () {{
+                    document.documentElement.dataset.theme = resolveTheme();
+                }};
+
+                window.toggleTheme = function () {{
+                    var current = document.documentElement.dataset.theme;
+                    var next = current === 'light' ? 'dark' : 'light';
+                    document.documentElement.dataset.theme = next;
+                    localStorage.setItem('color-theme', next);
+                }};
+
+                // Run once before CSS is parsed to avoid theme flash on first paint.
+                window.applyTheme();
+
+                // Re-apply after enhanced navigation updates page content without full reload.
+                document.addEventListener('enhancedload', window.applyTheme);
+            </script>
             <style>
-                body {{ display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f8fafc; font-family: ui-sans-serif, system-ui, sans-serif; color: #334155; }}
-                .loader {{ border: 3px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto 16px; }}
+                :root {{
+                    --bg: #101214;
+                    --bg-surface: #171a1f;
+                    --text-primary: #f5f7fb;
+                    --text-secondary: #c2c9d4;
+                    --text-muted: #9aa3b2;
+                    --border: rgba(255, 255, 255, 0.16);
+                }}
+                [data-theme='light'] {{
+                    --bg: #F5F5F2;
+                    --bg-surface: #FFFFFF;
+                    --text-primary: #0A0A0A;
+                    --text-secondary: #666666;
+                    --text-muted: #AAAAAA;
+                    --border: rgba(0, 0, 0, 0.08);
+                }}
+                body {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 24px;
+                    background: var(--bg);
+                    color: var(--text-primary);
+                    font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+                }}
+                .container {{
+                    text-align: center;
+                    background: var(--bg-surface);
+                    border: 1px solid var(--border);
+                    border-radius: 8px;
+                    padding: 2rem 2.5rem;
+                    min-width: min(100%, 360px);
+                    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+                }}
+                .brand {{
+                    margin: 0 0 10px;
+                    font-size: 12px;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: var(--text-muted);
+                }}
+                h3 {{
+                    margin: 0;
+                    font-family: 'Syne', 'DM Sans', sans-serif;
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: var(--text-primary);
+                }}
+                p {{
+                    margin: 8px 0 0;
+                    font-size: 14px;
+                    color: var(--text-secondary);
+                }}
+                .loader {{
+                    border: 3px solid var(--border);
+                    border-top-color: var(--text-primary);
+                    border-radius: 50%;
+                    width: 32px;
+                    height: 32px;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 16px;
+                }}
                 @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
-                .container {{ text-align: center; background: white; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }}
             </style>
         </head>
         <body>
             <div class='container'>
+                <p class='brand'>Mycelis</p>
                 <div class='loader'></div>
-                <h3 style='margin:0; font-weight:600;'>Authenticating...</h3>
-                <p style='margin:8px 0 0; font-size:14px; color:#64748b;'>Securing your session.</p>
+                <h3>Authenticating...</h3>
+                <p>Securing your session.</p>
             </div>
 
             <script>
@@ -123,7 +210,6 @@ public class OidcProviderController : ControllerBase
                         window.location.replace(data.redirectUrl);
                     }})
                     .catch(() => {{
-                        // Token abgelaufen oder ungültig -> Neu einloggen
                         redirectToLogin();
                     }});
                 }}

@@ -54,7 +54,7 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
         // Bei persönlicher Einladung: E-Mail versenden
         if (!string.IsNullOrEmpty(invitation.Email))
         {
-            var inviteLink = $"{_options.Domain}accept-invitation?token={Uri.EscapeDataString(token)}";
+            var inviteLink = $"{_options.Domain.TrimEnd("/")}/accept-invitation?token={Uri.EscapeDataString(token)}";
             await SendInvitationEmailAsync(invitation.Email, team.Name, inviteLink);
         }
 
@@ -214,31 +214,12 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
 
     private async Task SendInvitationEmailAsync(string email, string teamName, string inviteLink)
     {
-        var html = $@"
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: 'Segoe UI', sans-serif; background-color: #f4f4f5; padding: 20px; margin: 0; }}
-        .container {{ max-width: 500px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }}
-        .btn {{ display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 20px 0; }}
-        .text {{ color: #334155; line-height: 1.6; }}
-        .link-fallback {{ font-size: 12px; color: #64748b; word-break: break-all; }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <h2 style='color: #1e293b; text-align: center; margin-top: 0;'>Team-Einladung</h2>
-        <p class='text'>Du wurdest eingeladen, dem Team <strong>{teamName}</strong> beizutreten.</p>
-        <p class='text'>Klicke auf den Button unten um die Einladung anzunehmen und deinen Account zu erstellen:</p>
-        <div style='text-align: center;'>
-            <a href='{inviteLink}' class='btn' style='color: #ffffff;'>Einladung annehmen</a>
-        </div>
-        <p class='text' style='font-size: 14px;'>Falls du diese Einladung nicht erwartet hast, kannst du diese E-Mail ignorieren.</p>
-        <p class='link-fallback'>Oder klicke hier: <a href='{inviteLink}' style='color: #4f46e5;'>{inviteLink}</a></p>
-    </div>
-</body>
-</html>";
+        var html = MycelisEmailTemplate.BuildActionEmail(
+            title: "Team-Einladung",
+            intro: $"Du wurdest eingeladen, dem Team {teamName} beizutreten.",
+            actionLabel: "Einladung annehmen",
+            actionUrl: inviteLink,
+            outro: "Falls du diese Einladung nicht erwartet hast, kannst du diese E-Mail ignorieren.");
 
         await _emailSender.SendEmailAsync(email, $"Einladung zum Team: {teamName}", html);
     }
