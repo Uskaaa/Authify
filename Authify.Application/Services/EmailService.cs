@@ -19,7 +19,7 @@ public class EmailService : IEmailSender
         }
         else
         {
-            _senderEmail = "noreply@deinedomain.com"; 
+            _senderEmail = "noreply@mycelis.ai"; 
         }
     }
 
@@ -29,7 +29,7 @@ public class EmailService : IEmailSender
         {
             var message = new MailMessage
             {
-                From = new MailAddress(_senderEmail, "SummaQuick Support"), 
+                From = new MailAddress(_senderEmail, "Mycelis Support"), 
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true
