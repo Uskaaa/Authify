@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
         // DeviceName/IP optional aus Request oder Header
-        loginRequest.DeviceName = Request.Headers["Device-Name"].FirstOrDefault() ?? "Unknown";
+        loginRequest.DeviceName ??= Request.Headers["Device-Name"].FirstOrDefault() ?? "Unknown";
         loginRequest.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
         var result = await _authServiceJwt.LoginAsync(loginRequest);
