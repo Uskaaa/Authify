@@ -11,7 +11,7 @@
 <div class="auth-space-y-8">
     
     <div>
-        <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
+        <div class="auth-px-3 auth-mb-2 label-caption">
             Account Settings
         </div>
         <div class="auth-space-y-0.5">
@@ -27,7 +27,7 @@
     @if (!_isTeamMember)
     {
         <div>
-            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
+            <div class="auth-px-3 auth-mb-2 label-caption">
                 Subscription
             </div>
             <div class="auth-space-y-0.5">
@@ -39,7 +39,7 @@
     @if (TeamFeature.IsEnabled && !_isTeamMember)
     {
         <div>
-            <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
+            <div class="auth-px-3 auth-mb-2 label-caption">
                 Admin-Einstellungen
             </div>
             <div class="auth-space-y-0.5">
@@ -102,37 +102,9 @@
     
     private RenderFragment NavItem(string href, string icon, string text) => __builder =>
     {
-        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="nav-item auth-group auth-relative auth-flex auth-items-center auth-gap-3 auth-px-3 auth-py-2 auth-rounded-lg auth-text-sm auth-font-medium auth-transition-all" style="color:var(--text-secondary);text-decoration:none;">
-
-            <i class="@icon auth-w-5 auth-text-center auth-transition-colors auth-text-xs" style="color:var(--text-muted);"></i>
-
-            <span class="auth-relative auth-z-10">@text</span>
-
-            <div class="active-indicator auth-absolute auth-left-0 auth-top-1/2 auth--translate-y-1/2 auth-h-5 auth-w-1 auth-rounded-r-full auth-opacity-0 auth-transition-opacity" style="background:var(--text-primary);"></div>
+        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="dash-nav-item" ActiveClass="active">
+            <i class="@icon auth-w-4 auth-text-center auth-text-[11px] auth-flex-shrink-0" style="color:var(--text-muted);"></i>
+            <span>@text</span>
         </NavLink>
     };
 }
-
-<style>
-    .nav-item.active {
-        background-color: var(--bg-elevated);
-        color: var(--text-primary) !important;
-    }
-
-    .nav-item.active i {
-        color: var(--text-primary) !important;
-    }
-
-    .nav-item.active .active-indicator {
-        opacity: 1;
-    }
-
-    .nav-item:hover {
-        background-color: var(--bg-elevated);
-        color: var(--text-primary) !important;
-    }
-
-    .nav-item:hover i {
-        color: var(--text-secondary) !important;
-    }
-</style>
