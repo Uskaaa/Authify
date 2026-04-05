@@ -8,34 +8,6 @@
 @inject IAuthifyDataService DataService
 @inject IStringLocalizer<ProfileSettings> Loc
 
-<header class="auth-border-b auth-pt-16 lg:auth-pt-0 auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-bottom:1px solid var(--border);">
-    <div class="auth-px-4 auth-py-6 sm:auth-px-6 lg:auth-px-8">
-        <div class="auth-flex auth-flex-col lg:auth-flex-row lg:auth-items-center lg:auth-justify-between">
-            <div>
-                <h1 class="auth-text-3xl auth-font-bold auth-leading-tight" style="color:var(--text-primary);">@Loc["Title_Page"]</h1>
-                <p class="auth-mt-2 auth-text-sm" style="color:var(--text-secondary);">@Loc["Subtitle_Page"]</p>
-            </div>
-            <div class="auth-flex auth-flex-col sm:auth-flex-row auth-items-start sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-mt-4 lg:auth-mt-0">
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
-                    <i class="fa-solid fa-download auth-mr-2 auth-text-gray-400"></i>
-                    @Loc["Btn_ExportData"]
-                </button>
-                <button @onclick="SaveProfile" disabled="@_isSaving" class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-border-transparent auth-rounded-lg focus:auth-outline-none auth-shadow-sm disabled:auth-opacity-50 disabled:auth-cursor-not-allowed auth-transition-all" style="background:var(--text-primary);color:var(--bg);">
-                    @if (_isSaving)
-                    {
-                        <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i>
-                        <span>@Loc["Btn_Saving"]</span>
-                    }
-                    else
-                    {
-                        <span>@Loc["Btn_SaveChanges"]</span>
-                    }
-                </button>
-            </div>
-        </div>
-    </div>
-</header>
-
 @if (_showNotification)
 {
     <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-lg auth-shadow-xl auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down auth-border auth-border-white/10">
@@ -53,8 +25,18 @@
     </div>
 }
 
-<div class="auth-px-4 auth-py-8 sm:auth-px-6 lg:auth-px-8 auth-min-h-screen" style="background:var(--bg);">
-    <div class="auth-max-w-4xl auth-mx-auto" @ref="_rootElement">
+<div class="auth-px-4 lg:auth-px-6 auth-py-4 sm:auth-py-6 lg:auth-py-8 auth-min-h-screen" style="background:var(--bg);">
+    <div class="auth-max-w-7xl auth-space-y-6" @ref="_rootElement">
+        <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center auth-justify-between auth-gap-4">
+            <div>
+                <h1 style="font-family:'Syne',sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);">
+                    @Loc["Title_Page"]
+                </h1>
+                <p style="margin-top:0.25rem;font-size:0.875rem;color:var(--text-secondary);">
+                    @Loc["Subtitle_Page"]
+                </p>
+            </div>
+        </div>
         
         @if (_isLoading)
         {

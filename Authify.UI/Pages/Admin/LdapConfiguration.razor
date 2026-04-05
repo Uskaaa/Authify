@@ -10,7 +10,8 @@
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
 
-<div class="auth-max-w-3xl auth-mx-auto auth-px-4 auth-py-8">
+<div class="auth-px-4 lg:auth-px-6 auth-py-4 sm:auth-py-6 lg:auth-py-8 auth-min-h-screen" style="background:var(--bg);">
+<div class="auth-max-w-7xl auth-space-y-6">
 
     @if (!LdapFeature.IsEnabled)
     {
@@ -257,6 +258,7 @@
             </div>
         </div>
     }
+</div>
 </div>
 
 @code {

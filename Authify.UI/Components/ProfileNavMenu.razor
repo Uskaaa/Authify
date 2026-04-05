@@ -6,7 +6,9 @@
 @inject LdapFeatureOptions LdapFeature
 @inject ITeamDataService TeamDataService
 
-<div class="auth-flex-1 auth-py-6 auth-px-4 auth-space-y-8 auth-overflow-y-auto custom-scrollbar">
+<div class="auth-h-full auth-min-h-0 auth-flex auth-flex-col">
+<div class="auth-flex-1 auth-min-h-0 auth-overflow-y-auto auth-pr-1">
+<div class="auth-space-y-8">
     
     <div>
         <div class="auth-px-3 auth-mb-2 auth-text-[10px] auth-font-bold auth-uppercase auth-tracking-wider" style="color:var(--text-muted);">
@@ -55,13 +57,15 @@
         </div>
     }
 
+    </div>
 </div>
 
-<div class="auth-p-4 auth-border-t" style="background:var(--bg-surface);border-color:var(--border);">
+<div class="auth-pt-4 auth-mt-2 auth-border-t auth-flex-shrink-0" style="border-color:var(--border);">
     <a href="/dashboard" class="auth-flex auth-items-center auth-gap-3 auth-p-2.5 auth-rounded-xl auth-text-sm auth-font-medium auth-transition-colors auth-group" style="color:var(--text-secondary);text-decoration:none;">
         <i class="fa-solid fa-arrow-left auth-text-xs group-hover:-auth-translate-x-0.5 auth-transition-transform"></i>
         <span>Back to Dashboard</span>
     </a>
+</div>
 </div>
 
 @code {

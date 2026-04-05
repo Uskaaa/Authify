@@ -1,0 +1,120 @@
+@using Authify.UI.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@inject NavigationManager NavManager
+@inject IAuthifyDataService DataService
+
+@if (_isDropdownOpen)
+{
+    <div class="auth-fixed auth-inset-0 auth-z-40" @onclick="CloseDropdown"></div>
+}
+
+<CascadingAuthenticationState>
+    <div class="auth-flex auth-items-center auth-gap-3">
+        <div class="auth-hidden md:auth-flex auth-items-center auth-gap-3 auth-px-4 auth-py-1.5 auth-rounded-full"
+             style="background:var(--bg-elevated);border:1px solid var(--border);">
+            <div class="auth-flex auth-flex-col auth-leading-none">
+                <span class="auth-text-[0.625rem] auth-uppercase auth-tracking-wide" style="color:var(--text-muted);">Status</span>
+                <span class="auth-text-sm auth-font-medium" style="color:var(--text-primary);">Online</span>
+            </div>
+            <span class="auth-w-2.5 auth-h-2.5 auth-rounded-full" style="background:#10b981;"></span>
+        </div>
+
+        <div class="auth-relative auth-z-50">
+            <button @onclick="ToggleDropdown"
+                    class="auth-flex auth-items-center focus:auth-outline-none auth-relative"
+                    aria-label="Benutzermenü"
+                    aria-expanded="@_isDropdownOpen">
+                <img src="@(_profileImage ?? "https://api.dicebear.com/7.x/avataaars/svg?seed")"
+                     alt="User"
+                     class="auth-w-8 auth-h-8 auth-rounded-full auth-object-cover auth-cursor-pointer auth-transition-opacity hover:auth-opacity-80"
+                     style="border:1px solid var(--border);" />
+                <div class="auth-absolute auth-bottom-0 auth-right-0 auth-w-2 auth-h-2 auth-bg-green-500 auth-rounded-full"
+                     style="border:2px solid var(--bg);"></div>
+            </button>
+
+            @if (_isDropdownOpen)
+            {
+                <div class="auth-absolute auth-right-0 auth-mt-3 auth-w-56 auth-py-1.5 auth-origin-top-right"
+                     style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;">
+                    <AuthorizeView>
+                        <div class="auth-px-4 auth-py-2.5 auth-mb-1">
+                            <p class="auth-text-sm auth-font-medium" style="color:var(--text-primary);">@context.User.FindFirst("name")?.Value</p>
+                            <p class="auth-text-xs auth-truncate" style="color:var(--text-secondary);">@context.User.FindFirst("email")?.Value</p>
+                        </div>
+                    </AuthorizeView>
+
+                    <hr class="auth-mx-3 auth-my-1" style="border-color:var(--border);" />
+
+                    <div class="auth-px-1.5 auth-space-y-0.5">
+                        <button @onclick="ToggleTheme"
+                                class="auth-w-full auth-text-left auth-px-3 auth-py-2 auth-text-sm auth-flex auth-items-center auth-gap-3 auth-rounded hover:auth-bg-[var(--accent-subtle)]"
+                                style="color:var(--text-secondary);">
+                            <i class="fa-solid fa-circle-half-stroke auth-w-4 auth-text-center auth-text-[11px]" style="color:var(--text-muted);"></i>
+                            <span>Darstellung wechseln</span>
+                        </button>
+
+                        <button @onclick="NavigateToSettings"
+                                class="auth-w-full auth-text-left auth-px-3 auth-py-2 auth-text-sm auth-flex auth-items-center auth-gap-3 auth-rounded hover:auth-bg-[var(--accent-subtle)]"
+                                style="color:var(--text-secondary);">
+                            <i class="fa-solid fa-gear auth-w-4 auth-text-center auth-text-[11px]" style="color:var(--text-muted);"></i>
+                            <span>Einstellungen</span>
+                        </button>
+                    </div>
+
+                    <hr class="auth-mx-3 auth-my-1.5" style="border-color:var(--border);" />
+
+                    <div class="auth-px-1.5">
+                        <button @onclick="Logout"
+                                class="auth-w-full auth-text-left auth-px-3 auth-py-2 auth-text-sm auth-flex auth-items-center auth-gap-3 auth-rounded"
+                                style="color:#ef4444;"
+                                onmouseover="this.style.background='rgba(239,68,68,0.08)'"
+                                onmouseout="this.style.background='transparent'">
+                            <i class="fa-solid fa-arrow-right-from-bracket auth-w-4 auth-text-center auth-text-[11px]"></i>
+                            <span>Abmelden</span>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</CascadingAuthenticationState>
+
+@code {
+    private bool _isDropdownOpen;
+    private string? _profileImage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("applyTheme");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await DataService.GetProfileAsync();
+        if (result.Data?.ProfileImage != null)
+        {
+            var base64 = Convert.ToBase64String(result.Data.ProfileImage);
+            _profileImage = $"data:image/png;base64,{base64}";
+        }
+    }
+
+    private void ToggleDropdown() => _isDropdownOpen = !_isDropdownOpen;
+    private void CloseDropdown() => _isDropdownOpen = false;
+
+    private async Task ToggleTheme() => await JS.InvokeVoidAsync("toggleTheme");
+
+    private void NavigateToSettings() => NavManager.NavigateTo("/profile-settings");
+
+    private async Task Logout()
+    {
+        var result = await DataService.JwtLogoutAsync();
+        await Task.Delay(400);
+        if (result.Success)
+            NavManager.NavigateTo("/", forceLoad: true);
+    }
+}

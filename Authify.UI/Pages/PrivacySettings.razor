@@ -10,28 +10,6 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PrivacySettings> Loc
 
-<header class="auth-border-b auth-pt-16 lg:auth-pt-0 auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-bottom:1px solid var(--border);">
-    <div class="auth-px-4 auth-py-6 sm:auth-px-6 lg:auth-px-8">
-        <div class="auth-flex auth-flex-col lg:auth-flex-row lg:auth-items-center lg:auth-justify-between">
-            <div>
-                <h1 class="auth-text-3xl auth-font-bold auth-leading-tight" style="color:var(--text-primary);">@Loc["Title_Page"]</h1>
-                <p class="auth-mt-2 auth-text-sm" style="color:var(--text-secondary);">@Loc["Subtitle_Page"]</p>
-            </div>
-            <div class="auth-flex auth-flex-col sm:auth-flex-row auth-items-start sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-mt-4 lg:auth-mt-0">
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
-                    <svg class="auth-w-4 auth-h-4 auth-mr-2 auth-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    @Loc["Btn_PrivacyPolicy"]
-                </button>
-                <button class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-border-transparent auth-rounded-lg focus:auth-outline-none auth-shadow-sm auth-transition-all" style="background:var(--text-primary);color:var(--bg);">
-                    @Loc["Btn_ContactSupport"]
-                </button>
-            </div>
-        </div>
-    </div>
-</header>
-
 @if (_showNotification)
 {
     <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-lg auth-shadow-xl auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down auth-border auth-border-white/10">
@@ -44,8 +22,18 @@
     </div>
 }
 
-<div class="auth-px-4 auth-py-8 sm:auth-px-6 lg:auth-px-8 auth-min-h-screen" style="background:var(--bg);">
-    <div class="auth-max-w-4xl auth-mx-auto">
+<div class="auth-px-4 lg:auth-px-6 auth-py-4 sm:auth-py-6 lg:auth-py-8 auth-min-h-screen" style="background:var(--bg);">
+    <div class="auth-max-w-7xl auth-space-y-6">
+        <div class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center auth-justify-between auth-gap-4">
+            <div>
+                <h1 style="font-family:'Syne',sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);">
+                    @Loc["Title_Page"]
+                </h1>
+                <p style="margin-top:0.25rem;font-size:0.875rem;color:var(--text-secondary);">
+                    @Loc["Subtitle_Page"]
+                </p>
+            </div>
+        </div>
         
         <div class="auth-mb-8 auth-rounded-xl auth-shadow-sm auth-border auth-overflow-hidden auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-color:var(--border);">
 
