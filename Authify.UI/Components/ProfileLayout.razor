@@ -3,6 +3,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
+@implements IDisposable
 
 <AuthifyThemeStyle />
 
@@ -11,15 +12,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..400&display=swap" rel="stylesheet" />
 
 <div style="font-family:'DM Sans',sans-serif;color:var(--text-primary);background:var(--bg);">
-    <input type="checkbox" id="mobile-menu-toggle" class="peer auth-hidden" />
+    <input type="checkbox" id="mobile-menu-toggle" class="auth-hidden" />
 
     <label for="mobile-menu-toggle"
-           class="auth-fixed auth-inset-0 auth-z-40 auth-hidden peer-checked:auth-block lg:auth-hidden auth-cursor-pointer"
+           id="profile-mobile-backdrop"
+           class="auth-fixed auth-inset-0 auth-z-40 auth-hidden auth-pointer-events-none lg:auth-hidden auth-cursor-pointer"
            style="background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);"
            aria-label="Navigation schließen">
     </label>
 
-    <aside class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-w-60 auth-flex auth-flex-col auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full peer-checked:auth-translate-x-0 lg:auth-translate-x-0"
+    <aside id="profile-mobile-sidebar"
+           class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-w-60 auth-flex auth-flex-col auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full lg:auth-translate-x-0"
            style="background:var(--bg-surface);border-right:1px solid var(--border);">
         <div class="auth-h-14 auth-flex auth-items-center auth-px-5 auth-flex-shrink-0" style="border-bottom:1px solid var(--border);">
             <AuthifyLogo />
@@ -46,10 +49,10 @@
                 <i class="fa-solid fa-bars auth-text-lg"></i>
             </label>
             <span class="auth-text-sm auth-font-medium auth-truncate" style="color:var(--text-primary);font-family:'DM Sans',sans-serif;font-weight:400;">
-                Einstellungen
+                @_currentPageTitle
             </span>
         </div>
-        <TopBarContent />
+        <div></div>
     </header>
 
     <main class="lg:auth-ml-60 auth-pt-14 auth-min-h-screen" style="background:var(--bg);">
@@ -58,6 +61,14 @@
 </div>
 
 @code {
+    private string _currentPageTitle = "Einstellungen";
+
+    protected override void OnInitialized()
+    {
+        SetPageTitle();
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,4 +76,43 @@
             try { await JS.InvokeVoidAsync("applyTheme"); } catch { }
         }
     }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        SetPageTitle();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetPageTitle()
+    {
+        var path = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/').ToLowerInvariant();
+        _currentPageTitle = path switch
+        {
+            "profile-settings" => "Profile",
+            "security-settings" => "Security",
+            "privacy-settings" => "Privacy",
+            "admin/team-settings" => "Team-Account",
+            "admin/team-members" => "Mitarbeiter",
+            "admin/team-invitations" => "Einladungslinks",
+            "admin/ldap" => "LDAP / Active Directory",
+            _ => "Einstellungen"
+        };
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
 }
+
+<style>
+    #mobile-menu-toggle:checked ~ #profile-mobile-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+        display: block;
+    }
+
+    #mobile-menu-toggle:checked ~ #profile-mobile-sidebar {
+        transform: translateX(0);
+    }
+</style>
