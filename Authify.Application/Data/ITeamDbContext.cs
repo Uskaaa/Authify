@@ -1,5 +1,6 @@
 using Authify.Core.Models.Teams;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Authify.Application.Data;
 
@@ -12,6 +13,7 @@ public interface ITeamDbContext
     DbSet<Team> Teams { get; set; }
     DbSet<TeamMember> TeamMembers { get; set; }
     DbSet<TeamInvitation> TeamInvitations { get; set; }
+    DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -15,14 +15,17 @@ public class TeamService<TUser> : ITeamService
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _options;
+    private readonly IEnumerable<ITeamLifecycleHook> _teamLifecycleHooks;
 
     public TeamService(ITeamDbContext db, UserManager<TUser> userManager,
-        IEmailSender emailSender, InfrastructureOptions options)
+        IEmailSender emailSender, InfrastructureOptions options,
+        IEnumerable<ITeamLifecycleHook> teamLifecycleHooks)
     {
         _db = db;
         _userManager = userManager;
         _emailSender = emailSender;
         _options = options;
+        _teamLifecycleHooks = teamLifecycleHooks;
     }
 
     public async Task<OperationResult<TeamDto>> CreateTeamAsync(string adminUserId, CreateTeamRequest request)
@@ -111,11 +114,18 @@ public class TeamService<TUser> : ITeamService
         if (team == null)
             return OperationResult.Fail("Team nicht gefunden.");
 
+        await using var tx = await _db.Database.BeginTransactionAsync();
+        foreach (var hook in _teamLifecycleHooks)
+        {
+            await hook.OnTeamDeletingAsync(team.Id, adminUserId);
+        }
+
         _db.TeamMembers.RemoveRange(team.Members);
         _db.TeamInvitations.RemoveRange(team.Invitations);
         _db.Teams.Remove(team);
 
         await _db.SaveChangesAsync();
+        await tx.CommitAsync();
         return OperationResult.Ok();
     }
 
