@@ -20,7 +20,8 @@ public abstract class AuthifyLogoOptions
             TextPrefix = textPrefix,
             TextHighlight = textHighlight,
             GradientFrom = gradientFrom,
-            GradientTo = gradientTo
+            GradientTo = gradientTo,
+            UseAdaptiveIconColors = false
         };
 
     /// <summary>
@@ -58,8 +59,8 @@ public abstract class AuthifyLogoOptions
 /// </summary>
 public sealed class AuthifyIconTextLogo : AuthifyLogoOptions
 {
-    /// <summary>FontAwesome icon class, e.g. "fa-solid fa-shield-halved".</summary>
-    public string IconClass { get; set; } = "fa-solid fa-shield-halved";
+    /// <summary>FontAwesome icon class, e.g. "fa-solid fa-server".</summary>
+    public string IconClass { get; set; } = "fa-solid fa-server";
 
     /// <summary>Tailwind gradient-from class for the icon box, e.g. "auth-from-primary-500".</summary>
     public string GradientFrom { get; set; } = "auth-from-primary-500";
@@ -67,11 +68,17 @@ public sealed class AuthifyIconTextLogo : AuthifyLogoOptions
     /// <summary>Tailwind gradient-to class for the icon box, e.g. "auth-to-indigo-700".</summary>
     public string GradientTo { get; set; } = "auth-to-indigo-700";
 
-    /// <summary>Plain text part of the brand name, e.g. "Auth".</summary>
-    public string TextPrefix { get; set; } = "Auth";
+    /// <summary>Plain text part of the brand name, e.g. "Myce".</summary>
+    public string TextPrefix { get; set; } = "Myce";
 
-    /// <summary>Highlighted (primary-colored) text part, e.g. "ify".</summary>
-    public string TextHighlight { get; set; } = "ify";
+    /// <summary>Highlighted text part, e.g. "lis".</summary>
+    public string TextHighlight { get; set; } = "lis";
+
+    /// <summary>
+    /// Uses theme-adaptive icon colors (<c>var(--text-primary)</c> on <c>var(--bg)</c>) for Mycelis-style logo.
+    /// Set to <c>false</c> to use gradient classes.
+    /// </summary>
+    public bool UseAdaptiveIconColors { get; set; } = true;
 }
 
 /// <summary>

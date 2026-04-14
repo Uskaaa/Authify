@@ -9,9 +9,9 @@ public sealed class AuthifyBrandOptions
 {
     /// <summary>
     /// The application name shown in the mobile top-bar header.
-    /// Defaults to "Authify".
+    /// Defaults to "Mycelis".
     /// </summary>
-    public string AppName { get; set; } = "Authify";
+    public string AppName { get; set; } = "Mycelis";
 
     /// <summary>
     /// Logo displayed in the sidebar (desktop + mobile drawer) and mobile top-bar.
