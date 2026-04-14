@@ -11,11 +11,12 @@
     <a href="/" class="auth-flex auth-items-center auth-gap-2.5 auth-cursor-pointer">
         <div class="@GetIconContainerClass(iconText)"
              style="@GetIconContainerStyle(iconText)">
-            <i class="@iconText.IconClass auth-text-xs"></i>
+            <i class="@iconText.IconClass" style="font-size:10px;"></i>
         </div>
-        <span class="auth-font-bold auth-text-lg auth-tracking-tight"
+        <span class="@GetTextClass(iconText)"
               style="@GetTextStyle(iconText)">
-            @iconText.TextPrefix<span style="@GetHighlightTextStyle(iconText)">@iconText.TextHighlight</span>
+            @iconText.TextPrefix<span class="@GetHighlightTextClass(iconText)"
+                                      style="@GetHighlightTextStyle(iconText)">@iconText.TextHighlight</span>
         </span>
     </a>
 }
@@ -42,18 +43,24 @@ else if (logo is AuthifyImageLogo imageLogo)
 @code {
     private static string GetIconContainerClass(AuthifyIconTextLogo iconText)
         => iconText.UseAdaptiveIconColors
-            ? "auth-w-8 auth-h-8 auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-flex-shrink-0"
-            : $"auth-w-8 auth-h-8 auth-bg-gradient-to-br {iconText.GradientFrom} {iconText.GradientTo} auth-rounded-lg auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20 auth-flex-shrink-0";
+            ? "auth-w-7 auth-h-7 auth-rounded auth-flex auth-items-center auth-justify-center auth-flex-shrink-0"
+            : $"auth-w-7 auth-h-7 auth-bg-gradient-to-br {iconText.GradientFrom} {iconText.GradientTo} auth-rounded auth-flex auth-items-center auth-justify-center auth-text-white auth-shadow-md auth-shadow-primary-500/20 auth-flex-shrink-0";
 
     private static string? GetIconContainerStyle(AuthifyIconTextLogo iconText)
         => iconText.UseAdaptiveIconColors
             ? "background:var(--text-primary);color:var(--bg);"
             : null;
 
-    private static string? GetTextStyle(AuthifyIconTextLogo iconText)
+    private static string GetTextClass(AuthifyIconTextLogo iconText)
+        => iconText.UseAdaptiveIconColors ? string.Empty : "auth-text-slate-900 dark:auth-text-white";
+
+    private static string GetTextStyle(AuthifyIconTextLogo iconText)
         => iconText.UseAdaptiveIconColors
-            ? "color:var(--text-primary);"
-            : null;
+            ? "font-family:'Syne',sans-serif;font-weight:600;font-size:1rem;letter-spacing:-0.01em;color:var(--text-primary);"
+            : "font-family:'Syne',sans-serif;font-weight:600;font-size:1rem;letter-spacing:-0.01em;";
+
+    private static string GetHighlightTextClass(AuthifyIconTextLogo iconText)
+        => iconText.UseAdaptiveIconColors ? string.Empty : "auth-text-primary-600 dark:auth-text-primary-400";
 
     private static string? GetHighlightTextStyle(AuthifyIconTextLogo iconText)
         => iconText.UseAdaptiveIconColors
