@@ -2,6 +2,7 @@ using Authify.Client.Wasm.Interfaces;
 using Authify.Client.Wasm.Services;
 using Authify.Core.Features;
 using Authify.UI.Extensions;
+using Authify.UI.Models;
 using Authify.UI.Models.Branding;
 using Authify.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -20,9 +21,10 @@ public static class ServiceCollectionExtensions
     /// <param name="configureBranding">Optional branding configuration (logo, theme colors, app name).</param>
     public static IServiceCollection AddAuthifyWasmUI(this IServiceCollection services,
         Action<HttpClient> configureClient,
-        Action<AuthifyBrandOptions>? configureBranding = null)
+        Action<AuthifyBrandOptions>? configureBranding = null,
+        Action<AuthifyNavigationOptions>? configureNavigation = null)
     {
-        services.AddAuthifyUI(configureBranding);
+        services.AddAuthifyUI(configureBranding, configureNavigation);
         
         services.AddHttpClient<IAuthRefreshService, AuthRefreshService>(client => 
         {

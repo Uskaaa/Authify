@@ -8,8 +8,9 @@
 @inject NavigationManager NavigationManager
 @inject IAuthifyDataService DataService
 @inject IStringLocalizer<Otp> Loc
+@inject AuthifyNavigationOptions NavOptions
 
-<RedirectToHomeIfAuthenticated />
+<RedirectToHomeIfAuthenticated RedirectUrl="@NavOptions.PostLoginUrl" />
 
 <div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
     <div style="width:min(420px,100%);">
@@ -185,7 +186,7 @@
             }
             else
             {
-                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+                NavigationManager.NavigateTo(_returnUrl ?? NavOptions.PostLoginUrl, forceLoad: true);
             }
         }
         else
@@ -195,7 +196,7 @@
             if (cookieResult.Success)
             {
                 _error = false;
-                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+                NavigationManager.NavigateTo(_returnUrl ?? NavOptions.PostLoginUrl, forceLoad: true);
             }
             else
             {

@@ -9,8 +9,9 @@
 @inject IJSRuntime JS
 @inject IStringLocalizer<Login> Loc
 @inject TeamFeatureOptions TeamFeature
+@inject AuthifyNavigationOptions NavOptions
 
-<RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? "/")" />
+<RedirectToHomeIfAuthenticated RedirectUrl="@(_returnUrl ?? NavOptions.PostLoginUrl)" />
 
 <div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
     <div style="width:min(420px,100%);">
@@ -141,7 +142,7 @@
             if (!string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
             {
                 await DataService.StoreTokensFromExternalAuth(accessToken, refreshToken);
-                NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+                NavigationManager.NavigateTo(_returnUrl ?? NavOptions.PostLoginUrl, forceLoad: true);
             }
         }
     }
@@ -174,7 +175,7 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+                    NavigationManager.NavigateTo(_returnUrl ?? NavOptions.PostLoginUrl, forceLoad: true);
                 }
             }
             else if (loginResponse.ResultKind == LoginResultKind.Cookie)
@@ -195,7 +196,7 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo(_returnUrl ?? "/", forceLoad: true);
+                    NavigationManager.NavigateTo(_returnUrl ?? NavOptions.PostLoginUrl, forceLoad: true);
                 }
             }
         }
