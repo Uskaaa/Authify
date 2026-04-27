@@ -45,7 +45,7 @@ public class OidcProviderController : ControllerBase
         return Ok(new
         {
             issuer = _config["Jwt:Issuer"] ?? browserDomain,
-            authorization_endpoint = $"{browserDomain}/oidc/authorize",
+            authorization_endpoint = $"{browserDomain.TrimEnd("/")}/oidc/authorize",
             token_endpoint = $"{dockerDomain}/oidc/token",
             userinfo_endpoint = $"{dockerDomain}/oidc/userinfo",
             jwks_uri = $"{dockerDomain}/oidc/jwks", 
@@ -234,11 +234,11 @@ public class OidcProviderController : ControllerBase
             return BadRequest("Fehlende Parameter.");
 
         // Erwartete Client-IDs für diesen Nutzer:
-        var personalClientId = $"privateai-client-{userId}";
+        var personalClientId = $"mycelis-client-{userId}";
         
         // Prüfen ob Nutzer in einem Team ist
         var teamResult = await _teamService.GetTeamByMemberAsync(userId);
-        var teamClientId = teamResult.Success ? $"privateai-client-{teamResult.Data!.Id}" : null;
+        var teamClientId = teamResult.Success ? $"mycelis-client-{teamResult.Data!.Id}" : null;
 
         if (client_id != personalClientId && (teamClientId == null || client_id != teamClientId))
         {
@@ -265,7 +265,7 @@ public class OidcProviderController : ControllerBase
 
         var userId = sessionData.UserId;
         var nonce = sessionData.Nonce;
-        var clientId = sessionData.ClientId ?? "privateai-client";
+        var clientId = sessionData.ClientId ?? "mycelis-client";
 
         // 1. Access Token
         var accessToken = await _jwtService.GenerateTokenAsync(userId);
@@ -317,8 +317,8 @@ public class OidcProviderController : ControllerBase
         return Ok(new
         {
             sub = userId,
-            name = name ?? "PrivateAI User",
-            email = email ?? $"{userId}@privateai.local",
+            name = name ?? "Mycelis User",
+            email = email ?? $"{userId}@mycelis.local",
             email_verified = true
         });
     }

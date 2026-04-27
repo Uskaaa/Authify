@@ -408,7 +408,7 @@
         // Updated Classes with auth- prefix
         _providers.Add(new ExternalProvider { Name = "Google",   LoginProvider = "Google",   Icon = "fa-brands fa-google",   BgClass = "auth-bg-red-100 dark:auth-bg-red-900/50",   TextClass = "auth-text-red-600 dark:auth-text-red-400" });
         _providers.Add(new ExternalProvider { Name = "GitHub",   LoginProvider = "GitHub",   Icon = "fa-brands fa-github",   BgClass = "auth-bg-gray-100 dark:auth-bg-gray-700",     TextClass = "auth-text-gray-800 dark:auth-text-gray-200" });
-        _providers.Add(new ExternalProvider { Name = "Facebook", LoginProvider = "Facebook", Icon = "fa-brands fa-facebook", BgClass = "auth-bg-blue-100 dark:auth-bg-blue-900/50", TextClass = "auth-text-blue-600 dark:auth-text-blue-400" });
+        // _providers.Add(new ExternalProvider { Name = "Facebook", LoginProvider = "Facebook", Icon = "fa-brands fa-facebook", BgClass = "auth-bg-blue-100 dark:auth-bg-blue-900/50", TextClass = "auth-text-blue-600 dark:auth-text-blue-400" });
 
         var result = await DataService.GetConnectedProvidersAsync();
 
