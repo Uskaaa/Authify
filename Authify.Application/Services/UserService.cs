@@ -64,9 +64,9 @@ public class UserService<TUser> : IUserService
             $"{_infrastructureOptions.Domain.TrimEnd("/")}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
         var htmlContent = MycelisEmailTemplate.BuildActionEmail(
-            title: "E-Mail bestätigen",
-            intro: "Willkommen bei Mycelis. Bitte bestätige deine E-Mail-Adresse, um dein Konto zu aktivieren.",
-            actionLabel: "E-Mail bestätigen",
+            title: "Confirm your email",
+            intro: "Welcome to Mycelis. Please confirm your email address to activate your account.",
+            actionLabel: "Confirm email",
             actionUrl: confirmationLink);
 
         await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", htmlContent);
@@ -98,11 +98,11 @@ public class UserService<TUser> : IUserService
             $"{_infrastructureOptions.Domain.TrimEnd("/")}/reset-password?email={Uri.EscapeDataString(user.Email!)}&token={Uri.EscapeDataString(token)}";
 
         var htmlContent = MycelisEmailTemplate.BuildActionEmail(
-            title: "Passwort zurücksetzen",
-            intro: "Wir haben eine Anfrage zum Zurücksetzen deines Passworts erhalten.",
-            actionLabel: "Passwort zurücksetzen",
+            title: "Reset your password",
+            intro: "We received a request to reset your password.",
+            actionLabel: "Reset password",
             actionUrl: resetLink,
-            outro: "Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.");
+            outro: "If you did not request a password reset, you can safely ignore this email.");
 
         await _emailSender.SendEmailAsync(user.Email!, "Reset your password", htmlContent);
 

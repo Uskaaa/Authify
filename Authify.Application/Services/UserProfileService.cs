@@ -64,9 +64,9 @@ public class UserProfileService<TUser> : IUserProfileService
             var confirmationLink =
                 $"{_infrastructureOptions.Domain.TrimEnd("/")}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
             var htmlContent = MycelisEmailTemplate.BuildActionEmail(
-                title: "E-Mail bestätigen",
-                intro: "Bitte bestätige deine neue E-Mail-Adresse, um die Änderung abzuschließen.",
-                actionLabel: "E-Mail bestätigen",
+                title: "Confirm your email",
+                intro: "Please confirm your new email address to complete the change.",
+                actionLabel: "Confirm email",
                 actionUrl: confirmationLink);
 
             await _emailSender.SendEmailAsync(user.Email!, "Confirm your email", htmlContent);

@@ -218,13 +218,13 @@ public class TeamService<TUser> : ITeamService
                 var resetLink = $"{_options.Domain.TrimEnd('/')}/reset-password?email={encodedEmail}&token={encodedToken}&invited=true";
 
                 var html = MycelisEmailTemplate.BuildActionEmail(
-                    title: "Du wurdest zum Team hinzugefügt",
-                    intro: $"Hallo {user.FullName}, du wurdest dem Team {team.Name} hinzugefügt.",
-                    actionLabel: "Passwort festlegen",
+                    title: "You have been added to a team",
+                    intro: $"Hello {user.FullName}, you have been added to the team {team.Name}.",
+                    actionLabel: "Set password",
                     actionUrl: resetLink,
-                    outro: "Der Link ist 24 Stunden gültig.");
+                    outro: "This link is valid for 24 hours.");
 
-                await _emailSender.SendEmailAsync(user.Email!, $"Du wurdest zu {team.Name} hinzugefügt", html);
+                await _emailSender.SendEmailAsync(user.Email!, $"You have been added to {team.Name}", html);
             }
             catch
             {

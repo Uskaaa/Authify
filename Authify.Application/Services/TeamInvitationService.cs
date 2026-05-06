@@ -215,12 +215,12 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
     private async Task SendInvitationEmailAsync(string email, string teamName, string inviteLink)
     {
         var html = MycelisEmailTemplate.BuildActionEmail(
-            title: "Team-Einladung",
-            intro: $"Du wurdest eingeladen, dem Team {teamName} beizutreten.",
-            actionLabel: "Einladung annehmen",
+            title: "Team Invitation",
+            intro: $"You have been invited to join the team {teamName}.",
+            actionLabel: "Accept invitation",
             actionUrl: inviteLink,
-            outro: "Falls du diese Einladung nicht erwartet hast, kannst du diese E-Mail ignorieren.");
+            outro: "If you were not expecting this invitation, you can safely ignore this email.");
 
-        await _emailSender.SendEmailAsync(email, $"Einladung zum Team: {teamName}", html);
+        await _emailSender.SendEmailAsync(email, $"Invitation to team: {teamName}", html);
     }
 }
