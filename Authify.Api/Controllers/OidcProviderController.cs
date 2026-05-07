@@ -40,7 +40,7 @@ public class OidcProviderController : ControllerBase
     public IActionResult GetConfiguration()
     {
         var browserDomain = _config["App:Domain"] ?? "http://localhost:5220";
-        var dockerDomain = "http://host.docker.internal:5220";
+        var dockerDomain = _config["ManagedUiHosting:InternalWebAppUrl"] ?? "http://host.docker.internal:5220";
 
         return Ok(new
         {
