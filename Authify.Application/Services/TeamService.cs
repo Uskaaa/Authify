@@ -258,6 +258,9 @@ public class TeamService<TUser> : ITeamService
         if (member.UserId == adminUserId)
             return OperationResult.Fail("Der Admin-Account kann nicht entfernt werden.");
 
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnMemberRemovingAsync(team.Id, member.UserId);
+
         _db.TeamMembers.Remove(member);
         await _db.SaveChangesAsync();
         return OperationResult.Ok();
