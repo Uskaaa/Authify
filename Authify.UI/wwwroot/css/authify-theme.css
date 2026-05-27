@@ -13,6 +13,7 @@
 :root {
     /* Mycelis design tokens */
     --bg:             #101214;
+    --monochrome-logo-filter: invert(1) brightness(1.15);
     --bg-surface:     #171a1f;
     --bg-elevated:    #1f242b;
     --text-primary:   #f5f7fb;
@@ -43,6 +44,7 @@
 /* ── Light Mode ───────────────────────────────────────────────────── */
 [data-theme="light"] {
     --bg:             #F5F5F2;
+    --monochrome-logo-filter: none;
     --bg-surface:     #FFFFFF;
     --bg-elevated:    #ECECEA;
     --text-primary:   #0A0A0A;
@@ -60,6 +62,7 @@
 @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
         --bg:             #F5F5F2;
+        --monochrome-logo-filter: none;
         --bg-surface:     #FFFFFF;
         --bg-elevated:    #ECECEA;
         --text-primary:   #0A0A0A;
@@ -70,4 +73,9 @@
         --border:         rgba(0, 0, 0, 0.08);
         --outline:        rgba(0, 0, 0, 0.12);
     }
+}
+
+/* ── Monochrome logo helper ───────────────────────────────────────── */
+.auth-monochrome-logo {
+    filter: var(--monochrome-logo-filter);
 }

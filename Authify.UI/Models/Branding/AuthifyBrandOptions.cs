@@ -19,7 +19,7 @@ public sealed class AuthifyBrandOptions
     /// Use <see cref="AuthifyLogoOptions.FromIcon"/>, <see cref="AuthifyLogoOptions.FromSvg"/>
     /// or <see cref="AuthifyLogoOptions.FromImage"/> to configure.
     /// </summary>
-    public AuthifyLogoOptions Logo { get; set; } = new AuthifyIconTextLogo();
+    public AuthifyLogoOptions Logo { get; set; } = AuthifyLogoOptions.FromImage("/logo.png", altText: "Mycelis", cssClass: "auth-monochrome-logo");
 
     /// <summary>
     /// Primary color palette and semantic color overrides.
