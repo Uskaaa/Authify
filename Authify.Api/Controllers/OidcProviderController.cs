@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Authify.Core.Interfaces;
+using Authify.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,21 +20,28 @@ public class OidcProviderController : ControllerBase
     private readonly IJwtTokenService _jwtService;
     private readonly IMemoryCache _cache;
     private readonly ITeamService _teamService;
+    private readonly IPersonalAccessTokenService _patService;
 
+    // mycelis_change - reserved client_id for the Mycelis CLI's browser-login handoff (see AuthorizeApi/Token below).
+    // Unlike mycelis-client-{userId}/{teamId}, the CLI can't know this value in advance since it doesn't know
+    // who's signing in yet, so it's a fixed, always-allowed client_id rather than one derived per-user.
+    private const string CliClientId = "mycelis-cli";
 
     private static readonly RSA _rsa = RSA.Create(2048);
     private static readonly RsaSecurityKey _rsaKey = new RsaSecurityKey(_rsa) { KeyId = "privateai-key-1" };
 
     public OidcProviderController(
-        IConfiguration config, 
+        IConfiguration config,
         IJwtTokenService jwtService,
         IMemoryCache cache,
-        ITeamService teamService)
+        ITeamService teamService,
+        IPersonalAccessTokenService patService)
     {
         _config = config;
         _jwtService = jwtService;
         _cache = cache;
         _teamService = teamService;
+        _patService = patService;
     }
 
     [HttpGet(".well-known/openid-configuration")]
@@ -235,12 +243,13 @@ public class OidcProviderController : ControllerBase
 
         // Erwartete Client-IDs für diesen Nutzer:
         var personalClientId = $"mycelis-client-{userId}";
-        
+
         // Prüfen ob Nutzer in einem Team ist
         var teamResult = await _teamService.GetTeamByMemberAsync(userId);
         var teamClientId = teamResult.Success ? $"mycelis-client-{teamResult.Data!.Id}" : null;
 
-        if (client_id != personalClientId && (teamClientId == null || client_id != teamClientId))
+        // mycelis_change - the CLI's fixed client_id is valid for any authenticated user, not tied to a specific instance.
+        if (client_id != personalClientId && (teamClientId == null || client_id != teamClientId) && client_id != CliClientId)
         {
             return StatusCode(403, "Zugriff verweigert! Du bist nicht der Besitzer oder Mitglied des Teams dieser Instanz.");
         }
@@ -294,13 +303,36 @@ public class OidcProviderController : ControllerBase
         
         var tokenHandler = new JwtSecurityTokenHandler();
         var idToken = tokenHandler.CreateToken(tokenDescriptor);
-        
+
+        // mycelis_change start - the CLI can't call the model gateway with this short-lived access_token
+        // (AuthifyPatResolver only resolves real PATs by hash), so mint one alongside it here, using the
+        // same TenantId-resolution rule as ApiKeysController.Create.
+        string? cliPat = null;
+        if (clientId == CliClientId)
+        {
+            var cliTeamResult = await _teamService.GetTeamByMemberAsync(userId);
+            var tenantId = (cliTeamResult.Success && cliTeamResult.Data != null) ? cliTeamResult.Data.Id : userId;
+
+            var patResult = await _patService.CreateAsync(userId, new CreatePersonalAccessTokenRequest
+            {
+                Name = "Mycelis CLI",
+                TenantId = tenantId,
+                EndUserId = userId,
+                Scopes = ["cli"]
+            });
+
+            if (patResult.Success)
+                cliPat = patResult.Data!.Token;
+        }
+        // mycelis_change end
+
         return Ok(new
         {
             access_token = accessToken,
             token_type = "Bearer",
             expires_in = 3600,
-            id_token = tokenHandler.WriteToken(idToken)
+            id_token = tokenHandler.WriteToken(idToken),
+            pat = cliPat // mycelis_change
         });
     }
 
