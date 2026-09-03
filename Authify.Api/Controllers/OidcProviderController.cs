@@ -197,13 +197,34 @@ public class OidcProviderController : ControllerBase
                     window.location.replace('/login?returnUrl=' + currentUrl);
                 }}
 
-                let token = localStorage.getItem('auth_access_token'); 
+                // mycelis_change - a rejected client_id (403) or any other server error used to be
+                // swallowed and treated the same as not-logged-in-yet, bouncing back to /login. If
+                // the user was already logged in, that bounce lands right back here and repeats
+                // forever, which just looks like a stuck/blank page with no indication of what is wrong.
+                // Only a 401 (missing/expired session) is actually fixed by logging in again.
+                function showError(message) {{
+                    var container = document.querySelector('.container');
+                    if (!container) return;
+                    container.innerHTML = '';
+                    var brand = document.createElement('p');
+                    brand.className = 'brand';
+                    brand.textContent = 'Mycelis';
+                    var h3 = document.createElement('h3');
+                    h3.textContent = 'Sign-in failed';
+                    var p = document.createElement('p');
+                    p.textContent = message;
+                    container.appendChild(brand);
+                    container.appendChild(h3);
+                    container.appendChild(p);
+                }}
+
+                let token = localStorage.getItem('auth_access_token');
 
                 if (!token) {{
                     redirectToLogin();
                 }} else {{
                     token = token.replace(/^""|""$/g, '');
-                    
+
                     const apiUrl = `/oidc/authorize-api?redirect_uri=${{encodeURIComponent('{redirect_uri ?? ""}')}}&state=${{encodeURIComponent('{state ?? ""}')}}&client_id=${{encodeURIComponent('{client_id ?? ""}')}}&nonce=${{encodeURIComponent('{nonce ?? ""}')}}`;
 
                     fetch(apiUrl, {{
@@ -211,14 +232,23 @@ public class OidcProviderController : ControllerBase
                         headers: {{ 'Authorization': 'Bearer ' + token }}
                     }})
                     .then(response => {{
-                        if (!response.ok) throw new Error('Unauthorized');
+                        if (response.status === 401) {{
+                            redirectToLogin();
+                            return null;
+                        }}
+                        if (!response.ok) {{
+                            return response.text().then(text => {{
+                                throw new Error(text || ('Request failed (' + response.status + ')'));
+                            }});
+                        }}
                         return response.json();
                     }})
                     .then(data => {{
+                        if (!data) return;
                         window.location.replace(data.redirectUrl);
                     }})
-                    .catch(() => {{
-                        redirectToLogin();
+                    .catch(error => {{
+                        showError(error && error.message ? error.message : 'Sign-in failed.');
                     }});
                 }}
             </script>
