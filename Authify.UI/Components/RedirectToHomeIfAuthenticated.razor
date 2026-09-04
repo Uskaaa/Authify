@@ -13,7 +13,12 @@
         if (user.Identity is not null && user.Identity.IsAuthenticated)
         {
             // Benutzer ist eingeloggt -> Weg hier!
-            NavigationManager.NavigateTo(RedirectUrl);
+            // mycelis_change - RedirectUrl can point at a plain MVC/API route (e.g. the OIDC
+            // /oidc/authorize action used by the Mycelis CLI login flow), which has no matching
+            // Blazor @page component. Without forceLoad, Blazor's client-side router intercepts
+            // the navigation, fails to match any page, and shows "nothing at this address" -
+            // without ever making a real request to the server for that URL.
+            NavigationManager.NavigateTo(RedirectUrl, forceLoad: true);
         }
     }
 }
