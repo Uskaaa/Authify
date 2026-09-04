@@ -343,6 +343,22 @@ public class OidcProviderController : ControllerBase
             var cliTeamResult = await _teamService.GetTeamByMemberAsync(userId);
             var tenantId = (cliTeamResult.Success && cliTeamResult.Data != null) ? cliTeamResult.Data.Id : userId;
 
+            // mycelis_change - every browser-login round trip lands here (initial /connect,
+            // token expiry, a stale local credential, re-running /connect after /logout, ...),
+            // and each one used to mint a brand-new never-revoked "Mycelis CLI" PAT. Nothing
+            // ever cleaned those up, so a user who just re-authenticates now and then accumulates
+            // one live token per login forever. Delete any earlier CLI PATs for this user outright
+            // (not just revoke) so the API Keys list doesn't fill up with dead entries either -
+            // there's nothing left to reference a superseded CLI token for once the new one exists.
+            var existingCliPats = await _patService.GetMineAsync(userId);
+            if (existingCliPats.Success)
+            {
+                foreach (var existing in existingCliPats.Data!.Where(p => p.Name == "Mycelis CLI"))
+                {
+                    await _patService.DeleteAsync(userId, existing.Id);
+                }
+            }
+
             var patResult = await _patService.CreateAsync(userId, new CreatePersonalAccessTokenRequest
             {
                 Name = "Mycelis CLI",

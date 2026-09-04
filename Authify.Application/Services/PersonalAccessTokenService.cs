@@ -82,6 +82,23 @@ public class PersonalAccessTokenService : IPersonalAccessTokenService
         return OperationResult.Ok();
     }
 
+    // mycelis_change - hard delete, unlike RevokeAsync (which just sets RevokedAt)
+    public async Task<OperationResult> DeleteAsync(string userId, Guid tokenId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+            return OperationResult.Fail("Invalid user context.");
+
+        var token = await _dbContext.PersonalAccessTokens
+            .FirstOrDefaultAsync(x => x.Id == tokenId && x.UserId == userId);
+
+        if (token is null)
+            return OperationResult.Fail("PAT not found.");
+
+        _dbContext.PersonalAccessTokens.Remove(token);
+        await _dbContext.SaveChangesAsync();
+        return OperationResult.Ok();
+    }
+
     public async Task<OperationResult<ResolvePersonalAccessTokenResponse>> ResolveAsync(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
