@@ -10,19 +10,13 @@
 
 @if (_showNotification)
 {
-    <div
-        class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-lg auth-shadow-xl auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down auth-border auth-border-white/10">
-        <div class="auth-flex auth-items-center auth-font-medium">
-            @if (_notificationClass.Contains("auth-bg-green"))
-            {
-                <i class="fa-solid fa-check-circle auth-mr-2"></i>
-            }
-            else
-            {
-                <i class="fa-solid fa-circle-exclamation auth-mr-2"></i>
-            }
-            @_notificationMessage
-        </div>
+    var isSuccess = _notificationClass.Contains("green");
+    var isInfo = _notificationClass.Contains("blue") || _notificationClass.Contains("gray");
+    var alertVariant = isSuccess ? "alert-success" : isInfo ? "alert-info" : "alert-error";
+    <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-max-w-sm auth-transform auth-transition-all auth-duration-300 alert @alertVariant auth-animate-fade-in-down"
+         style="box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+        <i class="fa-solid @(isSuccess ? "fa-circle-check" : isInfo ? "fa-circle-info" : "fa-circle-exclamation") auth-mt-0.5"></i>
+        <span class="auth-font-medium">@_notificationMessage</span>
     </div>
 }
 
@@ -42,13 +36,12 @@
         @if (_isLoading)
         {
             <div class="auth-flex auth-justify-center auth-items-center auth-h-64">
-                <i class="fa-solid fa-circle-notch fa-spin auth-text-3xl auth-text-primary-600"></i>
+                <i class="fa-solid fa-circle-notch fa-spin auth-text-3xl" style="color:var(--accent);"></i>
             </div>
         }
         else
         {
-            <div class="auth-mb-8 auth-rounded-xl auth-shadow-sm auth-border auth-overflow-hidden"
-                 style="background:var(--bg-surface);border-color:var(--border);">
+            <div class="auth-mb-8 card-surface" style="padding:0;overflow:hidden;">
 
                 <div class="auth-px-8 auth-py-6 auth-border-b" style="border-color:var(--border);">
                     <div class="auth-flex auth-items-center auth-justify-between">
@@ -59,9 +52,9 @@
                                style="color:var(--text-secondary);">@Loc["Text_PersonalInfoDesc"]</p>
                         </div>
                         <div class="auth-flex-shrink-0">
-                            <div
-                                class="auth-w-10 auth-h-10 auth-bg-primary-50 dark:auth-bg-primary-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
-                                <i class="fa-solid fa-user auth-text-primary-600 dark:auth-text-primary-400"></i>
+                            <div class="auth-w-10 auth-h-10 auth-rounded-lg auth-flex auth-items-center auth-justify-center"
+                                 style="background:var(--accent-subtle);">
+                                <i class="fa-solid fa-user" style="color:var(--accent);"></i>
                             </div>
                         </div>
                     </div>
@@ -74,47 +67,40 @@
                         <div class="auth-grid auth-grid-cols-1 auth-gap-y-6 auth-gap-x-8 lg:auth-grid-cols-2">
 
                             <div class="lg:auth-col-span-2">
-                                <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
-                                       style="color:var(--text-secondary);">
-                                    @Loc["Label_FullName"] <span class="auth-text-red-500">*</span>
+                                <label class="label-caption" style="display:block;margin-bottom:0.5rem;">
+                                    @Loc["Label_FullName"] <span style="color:var(--danger);">*</span>
                                 </label>
-                                <InputText @bind-Value="_profileModel.FullName"
-                                           class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-border auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
-                                           style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                <InputText @bind-Value="_profileModel.FullName" class="input-field"
                                            placeholder="@Loc["Placeholder_FullName"]"/>
                                 <ValidationMessage For="@(() => _profileModel.FullName)"
-                                                   class="auth-text-red-500 auth-text-xs auth-mt-1"/>
+                                                   class="auth-text-xs auth-mt-1" style="color:var(--danger);"/>
                             </div>
 
                             <div>
-                                <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
-                                       style="color:var(--text-secondary);">
+                                <label class="label-caption" style="display:block;margin-bottom:0.5rem;">
                                     @Loc["Label_Email"]
                                 </label>
                                 <div class="auth-relative">
                                     <div
                                         class="auth-absolute auth-inset-y-0 auth-left-0 auth-pl-3 auth-flex auth-items-center auth-pointer-events-none">
-                                        <i class="fa-solid fa-envelope auth-text-gray-400"></i>
+                                        <i class="fa-solid fa-envelope" style="color:var(--text-muted);"></i>
                                     </div>
                                     <InputText @bind-Value="_profileModel.Email"
-                                               class="auth-block auth-w-full auth-pl-10 auth-pr-4 auth-py-2.5 auth-border auth-rounded-lg auth-cursor-not-allowed"
-                                               style="background:var(--bg-elevated);color:var(--text-secondary);border-color:var(--border);"
+                                               class="input-field" style="padding-left:2.5rem;cursor:not-allowed;"
                                                disabled/>
                                 </div>
-                                <p class="auth-text-xs auth-text-gray-400 auth-mt-1.5">@Loc["Text_EmailChange"]</p>
+                                <p class="auth-text-xs auth-mt-1.5" style="color:var(--text-muted);">@Loc["Text_EmailChange"]</p>
                             </div>
 
                             <div>
-                                <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
-                                       style="color:var(--text-secondary);">@Loc["Label_Phone"]</label>
+                                <label class="label-caption" style="display:block;margin-bottom:0.5rem;">@Loc["Label_Phone"]</label>
                                 <div class="auth-relative">
                                     <div
                                         class="auth-absolute auth-inset-y-0 auth-left-0 auth-pl-3 auth-flex auth-items-center auth-pointer-events-none">
-                                        <i class="fa-solid fa-phone auth-text-gray-400"></i>
+                                        <i class="fa-solid fa-phone" style="color:var(--text-muted);"></i>
                                     </div>
                                     <InputText @bind-Value="_profileModel.PhoneNumber"
-                                               class="auth-block auth-w-full auth-pl-10 auth-pr-4 auth-py-2.5 auth-border auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
-                                               style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                               class="input-field" style="padding-left:2.5rem;"
                                                placeholder="@Loc["Placeholder_Phone"]"/>
                                 </div>
                                 @if (!string.IsNullOrEmpty(_profileModel.PhoneNumber))
@@ -122,38 +108,34 @@
                                     <div class="auth-mt-2">
                                         @if (_phoneNumberConfirmed)
                                         {
-                                            <span
-                                                class="auth-inline-flex auth-items-center auth-gap-1 auth-text-xs auth-font-semibold auth-text-green-700 dark:auth-text-green-400">
+                                            <span class="badge badge-success">
                                                 <i class="fa-solid fa-circle-check"></i> @Loc["Status_PhoneVerified"]
                                             </span>
                                         }
                                         else
                                         {
-                                            <span
-                                                class="auth-inline-flex auth-items-center auth-gap-1 auth-text-xs auth-font-semibold auth-text-yellow-600 dark:auth-text-yellow-400">
+                                            <span class="badge badge-warning">
                                                 <i class="fa-solid fa-circle-exclamation"></i> @Loc["Status_PhoneNotVerified"]
                                             </span>
                                         }
                                     </div>
                                     @if (!_phoneNumberConfirmed)
                                     {
-                                        <div
-                                            class="auth-mt-3 auth-p-4 auth-bg-yellow-50 dark:auth-bg-yellow-900/10 auth-border auth-border-yellow-200 dark:auth-border-yellow-900/30 auth-rounded-lg auth-space-y-3">
-                                            <p class="auth-text-xs auth-text-yellow-700 dark:auth-text-yellow-400">@Loc["Text_PhoneVerifyHint"]</p>
+                                        <div class="alert alert-warning auth-mt-3" style="flex-direction:column;align-items:stretch;gap:0.75rem;">
+                                            <p class="auth-text-xs">@Loc["Text_PhoneVerifyHint"]</p>
                                             @if (!_verificationCodeSent)
                                             {
                                                 <button type="button" @onclick="SendPhoneVerificationCode"
                                                         disabled="@_isSendingCode"
-                                                        class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-rounded-lg disabled:auth-opacity-50 disabled:auth-cursor-not-allowed auth-transition-all"
-                                                        style="background:var(--text-primary);color:var(--bg);">
+                                                        class="btn-primary" style="align-self:flex-start;height:2.25rem;padding:0 1rem;font-size:0.8125rem;">
                                                     @if (_isSendingCode)
                                                     {
-                                                        <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i>
+                                                        <i class="fa-solid fa-circle-notch fa-spin"></i>
                                                         <span>@Loc["Btn_Sending"]</span>
                                                     }
                                                     else
                                                     {
-                                                        <i class="fa-solid fa-paper-plane auth-mr-2"></i>
+                                                        <i class="fa-solid fa-paper-plane"></i>
                                                         <span>@Loc["Btn_SendCode"]</span>
                                                     }
                                                 </button>
@@ -163,15 +145,14 @@
                                                 <div class="auth-flex auth-items-center auth-gap-2">
                                                     <input type="text" @bind="_verificationCode" maxlength="6"
                                                            aria-label="@Loc["Placeholder_Code"]"
-                                                           class="auth-block auth-w-32 auth-px-3 auth-py-2 auth-text-center auth-border auth-rounded-lg auth-text-sm auth-tracking-widest focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-outline-none"
-                                                           style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                                           class="input-field" style="width:8rem;text-align:center;letter-spacing:0.2em;"
                                                            placeholder="@Loc["Placeholder_Code"]"/>
                                                     <button type="button" @onclick="VerifyPhoneNumber"
                                                             disabled="@_isVerifying"
-                                                            class="auth-inline-flex auth-items-center auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-white auth-bg-green-600 auth-rounded-lg hover:auth-bg-green-700 disabled:auth-opacity-50 disabled:auth-cursor-not-allowed auth-transition-all">
+                                                            class="btn-primary" style="height:2.25rem;padding:0 1rem;font-size:0.8125rem;">
                                                         @if (_isVerifying)
                                                         {
-                                                            <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i>
+                                                            <i class="fa-solid fa-circle-notch fa-spin"></i>
                                                             <span>@Loc["Btn_Verifying"]</span>
                                                         }
                                                         else
@@ -181,7 +162,7 @@
                                                     </button>
                                                     <button type="button" @onclick="ResendPhoneVerificationCode"
                                                             disabled="@_isSendingCode"
-                                                            class="auth-text-xs auth-text-primary-600 dark:auth-text-primary-400 hover:auth-underline disabled:auth-opacity-50">
+                                                            class="auth-text-xs" style="color:var(--accent);background:none;border:none;cursor:pointer;">
                                                         @Loc["Btn_Resend"]
                                                     </button>
                                                 </div>
@@ -194,30 +175,23 @@
                             <div>
                                 <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
                                        style="color:var(--text-secondary);">@Loc["Label_JobTitle"]</label>
-                                <InputText @bind-Value="_profileModel.JobTitle"
-                                           class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-border auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
-                                           style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                <InputText @bind-Value="_profileModel.JobTitle" class="input-field"
                                            placeholder="@Loc["Placeholder_JobTitle"]"/>
                             </div>
 
                             <div>
-                                <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
-                                       style="color:var(--text-secondary);">@Loc["Label_Company"]</label>
-                                <InputText @bind-Value="_profileModel.Company"
-                                           class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-border auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none"
-                                           style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                <label class="label-caption" style="display:block;margin-bottom:0.5rem;">@Loc["Label_Company"]</label>
+                                <InputText @bind-Value="_profileModel.Company" class="input-field"
                                            placeholder="@Loc["Placeholder_Company"]"/>
                             </div>
 
                             <div class="lg:auth-col-span-2">
-                                <label class="auth-block auth-text-sm auth-font-semibold auth-mb-2"
-                                       style="color:var(--text-secondary);">@Loc["Label_Bio"]</label>
+                                <label class="label-caption" style="display:block;margin-bottom:0.5rem;">@Loc["Label_Bio"]</label>
                                 <InputTextArea @bind-Value="_profileModel.Bio" rows="4"
-                                               class="auth-block auth-w-full auth-px-4 auth-py-2.5 auth-border auth-rounded-lg focus:auth-ring-2 focus:auth-ring-primary-500/20 focus:auth-border-primary-500 auth-transition-colors auth-outline-none auth-resize-none"
-                                               style="background:var(--bg-elevated);color:var(--text-primary);border-color:var(--border);"
+                                               class="input-field" style="resize:none;"
                                                placeholder="@Loc["Placeholder_Bio"]"/>
                                 <p class="auth-mt-1.5 auth-text-xs"
-                                   style="color:var(--text-secondary);">@Loc["Text_BioLimit"]</p>
+                                   style="color:var(--text-muted);">@Loc["Text_BioLimit"]</p>
                             </div>
                         </div>
 
@@ -226,19 +200,15 @@
                             style="border-color:var(--border);">
                             <div class="auth-flex auth-items-center auth-text-sm auth-mb-4 sm:auth-mb-0"
                                  style="color:var(--text-secondary);">
-                                <i class="fa-solid fa-cloud-arrow-up auth-mr-2 auth-text-green-500"></i>
+                                <i class="fa-solid fa-cloud-arrow-up auth-mr-2" style="color:var(--success);"></i>
                                 @Loc["Text_AutoSave"]
                             </div>
                             <div
                                 class="auth-flex auth-flex-col sm:auth-flex-row sm:auth-items-center auth-space-y-3 sm:auth-space-y-0 sm:auth-space-x-3 auth-w-full sm:auth-w-auto">
-                                <button type="button" @onclick="ReloadProfile"
-                                        class="auth-w-full sm:auth-w-auto auth-px-5 auth-py-2.5 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all"
-                                        style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
+                                <button type="button" @onclick="ReloadProfile" class="btn-ghost auth-w-full sm:auth-w-auto">
                                     @Loc["Btn_Reset"]
                                 </button>
-                                <button type="submit" disabled="@_isSaving"
-                                        class="auth-w-full sm:auth-w-auto auth-px-6 auth-py-2.5 auth-text-sm auth-font-semibold auth-border auth-border-transparent auth-rounded-lg focus:auth-outline-none auth-shadow-md auth-transform hover:auth-scale-[1.02] auth-transition-all disabled:auth-opacity-50"
-                                        style="background:var(--text-primary);color:var(--bg);">
+                                <button type="submit" disabled="@_isSaving" class="btn-primary auth-w-full sm:auth-w-auto">
                                     @if (_isSaving)
                                     {
                                         <span>@Loc["Btn_Saving"]</span>
@@ -254,8 +224,7 @@
                 </div>
             </div>
 
-            <div class="auth-mb-8 auth-rounded-xl auth-shadow-sm auth-border auth-overflow-hidden"
-                 style="background:var(--bg-surface);border-color:var(--border);">
+            <div class="auth-mb-8 card-surface" style="padding:0;overflow:hidden;">
                 <div class="auth-px-6 auth-py-4 auth-border-b" style="border-color:var(--border);">
                     <h3 class="auth-text-lg auth-font-bold"
                         style="color:var(--text-primary);">@Loc["Title_ProfilePic"]</h3>
@@ -266,7 +235,8 @@
                     <div class="auth-flex auth-items-center auth-space-x-6">
                         <div class="auth-flex-shrink-0">
                             <img id="profile-image"
-                                 class="auth-w-24 auth-h-24 auth-rounded-full auth-object-cover auth-border-4 auth-border-gray-100 dark:auth-border-gray-800"
+                                 class="auth-w-24 auth-h-24 auth-rounded-full auth-object-cover"
+                                 style="border:4px solid var(--bg-elevated);"
                                  src="@_currentProfileImage" alt="Current profile photo">
                         </div>
                         <div class="auth-flex-1">
@@ -274,18 +244,16 @@
                                 <input type="file" id="profile-file-input" accept="image/jpeg,image/png,image/gif"
                                        class="auth-hidden"/>
 
-                                <button id="change-profile-btn" type="button"
-                                        class="auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all"
-                                        style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
+                                <button id="change-profile-btn" type="button" class="btn-ghost" style="height:2.25rem;padding:0 1rem;font-size:0.8125rem;">
                                     @Loc["Btn_Change"]
                                 </button>
-                                <button id="remove-profile-btn" type="button"
-                                        class="auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-text-red-600 dark:auth-text-red-400 auth-bg-white dark:auth-bg-gray-800 auth-border auth-border-red-200 dark:auth-border-red-900/50 auth-rounded-lg hover:auth-bg-red-50 dark:hover:auth-bg-red-900/20 auth-transition-all">
+                                <button id="remove-profile-btn" type="button" class="btn-ghost"
+                                        style="height:2.25rem;padding:0 1rem;font-size:0.8125rem;color:var(--danger);border-color:var(--danger-subtle);">
                                     @Loc["Btn_Remove"]
                                 </button>
                             </div>
                             <p class="auth-mt-2 auth-text-xs"
-                               style="color:var(--text-secondary);">@Loc["Text_FileSpecs"]</p>
+                               style="color:var(--text-muted);">@Loc["Text_FileSpecs"]</p>
                         </div>
                     </div>
                 </div>
@@ -294,39 +262,32 @@
 
         <div id="crop-dialog" class="auth-fixed auth-inset-0 auth-z-[9999] auth-hidden" role="dialog" aria-modal="true">
             <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-p-4">
-                <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity"
+                <div class="auth-fixed auth-inset-0 auth-transition-opacity"
+                     style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);"
                      aria-hidden="true"></div>
 
-                <div
-                    class="auth-relative auth-rounded-xl auth-shadow-2xl auth-max-w-lg auth-w-full auth-border auth-transform auth-transition-all"
-                    style="background:var(--bg-surface);border-color:var(--border);">
+                <div class="auth-relative auth-max-w-lg auth-w-full auth-transform auth-transition-all card-surface" style="padding:0;overflow:hidden;">
                     <div class="auth-p-6">
                         <h3 class="auth-text-lg auth-font-bold auth-mb-4" id="crop-dialog-title"
                             style="color:var(--text-primary);">
                             @Loc["Title_Crop"]
                         </h3>
                         <div class="auth-flex auth-flex-col auth-items-center auth-space-y-4">
-                            <div
-                                class="auth-relative auth-bg-gray-100 dark:auth-bg-gray-800 auth-rounded-lg auth-p-2 auth-overflow-hidden">
+                            <div class="auth-relative auth-p-2 auth-overflow-hidden" style="background:var(--bg-elevated);border-radius:var(--radius-md);">
                                 <canvas id="crop-canvas" width="350" height="350"
-                                        class="auth-rounded auth-cursor-crosshair"></canvas>
+                                        style="border-radius:var(--radius-sm);cursor:crosshair;"></canvas>
                             </div>
                             <div class="auth-text-xs auth-text-center" style="color:var(--text-secondary);">
                                 @Loc["Text_CropInstruction"]
                             </div>
                         </div>
                     </div>
-                    <div
-                        class="auth-px-6 auth-py-4 auth-flex auth-justify-end auth-space-x-3 auth-border-t auth-rounded-b-xl"
+                    <div class="auth-px-6 auth-py-4 auth-flex auth-justify-end auth-space-x-3 auth-border-t"
                         style="background:var(--bg-elevated);border-color:var(--border);">
-                        <button id="crop-cancel-btn" type="button"
-                                class="auth-px-4 auth-py-2 auth-text-sm auth-font-medium auth-border auth-rounded-lg auth-transition-all"
-                                style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
+                        <button id="crop-cancel-btn" type="button" class="btn-ghost">
                             @Loc["Btn_Cancel"]
                         </button>
-                        <button id="crop-apply-btn" type="button"
-                                class="auth-px-4 auth-py-2 auth-text-sm font-semibold auth-border auth-border-transparent auth-rounded-lg auth-transition-all"
-                                style="background:var(--text-primary);color:var(--bg);">
+                        <button id="crop-apply-btn" type="button" class="btn-primary">
                             @Loc["Btn_Apply"]
                         </button>
                     </div>

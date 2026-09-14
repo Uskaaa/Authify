@@ -12,13 +12,13 @@
 
 @if (_showNotification)
 {
-    <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-px-4 auth-py-3 auth-rounded-lg auth-shadow-xl auth-max-w-sm auth-transform auth-transition-all auth-duration-300 @_notificationClass auth-animate-fade-in-down auth-border auth-border-white/10">
-        <div class="auth-flex auth-items-center auth-font-medium">
-            @if (_notificationClass.Contains("auth-bg-green")) { <i class="fa-solid fa-check-circle auth-mr-2"></i> }
-            else if (_notificationClass.Contains("auth-bg-red")) { <i class="fa-solid fa-circle-xmark auth-mr-2"></i> }
-            else { <i class="fa-solid fa-info-circle auth-mr-2"></i> }
-            @_notificationMessage
-        </div>
+    var isSuccess = _notificationClass.Contains("green");
+    var isError = _notificationClass.Contains("red");
+    var alertVariant = isSuccess ? "alert-success" : isError ? "alert-error" : "alert-info";
+    <div class="auth-fixed auth-top-20 auth-right-4 auth-z-[10000] auth-max-w-sm auth-transform auth-transition-all auth-duration-300 alert @alertVariant auth-animate-fade-in-down"
+         style="box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+        <i class="fa-solid @(isSuccess ? "fa-circle-check" : isError ? "fa-circle-xmark" : "fa-circle-info") auth-mt-0.5"></i>
+        <span class="auth-font-medium">@_notificationMessage</span>
     </div>
 }
 
@@ -35,7 +35,7 @@
             </div>
         </div>*@
         
-        <div class="auth-mb-8 auth-rounded-xl auth-shadow-sm auth-border auth-overflow-hidden auth-transition-colors auth-duration-300" style="background:var(--bg-surface);border-color:var(--border);">
+        <div class="auth-mb-8 card-surface" style="padding:0;overflow:hidden;">
 
             <div class="auth-px-8 auth-py-6 auth-border-b" style="border-color:var(--border);">
                 <div class="auth-flex auth-items-center auth-justify-between">
@@ -44,21 +44,21 @@
                         <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_MainCardDesc"]</p>
                     </div>
                     <div class="auth-flex-shrink-0">
-                        <div class="auth-w-10 auth-h-10 auth-bg-emerald-50 dark:auth-bg-emerald-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-5 auth-h-5 auth-text-emerald-600 dark:auth-text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-10 auth-h-10 auth-rounded-lg auth-flex auth-items-center auth-justify-center" style="background:var(--accent-subtle);">
+                            <svg class="auth-w-5 auth-h-5" style="color:var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                             </svg>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="auth-px-8 auth-py-8 auth-space-y-8">
-                
+
                 <div class="auth-space-y-6">
                     <div class="auth-flex auth-items-center auth-space-x-3">
-                        <div class="auth-w-8 auth-h-8 auth-bg-blue-50 dark:auth-bg-blue-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-4 auth-h-4 auth-text-blue-600 dark:auth-text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-8 auth-h-8 auth-rounded-lg auth-flex auth-items-center auth-justify-center" style="background:var(--accent-subtle);">
+                            <svg class="auth-w-4 auth-h-4" style="color:var(--accent);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
@@ -67,34 +67,32 @@
                             <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_ExportDesc"]</p>
                         </div>
                     </div>
-                    
-                    <div class="auth-bg-blue-50 dark:auth-bg-blue-900/10 auth-border auth-border-blue-100 dark:auth-border-blue-900/30 auth-rounded-xl auth-p-5">
-                        <div class="auth-flex auth-items-start">
-                            <svg class="auth-w-5 auth-h-5 auth-text-blue-500 dark:auth-text-blue-400 auth-mt-0.5 auth-mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div class="auth-flex-1">
-                                <h6 class="auth-text-sm auth-font-medium auth-text-blue-800 dark:auth-text-blue-300">@Loc["Title_ExportInfo"]</h6>
-                                <ul class="auth-text-sm auth-text-blue-700 dark:auth-text-blue-400 auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
-                                    <li>@Loc["List_Export_1"]</li>
-                                    <li>@Loc["List_Export_2"]</li>
-                                    <li>@Loc["List_Export_3"]</li>
-                                    <li>@Loc["List_Export_4"]</li>
-                                    <li>@Loc["List_Export_5"]</li>
-                                </ul>
-                                <p class="auth-text-xs auth-text-blue-600 dark:auth-text-blue-500 auth-mt-3">@Loc["Text_ExportNote"]</p>
-                            </div>
+
+                    <div class="alert alert-info" style="align-items:flex-start;">
+                        <svg class="auth-w-5 auth-h-5 auth-mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="auth-flex-1">
+                            <h6 class="auth-text-sm auth-font-medium" style="color:var(--text-primary);">@Loc["Title_ExportInfo"]</h6>
+                            <ul class="auth-text-sm auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
+                                <li>@Loc["List_Export_1"]</li>
+                                <li>@Loc["List_Export_2"]</li>
+                                <li>@Loc["List_Export_3"]</li>
+                                <li>@Loc["List_Export_4"]</li>
+                                <li>@Loc["List_Export_5"]</li>
+                            </ul>
+                            <p class="auth-text-xs auth-mt-3" style="color:var(--text-muted);">@Loc["Text_ExportNote"]</p>
                         </div>
                     </div>
 
-                    <button @onclick="ExportData" disabled="@_isExporting" class="auth-w-full auth-flex auth-items-center auth-justify-center auth-px-6 auth-py-3 auth-text-sm auth-font-semibold auth-text-blue-700 auth-bg-white auth-border auth-border-blue-200 auth-rounded-xl hover:auth-bg-blue-50 hover:auth-border-blue-300 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-blue-500 auth-transition-all auth-duration-200 dark:auth-text-blue-400 dark:auth-bg-gray-900 dark:auth-border-blue-900 dark:hover:auth-bg-gray-800 dark:hover:auth-border-blue-800 dark:focus:auth-ring-offset-gray-900 disabled:auth-opacity-60 disabled:auth-cursor-not-allowed">
+                    <button @onclick="ExportData" disabled="@_isExporting" class="btn-ghost auth-w-full" style="color:var(--accent);border-color:var(--accent-subtle);">
                         @if (_isExporting)
                         {
-                            <i class="fa-solid fa-circle-notch fa-spin auth-mr-2"></i> <span>@Loc["Btn_Exporting"]</span>
+                            <i class="fa-solid fa-circle-notch fa-spin"></i> <span>@Loc["Btn_Exporting"]</span>
                         }
                         else
                         {
-                            <i class="fa-solid fa-download auth-mr-2"></i>
+                            <i class="fa-solid fa-download"></i>
                             <span>@Loc["Btn_Export"]</span>
                         }
                     </button>
@@ -104,8 +102,8 @@
 
                 <div class="auth-space-y-6">
                     <div class="auth-flex auth-items-center auth-space-x-3">
-                        <div class="auth-w-8 auth-h-8 auth-bg-yellow-50 dark:auth-bg-yellow-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-4 auth-h-4 auth-text-yellow-600 dark:auth-text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-8 auth-h-8 auth-rounded-lg auth-flex auth-items-center auth-justify-center" style="background:var(--warning-subtle);">
+                            <svg class="auth-w-4 auth-h-4" style="color:var(--warning);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                             </svg>
                         </div>
@@ -114,28 +112,26 @@
                             <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_DeactivateDesc"]</p>
                         </div>
                     </div>
-                    
-                    <div class="auth-bg-yellow-50 dark:auth-bg-yellow-900/10 auth-border auth-border-yellow-100 dark:auth-border-yellow-900/30 auth-rounded-xl auth-p-5">
-                        <div class="auth-flex auth-items-start">
-                            <svg class="auth-w-5 auth-h-5 auth-text-yellow-500 dark:auth-text-yellow-400 auth-mt-0.5 auth-mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div class="auth-flex-1">
-                                <h6 class="auth-text-sm auth-font-medium auth-text-yellow-800 dark:auth-text-yellow-300">@Loc["Title_DeactivateInfo"]</h6>
-                                <ul class="auth-text-sm auth-text-yellow-700 dark:auth-text-yellow-400 auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
-                                    <li>@Loc["List_Deactivate_1"]</li>
-                                    <li>@Loc["List_Deactivate_2"]</li>
-                                    <li>@Loc["List_Deactivate_3"]</li>
-                                    <li>@Loc["List_Deactivate_4"]</li>
-                                    <li>@Loc["List_Deactivate_5"]</li>
-                                </ul>
-                                <p class="auth-text-xs auth-text-yellow-600 dark:auth-text-yellow-500 auth-mt-3">@Loc["Text_DeactivateNote"]</p>
-                            </div>
+
+                    <div class="alert alert-warning" style="align-items:flex-start;">
+                        <svg class="auth-w-5 auth-h-5 auth-mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="auth-flex-1">
+                            <h6 class="auth-text-sm auth-font-medium" style="color:var(--text-primary);">@Loc["Title_DeactivateInfo"]</h6>
+                            <ul class="auth-text-sm auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
+                                <li>@Loc["List_Deactivate_1"]</li>
+                                <li>@Loc["List_Deactivate_2"]</li>
+                                <li>@Loc["List_Deactivate_3"]</li>
+                                <li>@Loc["List_Deactivate_4"]</li>
+                                <li>@Loc["List_Deactivate_5"]</li>
+                            </ul>
+                            <p class="auth-text-xs auth-mt-3" style="color:var(--text-muted);">@Loc["Text_DeactivateNote"]</p>
                         </div>
                     </div>
 
-                    <button @onclick="OpenDeactivateModal" class="auth-w-full auth-flex auth-items-center auth-justify-center auth-px-6 auth-py-3 auth-text-sm auth-font-semibold auth-text-yellow-700 auth-bg-yellow-50 auth-border-2 auth-border-yellow-200 auth-rounded-xl hover:auth-bg-yellow-100 hover:auth-border-yellow-300 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-yellow-500 auth-transition-all auth-duration-200 dark:auth-text-yellow-400 dark:auth-bg-yellow-900/20 dark:auth-border-yellow-800/50 dark:hover:auth-bg-yellow-900/30 dark:hover:auth-border-yellow-700 dark:focus:auth-ring-offset-gray-900">
-                        <i class="fa-solid fa-power-off auth-mr-2"></i>
+                    <button @onclick="OpenDeactivateModal" class="btn-ghost auth-w-full" style="color:var(--warning);border-color:var(--warning-subtle);">
+                        <i class="fa-solid fa-power-off"></i>
                         @Loc["Btn_Deactivate"]
                     </button>
                 </div>
@@ -144,8 +140,8 @@
 
                 <div class="auth-space-y-6">
                     <div class="auth-flex auth-items-center auth-space-x-3">
-                        <div class="auth-w-8 auth-h-8 auth-bg-red-50 dark:auth-bg-red-900/20 auth-rounded-lg auth-flex auth-items-center auth-justify-center">
-                            <svg class="auth-w-4 auth-h-4 auth-text-red-600 dark:auth-text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="auth-w-8 auth-h-8 auth-rounded-lg auth-flex auth-items-center auth-justify-center" style="background:var(--danger-subtle);">
+                            <svg class="auth-w-4 auth-h-4" style="color:var(--danger);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
                         </div>
@@ -154,43 +150,41 @@
                             <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_DeleteDesc"]</p>
                         </div>
                     </div>
-                    
-                    <div class="auth-bg-red-50 dark:auth-bg-red-900/10 auth-border auth-border-red-100 dark:auth-border-red-900/30 auth-rounded-xl auth-p-5">
-                        <div class="auth-flex auth-items-start">
-                            <svg class="auth-w-5 auth-h-5 auth-text-red-500 dark:auth-text-red-400 auth-mt-0.5 auth-mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            <div class="auth-flex-1">
-                                <h6 class="auth-text-sm auth-font-medium auth-text-red-800 dark:auth-text-red-300">@Loc["Title_DeleteInfo"]</h6>
-                                <ul class="auth-text-sm auth-text-red-700 dark:auth-text-red-400 auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
-                                    <li>@Loc["List_Delete_1"]</li>
-                                    <li>@Loc["List_Delete_2"]</li>
-                                    <li>@Loc["List_Delete_3"]</li>
-                                    <li>@Loc["List_Delete_4"]</li>
-                                    <li>@Loc["List_Delete_5"]</li>
-                                </ul>
-                                <p class="auth-text-xs auth-text-red-600 dark:auth-text-red-500 auth-mt-3 auth-font-medium">@Loc["Text_DeleteNote"]</p>
-                            </div>
+
+                    <div class="alert alert-error" style="align-items:flex-start;">
+                        <svg class="auth-w-5 auth-h-5 auth-mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div class="auth-flex-1">
+                            <h6 class="auth-text-sm auth-font-medium" style="color:var(--text-primary);">@Loc["Title_DeleteInfo"]</h6>
+                            <ul class="auth-text-sm auth-mt-2 auth-space-y-1 auth-list-disc auth-list-inside">
+                                <li>@Loc["List_Delete_1"]</li>
+                                <li>@Loc["List_Delete_2"]</li>
+                                <li>@Loc["List_Delete_3"]</li>
+                                <li>@Loc["List_Delete_4"]</li>
+                                <li>@Loc["List_Delete_5"]</li>
+                            </ul>
+                            <p class="auth-text-xs auth-mt-3 auth-font-medium" style="color:var(--danger);">@Loc["Text_DeleteNote"]</p>
                         </div>
                     </div>
 
-                    <button id="delete-account-btn" @onclick="OpenDeleteModal" class="auth-w-full auth-flex auth-items-center auth-justify-center auth-px-6 auth-py-3 auth-text-sm auth-font-bold auth-text-white auth-bg-red-600 auth-border auth-border-transparent auth-rounded-xl hover:auth-bg-red-700 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-red-500 auth-transform hover:auth-scale-[1.02] auth-transition-all auth-duration-200 auth-shadow-md hover:auth-shadow-lg dark:focus:auth-ring-offset-gray-900">
-                        <i class="fa-solid fa-trash auth-mr-2"></i>
+                    <button id="delete-account-btn" @onclick="OpenDeleteModal" class="btn-primary auth-w-full" style="background:var(--danger);color:#fff;">
+                        <i class="fa-solid fa-trash"></i>
                         @Loc["Btn_DeletePermanently"]
                     </button>
                 </div>
 
                 <div class="auth-pt-8 auth-border-t" style="border-color:var(--border);">
-                    <div class="auth-rounded-xl auth-p-5 auth-border" style="background:var(--bg-elevated);border-color:var(--border);">
+                    <div class="auth-p-5" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);">
                         <div class="auth-flex auth-items-center">
-                            <svg class="auth-w-5 auth-h-5 auth-text-gray-400 auth-mr-3 dark:auth-text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="auth-w-5 auth-h-5 auth-mr-3" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <div>
                                 <h5 class="auth-text-sm auth-font-semibold" style="color:var(--text-primary);">@Loc["Title_NeedHelp"]</h5>
                                 <p class="auth-text-xs auth-mt-1" style="color:var(--text-secondary);">
-                                    @Loc["Text_HelpDesc"] 
-                                    <a href="#" class="auth-text-primary-600 hover:auth-text-primary-700 auth-font-medium dark:auth-text-primary-400 dark:hover:auth-text-primary-300">@Loc["Link_ContactSupport"]</a>
+                                    @Loc["Text_HelpDesc"]
+                                    <a href="#" class="auth-font-medium" style="color:var(--accent);">@Loc["Link_ContactSupport"]</a>
                                 </p>
                             </div>
                         </div>
@@ -203,36 +197,30 @@
 
 @if (_showDeactivateModal)
 {
-    <div class="auth-fixed auth-inset-0 auth-z-50 auth-overflow-y-auto" role="dialog" aria-modal="true">
-        <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-pt-4 auth-px-4 auth-pb-20 auth-text-center sm:auth-block sm:auth-p-0">
-            <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseDeactivateModal"></div>
-            <span class="auth-hidden sm:auth-inline-block sm:auth-align-middle sm:auth-h-screen">&#8203;</span>
-            <div class="auth-inline-block auth-align-bottom auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border" style="background:var(--bg-surface);border-color:var(--border);">
-                <div class="auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4" style="background:var(--bg-surface);">
-                    <div class="sm:auth-flex sm:auth-items-start">
-                        <div class="auth-mx-auto auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-12 auth-w-12 auth-rounded-full auth-bg-yellow-100 dark:auth-bg-yellow-900/30 sm:auth-mx-0 sm:auth-h-10 sm:auth-w-10">
-                            <svg class="auth-h-6 auth-w-6 auth-text-yellow-600 dark:auth-text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                        </div>
-                        <div class="auth-mt-3 auth-text-center sm:auth-mt-0 sm:auth-ml-4 sm:auth-text-left">
-                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold" style="color:var(--text-primary);">@Loc["Modal_Deactivate_Title"]</h3>
-                            <div class="auth-mt-2">
-                                <p class="auth-text-sm" style="color:var(--text-secondary);">
-                                    @Loc["Modal_Deactivate_Text"]
-                                </p>
-                            </div>
-                        </div>
+    <div class="auth-fixed auth-inset-0 auth-z-50 auth-flex auth-items-center auth-justify-center auth-px-4" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);" role="dialog" aria-modal="true" @onclick="CloseDeactivateModal">
+        <div class="auth-w-full sm:auth-max-w-lg card-surface" style="padding:0;overflow:hidden;" @onclick:stopPropagation="true">
+            <div class="auth-p-6">
+                <div class="auth-flex auth-items-start auth-gap-4">
+                    <div class="auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-10 auth-w-10 auth-rounded-full" style="background:var(--warning-subtle);">
+                        <svg class="auth-h-5 auth-w-5" style="color:var(--warning);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="heading-3" style="font-size:1.05rem;">@Loc["Modal_Deactivate_Title"]</h3>
+                        <p class="auth-text-sm auth-mt-1" style="color:var(--text-secondary);">
+                            @Loc["Modal_Deactivate_Text"]
+                        </p>
                     </div>
                 </div>
-                <div class="auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t" style="background:var(--bg-elevated);border-color:var(--border);">
-                    <button type="button" @onclick="ConfirmDeactivate" class="auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-transparent auth-shadow-sm auth-px-4 auth-py-2 auth-bg-yellow-600 auth-text-base auth-font-medium auth-text-white hover:auth-bg-yellow-700 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-yellow-500 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:focus:auth-ring-offset-gray-900">
-                        @Loc["Modal_Btn_Deactivate"]
-                    </button>
-                    <button type="button" @onclick="CloseDeactivateModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-shadow-sm auth-px-4 auth-py-2 auth-text-base auth-font-medium focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
-                        @Loc["Modal_Btn_Cancel"]
-                    </button>
-                </div>
+            </div>
+            <div class="auth-px-6 auth-py-4 auth-flex auth-justify-end auth-gap-3" style="background:var(--bg-elevated);border-top:1px solid var(--border);">
+                <button type="button" @onclick="CloseDeactivateModal" class="btn-ghost">
+                    @Loc["Modal_Btn_Cancel"]
+                </button>
+                <button type="button" @onclick="ConfirmDeactivate" class="btn-primary" style="background:var(--warning);color:#fff;">
+                    @Loc["Modal_Btn_Deactivate"]
+                </button>
             </div>
         </div>
     </div>
@@ -240,36 +228,30 @@
 
 @if (_showDeleteModal)
 {
-    <div class="auth-fixed auth-inset-0 auth-z-50 auth-overflow-y-auto" role="dialog" aria-modal="true">
-        <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-pt-4 auth-px-4 auth-pb-20 auth-text-center sm:auth-block sm:auth-p-0">
-            <div class="auth-fixed auth-inset-0 auth-bg-gray-900/80 auth-backdrop-blur-sm auth-transition-opacity" @onclick="CloseDeleteModal"></div>
-            <span class="auth-hidden sm:auth-inline-block sm:auth-align-middle sm:auth-h-screen">&#8203;</span>
-            <div class="auth-inline-block auth-align-bottom auth-rounded-xl auth-text-left auth-overflow-hidden auth-shadow-2xl auth-transform auth-transition-all sm:auth-my-8 sm:auth-align-middle sm:auth-max-w-lg sm:auth-w-full auth-border" style="background:var(--bg-surface);border-color:var(--border);">
-                <div class="auth-px-4 auth-pt-5 auth-pb-4 sm:auth-p-6 sm:auth-pb-4" style="background:var(--bg-surface);">
-                    <div class="sm:auth-flex sm:auth-items-start">
-                        <div class="auth-mx-auto auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-12 auth-w-12 auth-rounded-full auth-bg-red-100 dark:auth-bg-red-900/30 sm:auth-mx-0 sm:auth-h-10 sm:auth-w-10">
-                            <svg class="auth-h-6 auth-w-6 auth-text-red-600 dark:auth-text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                        </div>
-                        <div class="auth-mt-3 auth-text-center sm:auth-mt-0 sm:auth-ml-4 sm:auth-text-left">
-                            <h3 class="auth-text-lg auth-leading-6 auth-font-bold" style="color:var(--text-primary);">@Loc["Modal_Delete_Title"]</h3>
-                            <div class="auth-mt-2">
-                                <p class="auth-text-sm" style="color:var(--text-secondary);">
-                                    @Loc["Modal_Delete_Text"]
-                                </p>
-                            </div>
-                        </div>
+    <div class="auth-fixed auth-inset-0 auth-z-50 auth-flex auth-items-center auth-justify-center auth-px-4" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);" role="dialog" aria-modal="true" @onclick="CloseDeleteModal">
+        <div class="auth-w-full sm:auth-max-w-lg card-surface" style="padding:0;overflow:hidden;" @onclick:stopPropagation="true">
+            <div class="auth-p-6">
+                <div class="auth-flex auth-items-start auth-gap-4">
+                    <div class="auth-flex-shrink-0 auth-flex auth-items-center auth-justify-center auth-h-10 auth-w-10 auth-rounded-full" style="background:var(--danger-subtle);">
+                        <svg class="auth-h-5 auth-w-5" style="color:var(--danger);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="heading-3" style="font-size:1.05rem;">@Loc["Modal_Delete_Title"]</h3>
+                        <p class="auth-text-sm auth-mt-1" style="color:var(--text-secondary);">
+                            @Loc["Modal_Delete_Text"]
+                        </p>
                     </div>
                 </div>
-                <div class="auth-px-4 auth-py-3 sm:auth-px-6 sm:auth-flex sm:auth-flex-row-reverse auth-border-t" style="background:var(--bg-elevated);border-color:var(--border);">
-                    <button type="button" @onclick="ConfirmDelete" class="auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-border-transparent auth-shadow-sm auth-px-4 auth-py-2 auth-bg-red-600 auth-text-base auth-font-medium auth-text-white hover:auth-bg-red-700 focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-red-500 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm dark:focus:auth-ring-offset-gray-900">
-                        @Loc["Modal_Btn_Delete"]
-                    </button>
-                    <button type="button" @onclick="CloseDeleteModal" class="auth-mt-3 auth-w-full auth-inline-flex auth-justify-center auth-rounded-lg auth-border auth-shadow-sm auth-px-4 auth-py-2 auth-text-base auth-font-medium focus:auth-outline-none focus:auth-ring-2 focus:auth-ring-offset-2 focus:auth-ring-primary-500 sm:auth-mt-0 sm:auth-ml-3 sm:auth-w-auto sm:auth-text-sm" style="background:transparent;border:1px solid var(--border);color:var(--text-primary);">
-                        @Loc["Modal_Btn_Cancel"]
-                    </button>
-                </div>
+            </div>
+            <div class="auth-px-6 auth-py-4 auth-flex auth-justify-end auth-gap-3" style="background:var(--bg-elevated);border-top:1px solid var(--border);">
+                <button type="button" @onclick="CloseDeleteModal" class="btn-ghost">
+                    @Loc["Modal_Btn_Cancel"]
+                </button>
+                <button type="button" @onclick="ConfirmDelete" class="btn-primary" style="background:var(--danger);color:#fff;">
+                    @Loc["Modal_Btn_Delete"]
+                </button>
             </div>
         </div>
     </div>
