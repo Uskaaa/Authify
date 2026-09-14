@@ -11,8 +11,7 @@
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
 
-<div class="auth-px-4 lg:auth-px-6 auth-py-4 sm:auth-py-6 lg:auth-py-8 auth-min-h-screen" style="background:var(--bg);">
-<div class="auth-max-w-7xl auth-space-y-6">
+<div class="auth-space-y-6">
 
     @if (!TeamFeature.IsEnabled)
     {
@@ -160,7 +159,6 @@
             }
         </div>
     }
-</div>
 </div>
 
 @code {

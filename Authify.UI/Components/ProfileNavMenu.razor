@@ -6,12 +6,11 @@
 @inject LdapFeatureOptions LdapFeature
 @inject ITeamDataService TeamDataService
 
-<div class="auth-h-full auth-min-h-0 auth-flex auth-flex-col">
-<div class="auth-flex-1 auth-min-h-0 auth-overflow-y-auto auth-pr-1">
+<div class="sidebar-nav">
 <div class="auth-space-y-8">
-    
-    <div>
-        <div class="auth-px-3 auth-mb-2 label-caption">
+
+    <div class="nav-group">
+        <div class="nav-group-label">
             Account Settings
         </div>
         <div class="auth-space-y-0.5">
@@ -26,8 +25,8 @@
 
     @if (!_isTeamMember)
     {
-        <div>
-            <div class="auth-px-3 auth-mb-2 label-caption">
+        <div class="nav-group">
+            <div class="nav-group-label">
                 Subscription
             </div>
             <div class="auth-space-y-0.5">
@@ -38,8 +37,8 @@
 
     @if (TeamFeature.IsEnabled && !_isTeamMember)
     {
-        <div>
-            <div class="auth-px-3 auth-mb-2 label-caption">
+        <div class="nav-group">
+            <div class="nav-group-label">
                 Admin-Einstellungen
             </div>
             <div class="auth-space-y-0.5">
@@ -60,12 +59,11 @@
     </div>
 </div>
 
-<div class="auth-pt-4 auth-mt-2 auth-border-t auth-flex-shrink-0" style="border-color:var(--border);">
-    <a href="/dashboard" class="auth-flex auth-items-center auth-gap-3 auth-p-2.5 auth-text-sm auth-font-medium auth-transition-colors auth-group" style="color:var(--text-secondary);text-decoration:none;border-radius:var(--radius-sm);">
-        <i class="fa-solid fa-arrow-left auth-text-xs group-hover:-auth-translate-x-0.5 auth-transition-transform"></i>
+<div class="sidebar-foot">
+    <a href="/dashboard" class="nav-item" style="text-decoration:none;">
+        <i class="fa-solid fa-arrow-left"></i>
         <span>Back to Dashboard</span>
     </a>
-</div>
 </div>
 
 @code {
@@ -102,8 +100,8 @@
     
     private RenderFragment NavItem(string href, string icon, string text) => __builder =>
     {
-        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="dash-nav-item" ActiveClass="active">
-            <i class="@icon auth-w-4 auth-text-center auth-text-[11px] auth-flex-shrink-0" style="color:var(--text-muted);"></i>
+        <NavLink href="@href" Match="NavLinkMatch.Prefix" class="nav-item" ActiveClass="active">
+            <i class="@icon"></i>
             <span>@text</span>
         </NavLink>
     };

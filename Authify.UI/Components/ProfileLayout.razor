@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
 <div style="font-family:'DM Sans',sans-serif;color:var(--text-primary);background:var(--bg);">
     <input type="checkbox" id="mobile-menu-toggle" class="auth-hidden" />
@@ -20,9 +20,9 @@
     </label>
 
     <aside id="profile-mobile-sidebar"
-           class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-w-60 auth-flex auth-flex-col auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full lg:auth-translate-x-0"
-           style="background:var(--bg-surface);border-right:1px solid var(--border);">
-        <div class="auth-h-14 auth-flex auth-items-center auth-px-5 auth-flex-shrink-0" style="border-bottom:1px solid var(--border);">
+           class="auth-fixed auth-inset-y-0 auth-left-0 auth-z-50 auth-flex auth-flex-col auth-transition-transform auth-duration-300 auth-ease-in-out -auth-translate-x-full lg:auth-translate-x-0"
+           style="width:236px;background:var(--bg-surface);border-right:1px solid var(--border);">
+        <div class="sidebar-head">
             <AuthifyLogo />
             <label for="mobile-menu-toggle"
                    class="lg:auth-hidden auth-ml-auto auth-p-1 auth-cursor-pointer"
@@ -32,13 +32,11 @@
             </label>
         </div>
 
-        <div class="auth-flex-1 auth-min-h-0 auth-py-5 auth-px-3">
-            <ProfileNavMenu />
-        </div>
+        <ProfileNavMenu />
     </aside>
 
-    <header class="auth-fixed auth-top-0 auth-right-0 auth-left-0 lg:auth-left-60 auth-h-14 auth-z-30 auth-flex auth-items-center auth-justify-between auth-px-4 lg:auth-px-6"
-            style="background:var(--bg);border-bottom:1px solid var(--border);">
+    <header class="auth-fixed auth-top-0 auth-right-0 auth-left-0 lg:auth-left-[236px] auth-z-30 auth-flex auth-items-center auth-justify-between auth-px-4 lg:auth-px-6"
+            style="height:58px;background:var(--bg);border-bottom:1px solid var(--border);">
         <div class="auth-flex auth-items-center auth-gap-3">
             <label for="mobile-menu-toggle"
                    class="lg:auth-hidden auth-p-2 auth--ml-1 auth-cursor-pointer auth-rounded"
@@ -46,15 +44,17 @@
                    aria-label="Navigation öffnen">
                 <i class="fa-solid fa-bars auth-text-lg"></i>
             </label>
-            <span class="auth-text-sm auth-font-medium auth-truncate" style="color:var(--text-primary);font-family:'DM Sans',sans-serif;font-weight:400;">
+            <span class="topbar-title">
                 @_currentPageTitle
             </span>
         </div>
         <div></div>
     </header>
 
-    <main class="lg:auth-ml-60 auth-pt-14 auth-min-h-screen" style="background:var(--bg);">
-        @Body
+    <main class="dash-main lg:auth-ml-[236px]" style="background:var(--bg);">
+        <div class="dash-main-inner">
+            @Body
+        </div>
     </main>
 </div>
 

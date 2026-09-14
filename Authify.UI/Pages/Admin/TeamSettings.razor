@@ -11,8 +11,7 @@
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
 
-<div class="auth-px-4 lg:auth-px-6 auth-py-4 sm:auth-py-6 lg:auth-py-8 auth-min-h-screen" style="background:var(--bg);">
-<div class="auth-max-w-7xl auth-space-y-6">
+<div class="auth-space-y-6">
 
     @if (!TeamFeature.IsEnabled)
     {
@@ -47,30 +46,6 @@
                 Team erstellen
             </button>
         </div>
-
-        @if (_showCreateForm)
-        {
-            <div class="card-surface auth-mt-6">
-                <h3 class="auth-text-base auth-font-semibold auth-mb-4" style="color:var(--text-primary);">Neues Team erstellen</h3>
-                <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateTeamForm">
-                    <DataAnnotationsValidator />
-                    @FormFields(_createRequest)
-                    <div class="auth-flex auth-gap-3 auth-mt-4">
-                        <button type="submit" disabled="@_isSaving" class="btn-primary auth-flex-1">
-                            @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin"></i> }
-                            Team erstellen
-                        </button>
-                        <button type="button" @onclick="() => _showCreateForm = false" class="btn-ghost">
-                            Abbrechen
-                        </button>
-                    </div>
-                    @if (!string.IsNullOrEmpty(_errorMessage))
-                    {
-                        <div class="alert alert-error auth-mt-3">@_errorMessage</div>
-                    }
-                </EditForm>
-            </div>
-        }
     }
     else
     {
@@ -130,7 +105,41 @@
         </div>
     }
 </div>
-</div>
+
+@if (_showCreateForm)
+{
+    <div class="auth-fixed auth-inset-0 auth-z-[9999] auth-overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-p-4">
+            <div class="auth-fixed auth-inset-0 auth-transition-opacity" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);" @onclick="CloseCreateForm"></div>
+
+            <div class="auth-relative auth-max-w-lg auth-w-full card-surface" style="padding:0;">
+                <div class="auth-px-6 auth-py-4 auth-border-b auth-flex auth-justify-between auth-items-center" style="background:var(--bg-elevated);border-color:var(--border);">
+                    <h3 class="auth-text-lg auth-font-bold" style="color:var(--text-primary);">Neues Team erstellen</h3>
+                    <button type="button" @onclick="CloseCreateForm" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;">
+                        <i class="fa-solid fa-xmark auth-text-lg"></i>
+                    </button>
+                </div>
+                <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateTeamForm">
+                    <DataAnnotationsValidator />
+                    <div class="auth-px-6 auth-py-6">
+                        @FormFields(_createRequest)
+                        @if (!string.IsNullOrEmpty(_errorMessage))
+                        {
+                            <div class="alert alert-error auth-mt-4">@_errorMessage</div>
+                        }
+                    </div>
+                    <div class="auth-px-6 auth-py-4 auth-border-t auth-flex auth-justify-end auth-gap-3" style="background:var(--bg-elevated);border-color:var(--border);">
+                        <button type="button" @onclick="CloseCreateForm" class="btn-ghost">Abbrechen</button>
+                        <button type="submit" disabled="@_isSaving" class="btn-primary">
+                            @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin"></i> }
+                            Team erstellen
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private TeamDto? _team;
@@ -183,6 +192,12 @@
         {
             _errorMessage = result.ErrorMessage;
         }
+    }
+
+    private void CloseCreateForm()
+    {
+        _showCreateForm = false;
+        _errorMessage = null;
     }
 
     private async Task HandleUpdate()
