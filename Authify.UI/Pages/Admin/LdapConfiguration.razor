@@ -15,11 +15,11 @@
 
     @if (!LdapFeature.IsEnabled)
     {
-        <div class="auth-text-center auth-py-16 auth-text-slate-400">LDAP-Features sind nicht aktiviert.</div>
+        <div class="auth-text-center auth-py-16" style="color:var(--text-muted);">LDAP-Features sind nicht aktiviert.</div>
     }
 
     <div class="auth-mb-8">
-        <h1 class="auth-text-2xl auth-font-bold" style="color:var(--text-primary);">LDAP / Active Directory</h1>
+        <h1 class="heading-3" style="font-size:1.5rem;">LDAP / Active Directory</h1>
         <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">
             Verbinde dein Unternehmensverzeichnis, damit sich Mitarbeiter mit ihren Domänen-Accounts anmelden können.
         </p>
@@ -28,17 +28,17 @@
     @if (_isLoading)
     {
         <div class="auth-flex auth-items-center auth-justify-center auth-py-16">
-            <i class="fa-solid fa-spinner fa-spin auth-text-2xl auth-text-primary-500"></i>
+            <i class="fa-solid fa-spinner fa-spin auth-text-2xl" style="color:var(--accent);"></i>
         </div>
     }
 
     @if (!_hasTeam)
     {
-        <div class="auth-rounded-xl auth-border auth-border-amber-200 auth-bg-amber-50 dark:auth-bg-amber-950/30 dark:auth-border-amber-800 auth-p-6 auth-text-center">
-            <i class="fa-solid fa-building auth-text-4xl auth-text-amber-400 auth-mb-3"></i>
-            <p class="auth-text-amber-800 dark:auth-text-amber-200 auth-font-medium">Du musst zuerst einen Team-Account erstellen.</p>
-            <p class="auth-text-sm auth-text-amber-600 dark:auth-text-amber-400 auth-mt-1 auth-mb-4">LDAP-Konfigurationen gehören zu deinem Team.</p>
-            <button style="background:var(--text-primary);color:var(--bg);border:none;border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick='() => NavigationManager.NavigateTo("/admin/team-settings")'>
+        <div class="card-surface auth-text-center" style="border-color:var(--warning-subtle);">
+            <i class="fa-solid fa-building auth-text-4xl auth-mb-3" style="color:var(--warning);"></i>
+            <p class="auth-font-medium" style="color:var(--text-primary);">Du musst zuerst einen Team-Account erstellen.</p>
+            <p class="auth-text-sm auth-mt-1 auth-mb-4" style="color:var(--text-secondary);">LDAP-Konfigurationen gehören zu deinem Team.</p>
+            <button class="btn-primary" @onclick='() => NavigationManager.NavigateTo("/admin/team-settings")'>
                 Team erstellen
             </button>
         </div>
@@ -46,17 +46,17 @@
 
     @if (!string.IsNullOrEmpty(_successMessage))
     {
-        <div class="auth-rounded-lg auth-bg-green-50 dark:auth-bg-green-950/30 auth-border auth-border-green-200 dark:auth-border-green-800 auth-p-4 auth-mb-6 auth-flex auth-items-start auth-gap-3">
-            <i class="fa-solid fa-circle-check auth-text-green-500 auth-mt-0.5"></i>
-            <p class="auth-text-sm auth-text-green-700 dark:auth-text-green-300">@_successMessage</p>
+        <div class="alert alert-success auth-mb-6">
+            <i class="fa-solid fa-circle-check auth-mt-0.5"></i>
+            <p>@_successMessage</p>
         </div>
     }
 
     @if (!string.IsNullOrEmpty(_errorMessage))
     {
-        <div class="auth-rounded-lg auth-bg-red-50 dark:auth-bg-red-950/30 auth-border auth-border-red-200 dark:auth-border-red-800 auth-p-4 auth-mb-6 auth-flex auth-items-start auth-gap-3">
-            <i class="fa-solid fa-circle-exclamation auth-text-red-500 auth-mt-0.5"></i>
-            <p class="auth-text-sm auth-text-red-700 dark:auth-text-red-300">@_errorMessage</p>
+        <div class="alert alert-error auth-mb-6">
+            <i class="fa-solid fa-circle-exclamation auth-mt-0.5"></i>
+            <p>@_errorMessage</p>
         </div>
     }
 
@@ -66,42 +66,42 @@
         <div class="auth-space-y-3 auth-mb-8">
             @foreach (var cfg in _configurations)
             {
-                <div class="auth-rounded-xl auth-border auth-p-5" style="background:var(--bg-surface);border-color:var(--border);">
+                <div class="card-surface">
                     <div class="auth-flex auth-items-start auth-justify-between auth-gap-4">
                         <div class="auth-flex-1 auth-min-w-0">
                             <div class="auth-flex auth-items-center auth-gap-2 auth-mb-1">
                                 <span class="auth-font-semibold" style="color:var(--text-primary);">@cfg.Domain</span>
                                 @if (cfg.IsEnabled)
                                 {
-                                    <span class="auth-inline-flex auth-items-center auth-gap-1 auth-rounded-full auth-bg-green-100 dark:auth-bg-green-900/40 auth-px-2 auth-py-0.5 auth-text-xs auth-font-medium auth-text-green-700 dark:auth-text-green-300">
+                                    <span class="badge badge-success">
                                         <i class="fa-solid fa-circle auth-text-[8px]"></i> Aktiv
                                     </span>
                                 }
                                 else
                                 {
-                                    <span class="auth-inline-flex auth-items-center auth-gap-1 auth-rounded-full auth-bg-slate-100 dark:auth-bg-slate-700 auth-px-2 auth-py-0.5 auth-text-xs auth-font-medium auth-text-slate-500">
+                                    <span class="badge badge-neutral">
                                         <i class="fa-solid fa-circle auth-text-[8px]"></i> Inaktiv
                                     </span>
                                 }
                                 @if (cfg.UseSsl)
                                 {
-                                    <span class="auth-inline-flex auth-items-center auth-gap-1 auth-rounded-full auth-bg-blue-100 dark:auth-bg-blue-900/40 auth-px-2 auth-py-0.5 auth-text-xs auth-font-medium auth-text-blue-700 dark:auth-text-blue-300">
+                                    <span class="badge badge-info">
                                         <i class="fa-solid fa-lock auth-text-[10px]"></i> SSL
                                     </span>
                                 }
                             </div>
-                            <p class="auth-text-sm auth-text-slate-500">
+                            <p class="auth-text-sm" style="color:var(--text-secondary);">
                                 @cfg.Host:@cfg.Port &nbsp;·&nbsp; @cfg.BaseDn
                             </p>
-                            <p class="auth-text-xs auth-text-slate-400 auth-mt-0.5">
+                            <p class="auth-text-xs auth-mt-0.5" style="color:var(--text-muted);">
                                 BindDn: @cfg.BindDn &nbsp;·&nbsp; Passwort: @(cfg.HasBindPassword ? "gesetzt" : "nicht gesetzt")
                             </p>
                         </div>
                         <div class="auth-flex auth-items-center auth-gap-2 auth-shrink-0">
-                            <button style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:6px;padding:0.375rem 0.75rem;font-size:0.8125rem;cursor:pointer;font-family:inherit;" @onclick="() => StartEdit(cfg)">
+                            <button class="btn-ghost" style="height:2rem;padding:0 0.75rem;font-size:0.8125rem;" @onclick="() => StartEdit(cfg)">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;border-radius:6px;padding:0.375rem 0.75rem;font-size:0.8125rem;cursor:pointer;font-family:inherit;" @onclick="() => ConfirmDelete(cfg)">
+                            <button class="btn-ghost" style="height:2rem;padding:0 0.75rem;font-size:0.8125rem;color:var(--danger);border-color:var(--danger-subtle);" @onclick="() => ConfirmDelete(cfg)">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -114,7 +114,7 @@
     @* ── Formular: Neu erstellen / Bearbeiten ───────────────────────────── *@
     @if (_showForm)
     {
-        <div class="auth-rounded-xl auth-border auth-p-6 auth-mb-6" style="background:var(--bg-surface);border-color:var(--border);">
+        <div class="card-surface auth-mb-6">
             <h2 class="auth-text-lg auth-font-semibold auth-mb-5" style="color:var(--text-primary);">
                 @(_editingId != null ? "LDAP-Konfiguration bearbeiten" : "Neue LDAP-Konfiguration")
             </h2>
@@ -122,77 +122,79 @@
             <div class="auth-grid auth-grid-cols-1 sm:auth-grid-cols-2 auth-gap-4">
 
                 <div class="auth-mb-4 sm:auth-col-span-2">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">E-Mail-Domain <span class="auth-text-red-500">*</span></label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.Domain" placeholder="z.B. company.com" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">E-Mail-Domain <span style="color:var(--danger);">*</span></label>
+                    <input class="input-field" @bind="_form.Domain" placeholder="z.B. company.com" />
                     <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">Benutzer mit dieser E-Mail-Domain werden über LDAP authentifiziert.</p>
                 </div>
 
                 <div class="auth-mb-4">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">LDAP-Server (Host) <span class="auth-text-red-500">*</span></label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.Host" placeholder="dc01.company.com" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">LDAP-Server (Host) <span style="color:var(--danger);">*</span></label>
+                    <input class="input-field" @bind="_form.Host" placeholder="dc01.company.com" />
                 </div>
 
                 <div class="auth-mb-4">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Port</label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" type="number" @bind="_form.Port" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">Port</label>
+                    <input class="input-field" type="number" @bind="_form.Port" />
                 </div>
 
                 <div class="auth-mb-4 sm:auth-col-span-2">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Base DN <span class="auth-text-red-500">*</span></label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.BaseDn" placeholder="DC=company,DC=com" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">Base DN <span style="color:var(--danger);">*</span></label>
+                    <input class="input-field" @bind="_form.BaseDn" placeholder="DC=company,DC=com" />
                 </div>
 
                 <div class="auth-mb-4 sm:auth-col-span-2">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Bind DN (Service-Account) <span class="auth-text-red-500">*</span></label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.BindDn" placeholder="CN=ldap-service,OU=ServiceAccounts,DC=company,DC=com" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">Bind DN (Service-Account) <span style="color:var(--danger);">*</span></label>
+                    <input class="input-field" @bind="_form.BindDn" placeholder="CN=ldap-service,OU=ServiceAccounts,DC=company,DC=com" />
                 </div>
 
                 <div class="auth-mb-4 sm:auth-col-span-2">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">
                         Bind-Passwort @(_editingId != null ? "(leer lassen = bestehendes Passwort beibehalten)" : "")
-                        @if (_editingId == null) { <span class="auth-text-red-500">*</span> }
+                        @if (_editingId == null) { <span style="color:var(--danger);">*</span> }
                     </label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" type="password" @bind="_form.BindPassword" autocomplete="new-password" />
+                    <input class="input-field" type="password" @bind="_form.BindPassword" autocomplete="new-password" />
                 </div>
 
                 <div class="auth-mb-4 sm:auth-col-span-2">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Suchfilter</label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.SearchFilter" placeholder="(&(objectClass=user)(mail={0}))" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">Suchfilter</label>
+                    <input class="input-field" @bind="_form.SearchFilter" placeholder="(&(objectClass=user)(mail={0}))" />
                     <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">{0} wird durch die E-Mail-Adresse ersetzt.</p>
                 </div>
 
                 <div class="auth-mb-4">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">E-Mail-Attribut</label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.EmailAttribute" placeholder="mail" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">E-Mail-Attribut</label>
+                    <input class="input-field" @bind="_form.EmailAttribute" placeholder="mail" />
                 </div>
 
                 <div class="auth-mb-4">
-                    <label style="display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-bottom:0.375rem;">Anzeigename-Attribut</label>
-                    <input style="width:100%;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;padding:0.625rem 0.875rem;font-size:0.875rem;color:var(--text-primary);outline:none;box-sizing:border-box;font-family:inherit;" @bind="_form.DisplayNameAttribute" placeholder="displayName" />
+                    <label class="label-caption" style="display:block;margin-bottom:0.375rem;">Anzeigename-Attribut</label>
+                    <input class="input-field" @bind="_form.DisplayNameAttribute" placeholder="displayName" />
                 </div>
 
-                <div class="auth-mb-4 auth-flex auth-items-center auth-gap-3">
-                    <input type="checkbox" id="useSsl" @bind="_form.UseSsl" style="width:1rem;height:1rem;accent-color:var(--text-primary);" />
-                    <label for="useSsl" style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0;cursor:pointer;">SSL/TLS verwenden (LDAPS, Port 636)</label>
-                </div>
+                <label class="switch auth-mb-4">
+                    <input type="checkbox" @bind="_form.UseSsl" />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-txt">SSL/TLS verwenden (LDAPS, Port 636)</span>
+                </label>
 
-                <div class="auth-mb-4 auth-flex auth-items-center auth-gap-3">
-                    <input type="checkbox" id="isEnabled" @bind="_form.IsEnabled" style="width:1rem;height:1rem;accent-color:var(--text-primary);" />
-                    <label for="isEnabled" style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0;cursor:pointer;">Konfiguration aktiv</label>
-                </div>
+                <label class="switch auth-mb-4">
+                    <input type="checkbox" @bind="_form.IsEnabled" />
+                    <span class="switch-ui" aria-hidden="true"></span>
+                    <span class="switch-txt">Konfiguration aktiv</span>
+                </label>
             </div>
 
             @* Test-Verbindung *@
             <div class="auth-mt-5 auth-pt-5 auth-border-t" style="border-color:var(--border);">
                 <div class="auth-flex auth-items-center auth-gap-3 auth-flex-wrap">
-                    <button style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="TestConnection" disabled="@_isTestingConnection">
+                    <button class="btn-ghost" @onclick="TestConnection" disabled="@_isTestingConnection">
                         @if (_isTestingConnection)
                         {
-                            <i class="fa-solid fa-spinner fa-spin auth-mr-1"></i>
+                            <i class="fa-solid fa-spinner fa-spin"></i>
                         }
                         else
                         {
-                            <i class="fa-solid fa-plug auth-mr-1"></i>
+                            <i class="fa-solid fa-plug"></i>
                         }
                         Verbindung testen
                     </button>
@@ -201,14 +203,14 @@
                     {
                         @if (_testResult.Success)
                         {
-                            <span class="auth-text-sm auth-text-green-600 dark:auth-text-green-400">
+                            <span class="auth-text-sm" style="color:var(--success);">
                                 <i class="fa-solid fa-circle-check auth-mr-1"></i>
                                 Verbindung erfolgreich (@(_testResult.EntryCount ?? 0) Einträge gefunden)
                             </span>
                         }
                         else
                         {
-                            <span class="auth-text-sm auth-text-red-600 dark:auth-text-red-400">
+                            <span class="auth-text-sm" style="color:var(--danger);">
                                 <i class="fa-solid fa-circle-xmark auth-mr-1"></i>
                                 @_testResult.ErrorMessage
                             </span>
@@ -218,11 +220,11 @@
             </div>
 
             <div class="auth-flex auth-justify-end auth-gap-3 auth-mt-6">
-                <button style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="CancelForm">Abbrechen</button>
-                <button style="background:var(--text-primary);color:var(--bg);border:none;border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="SaveConfiguration" disabled="@_isSaving">
+                <button class="btn-ghost" @onclick="CancelForm">Abbrechen</button>
+                <button class="btn-primary" @onclick="SaveConfiguration" disabled="@_isSaving">
                     @if (_isSaving)
                     {
-                        <i class="fa-solid fa-spinner fa-spin auth-mr-1"></i>
+                        <i class="fa-solid fa-spinner fa-spin"></i>
                     }
                     @(_editingId != null ? "Speichern" : "Erstellen")
                 </button>
@@ -232,8 +234,8 @@
 
     @if (!_showForm)
     {
-        <button style="background:var(--text-primary);color:var(--bg);border:none;border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="StartCreate">
-            <i class="fa-solid fa-plus auth-mr-2"></i>
+        <button class="btn-primary" @onclick="StartCreate">
+            <i class="fa-solid fa-plus"></i>
             LDAP-Konfiguration hinzufügen
         </button>
     }
@@ -241,17 +243,17 @@
     @* ── Löschen-Bestätigung ─────────────────────────────────────────────── *@
     @if (_confirmDeleteId != null)
     {
-        <div class="auth-fixed auth-inset-0 auth-z-50 auth-flex auth-items-center auth-justify-center auth-bg-black/50">
-            <div class="auth-rounded-2xl auth-shadow-xl auth-p-6 auth-max-w-sm auth-w-full auth-mx-4" style="background:var(--bg-surface);">
-                <h3 class="auth-text-lg auth-font-semibold auth-mb-2" style="color:var(--text-primary);">LDAP-Konfiguration löschen?</h3>
+        <div class="auth-fixed auth-inset-0 auth-z-50 auth-flex auth-items-center auth-justify-center auth-px-4" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);">
+            <div class="card-surface auth-max-w-sm auth-w-full">
+                <h3 class="heading-3" style="font-size:1.05rem;margin-bottom:0.5rem;">LDAP-Konfiguration löschen?</h3>
                 <p class="auth-text-sm auth-mb-6" style="color:var(--text-secondary);">
                     Domain: <strong>@_confirmDeleteDomain</strong><br />
                     Bereits JIT-provisionierte Benutzer bleiben erhalten, können sich aber nicht mehr per LDAP anmelden.
                 </p>
                 <div class="auth-flex auth-gap-3 auth-justify-end">
-                    <button style="background:transparent;border:1px solid var(--border);color:var(--text-primary);border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="() => _confirmDeleteId = null">Abbrechen</button>
-                    <button style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;border-radius:8px;padding:0.5rem 1rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;" @onclick="DeleteConfiguration" disabled="@_isSaving">
-                        @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin auth-mr-1"></i> }
+                    <button class="btn-ghost" @onclick="() => _confirmDeleteId = null">Abbrechen</button>
+                    <button class="btn-primary" style="background:var(--danger);color:#fff;" @onclick="DeleteConfiguration" disabled="@_isSaving">
+                        @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin"></i> }
                         Löschen
                     </button>
                 </div>
