@@ -1,77 +1,127 @@
 /* authify-theme.css
  *
- * Mycelis-compatible design tokens.
+ * Mycelis design tokens — dark navy/near-black neutrals, one restrained sage
+ * accent, small sharp radii, no glow/pill shapes (see Mycelis /redesign).
  * Dark mode is DEFAULT. Light mode via [data-theme="light"].
  *
- * The --auth-primary-NNN-rgb variables are kept for ProfileLayout
- * Tailwind utility classes (auth-bg-primary-*, auth-text-primary-*).
- * All other theming now uses the Mycelis CSS variable set so that
- * Authify pages are visually consistent with the Mycelis dashboard.
+ * When Authify pages render inside the Mycelis host app, Mycelis's own
+ * app.min.css loads after this file and redeclares the same custom property
+ * names, so its values win the cascade there. This file is what applies
+ * when Authify runs standalone — it must match exactly so the two never
+ * visually diverge.
  */
 
 /* ── Dark Mode (default) ──────────────────────────────────────────── */
 :root {
-    /* Mycelis design tokens */
-    --bg:             #101214;
+    --bg:              #101014;
+    --bg-surface:      #18181F;
+    --bg-elevated:     #232330;
+    --text-primary:    #F5F5F2;
+    --text-secondary:  #A5A5B2;
+    --text-muted:      #6D6D79;
+    --accent:          #7FA98C;
+    --accent-ink:      #0D1410;
+    --accent-rgb:      127, 169, 140;
+    --accent-subtle:   rgba(127, 169, 140, 0.12);
+    --accent-2:        #C99A5B;
+    --accent-2-rgb:    201, 154, 91;
+    --border:          rgba(255, 255, 255, 0.12);
+    --outline:         rgba(255, 255, 255, 0.24);
+    --bg-rgb:          16, 16, 20;
     --monochrome-logo-filter: invert(1) brightness(1.15);
-    --bg-surface:     #171a1f;
-    --bg-elevated:    #1f242b;
-    --text-primary:   #f5f7fb;
-    --text-secondary: #c2c9d4;
-    --text-muted:     #9aa3b2;
-    --accent:         #f5f7fb;
-    --accent-subtle:  rgba(245, 247, 251, 0.1);
-    --border:         rgba(255, 255, 255, 0.16);
-    --outline:        rgba(255, 255, 255, 0.28);
-    --error:          #ef4444;
-    --success:        #10b981;
 
-    /* Primary palette – RGB triplets for Tailwind utility classes
-       (auth-bg-primary-600, auth-text-primary-400, etc.)           */
-    --auth-primary-50-rgb:  238 242 255;
-    --auth-primary-100-rgb: 224 231 255;
-    --auth-primary-200-rgb: 199 210 254;
-    --auth-primary-300-rgb: 165 180 252;
-    --auth-primary-400-rgb: 129 140 248;
-    --auth-primary-500-rgb: 99  102 241;
-    --auth-primary-600-rgb: 79  70  229;
-    --auth-primary-700-rgb: 67  56  202;
-    --auth-primary-800-rgb: 55  48  163;
-    --auth-primary-900-rgb: 49  46  129;
-    --auth-primary-950-rgb: 30  27  75;
+    --radius-btn:      6px;
+    --radius-sm:       6px;
+    --radius-md:       8px;
+    --radius-lg:       14px;
+    --shadow-card:     0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.45);
+
+    --accent-primary:  var(--accent);
+    --bg-secondary:    var(--bg-surface);
+    --bg-tertiary:     var(--bg-elevated);
+    --border-subtle:   var(--border);
+    --error:           #C17361;
+    --success:         #6FA97A;
+    --success-subtle:  rgba(111, 169, 122, 0.12);
+    --warning:         #C99A5B;
+    --warning-subtle:  rgba(201, 154, 91, 0.12);
+    --info:            #3b82f6;
+    --info-subtle:     rgba(59, 130, 246, 0.12);
+    --danger:          #C17361;
+    --danger-subtle:   rgba(193, 115, 97, 0.12);
 }
 
 /* ── Light Mode ───────────────────────────────────────────────────── */
 [data-theme="light"] {
-    --bg:             #F5F5F2;
+    --bg:              #FAFAF7;
+    --bg-surface:      #FFFFFF;
+    --bg-elevated:     #EFEEE8;
+    --text-primary:    #15151C;
+    --text-secondary:  #5C5C68;
+    --text-muted:      #8D8C97;
+    --accent:          #4B7A5D;
+    --accent-ink:      #FAFAF7;
+    --accent-rgb:      75, 122, 93;
+    --accent-subtle:   rgba(75, 122, 93, 0.08);
+    --accent-2:        #93672E;
+    --accent-2-rgb:    147, 103, 46;
+    --border:          rgba(15, 15, 25, 0.12);
+    --outline:         rgba(15, 15, 25, 0.24);
+    --bg-rgb:          250, 250, 247;
     --monochrome-logo-filter: none;
-    --bg-surface:     #FFFFFF;
-    --bg-elevated:    #ECECEA;
-    --text-primary:   #0A0A0A;
-    --text-secondary: #666666;
-    --text-muted:     #AAAAAA;
-    --accent:         #0A0A0A;
-    --accent-subtle:  rgba(0, 0, 0, 0.04);
-    --border:         rgba(0, 0, 0, 0.08);
-    --outline:        rgba(0, 0, 0, 0.12);
-    --error:          #ef4444;
-    --success:        #10b981;
+
+    --shadow-card:     0 1px 2px rgba(20,20,30,.04), 0 12px 24px -16px rgba(20,20,30,.14);
+
+    --accent-primary:  var(--accent);
+    --bg-secondary:    var(--bg-surface);
+    --bg-tertiary:     var(--bg-elevated);
+    --border-subtle:   var(--border);
+    --error:           #A4483A;
+    --success:         #4B7A5D;
+    --success-subtle:  rgba(75, 122, 93, 0.1);
+    --warning:         #93672E;
+    --warning-subtle:  rgba(147, 103, 46, 0.1);
+    --info:            #3b82f6;
+    --info-subtle:     rgba(59, 130, 246, 0.12);
+    --danger:          #A4483A;
+    --danger-subtle:   rgba(164, 72, 58, 0.1);
 }
 
 /* ── System preference fallback ───────────────────────────────────── */
 @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
-        --bg:             #F5F5F2;
+        --bg:              #FAFAF7;
+        --bg-surface:      #FFFFFF;
+        --bg-elevated:     #EFEEE8;
+        --text-primary:    #15151C;
+        --text-secondary:  #5C5C68;
+        --text-muted:      #8D8C97;
+        --accent:          #4B7A5D;
+        --accent-ink:      #FAFAF7;
+        --accent-rgb:      75, 122, 93;
+        --accent-subtle:   rgba(75, 122, 93, 0.08);
+        --accent-2:        #93672E;
+        --accent-2-rgb:    147, 103, 46;
+        --border:          rgba(15, 15, 25, 0.12);
+        --outline:         rgba(15, 15, 25, 0.24);
+        --bg-rgb:          250, 250, 247;
         --monochrome-logo-filter: none;
-        --bg-surface:     #FFFFFF;
-        --bg-elevated:    #ECECEA;
-        --text-primary:   #0A0A0A;
-        --text-secondary: #666666;
-        --text-muted:     #AAAAAA;
-        --accent:         #0A0A0A;
-        --accent-subtle:  rgba(0, 0, 0, 0.04);
-        --border:         rgba(0, 0, 0, 0.08);
-        --outline:        rgba(0, 0, 0, 0.12);
+
+        --shadow-card:     0 1px 2px rgba(20,20,30,.04), 0 12px 24px -16px rgba(20,20,30,.14);
+
+        --accent-primary:  var(--accent);
+        --bg-secondary:    var(--bg-surface);
+        --bg-tertiary:     var(--bg-elevated);
+        --border-subtle:   var(--border);
+        --error:           #A4483A;
+        --success:         #4B7A5D;
+        --success-subtle:  rgba(75, 122, 93, 0.1);
+        --warning:         #93672E;
+        --warning-subtle:  rgba(147, 103, 46, 0.1);
+        --info:            #3b82f6;
+        --info-subtle:     rgba(59, 130, 246, 0.12);
+        --danger:          #A4483A;
+        --danger-subtle:   rgba(164, 72, 58, 0.1);
     }
 }
 
