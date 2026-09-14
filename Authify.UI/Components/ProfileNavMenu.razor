@@ -1,10 +1,13 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
 @using Authify.Core.Features
+@using Authify.UI.Services
+@implements IDisposable
 @inject IJSRuntime JS
 @inject TeamFeatureOptions TeamFeature
 @inject LdapFeatureOptions LdapFeature
 @inject ITeamDataService TeamDataService
+@inject TeamNavStateService TeamNavState
 
 <div class="sidebar-nav">
 <div class="auth-space-y-8">
@@ -72,6 +75,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await RefreshTeamStateAsync();
+        TeamNavState.OnChange += HandleTeamChanged;
+    }
+
+    private async Task RefreshTeamStateAsync()
+    {
         if (TeamFeature.IsEnabled)
         {
             try
@@ -88,6 +97,17 @@
                 // Ignorieren falls Service nicht verfügbar
             }
         }
+    }
+
+    private async void HandleTeamChanged()
+    {
+        await RefreshTeamStateAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TeamNavState.OnChange -= HandleTeamChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

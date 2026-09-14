@@ -25,7 +25,7 @@ public class NullLdapService : ILdapService
     public Task<OperationResult> DeleteConfigurationAsync(string configId, string teamId)
         => Task.FromResult(OperationResult.Fail("LDAP-Feature ist nicht aktiviert."));
 
-    public Task<LdapTestConnectionResult> TestConnectionAsync(LdapTestConnectionRequest request)
+    public Task<LdapTestConnectionResult> TestConnectionAsync(string teamId, LdapTestConnectionRequest request)
         => Task.FromResult(LdapTestConnectionResult.Fail("LDAP-Feature ist nicht aktiviert."));
 
     public Task<(bool Success, string? DisplayName, string? ErrorMessage)> AuthenticateAsync(

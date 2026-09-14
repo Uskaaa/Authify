@@ -37,8 +37,10 @@ public interface ILdapService
     /// <summary>
     /// Testet ob eine Verbindung zum LDAP-Server mit den angegebenen Credentials hergestellt werden kann.
     /// Verwendet das gespeicherte Passwort wenn ExistingConfigId gesetzt und BindPassword leer.
+    /// ExistingConfigId wird auf das übergebene Team beschränkt, damit kein Team-Admin
+    /// das gespeicherte Bind-Passwort einer fremden Team-Konfiguration abgreifen kann.
     /// </summary>
-    Task<LdapTestConnectionResult> TestConnectionAsync(LdapTestConnectionRequest request);
+    Task<LdapTestConnectionResult> TestConnectionAsync(string teamId, LdapTestConnectionRequest request);
 
     /// <summary>
     /// Authentifiziert einen Benutzer gegen den LDAP-Server (Search-Bind-Pattern).

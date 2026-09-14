@@ -41,6 +41,9 @@ public static class ServiceCollectionExtensions
         // Fallback NullLdapDataService – wird durch AddAuthifyWasmLdap / AddAuthifyServerLdap ersetzt.
         services.TryAddScoped<ILdapDataService, NullLdapDataService>();
 
+        // Benachrichtigt die Sidebar-Navigation über Team-Änderungen (live, ohne Reload).
+        services.TryAddScoped<TeamNavStateService>();
+
         return services;
     }
 }

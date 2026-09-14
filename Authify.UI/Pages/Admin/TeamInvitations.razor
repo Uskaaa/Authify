@@ -24,7 +24,7 @@
             <h1 class="heading-3" style="font-size:1.5rem;">Einladungslinks</h1>
             <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">Erstelle und verwalte Einladungslinks für dein Team</p>
         </div>
-        <button @onclick="() => _showCreateForm = !_showCreateForm" class="btn-primary">
+        <button @onclick="() => _showCreateForm = true" class="btn-primary">
             <i class="fa-solid fa-plus"></i>
             Einladung erstellen
         </button>
@@ -42,81 +42,6 @@
             </a>
         </div>
         return;
-    }
-
-    <!-- Formular: Einladung erstellen -->
-    @if (_showCreateForm)
-    {
-        <div class="card-surface auth-mb-6">
-            <h3 class="auth-text-base auth-font-semibold auth-mb-4" style="color:var(--text-primary);">Neue Einladung erstellen</h3>
-            <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateInvitationForm">
-                <DataAnnotationsValidator />
-                <div class="auth-space-y-4">
-
-                    <div class="auth-space-y-1.5">
-                        <label class="label-caption">
-                            E-Mail (optional – für persönliche Einladungen)
-                        </label>
-                        <InputText @bind-Value="_createRequest.Email" type="email" placeholder="max@unternehmen.de" class="input-field" />
-                        @if (!string.IsNullOrWhiteSpace(_createRequest.Email))
-                        {
-                            <div class="auth-flex auth-items-center auth-gap-1.5 auth-text-xs auth-mt-1" style="color:var(--accent);">
-                                <i class="fa-solid fa-paper-plane"></i>
-                                <span>Der Einladungslink wird direkt an diese E-Mail-Adresse gesendet. Der Link kann nur einmal verwendet werden.</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <p class="auth-text-xs" style="color:var(--text-secondary);">Leer lassen für einen allgemeinen Link, den du selbst weitergibst.</p>
-                        }
-                    </div>
-
-                    @if (string.IsNullOrWhiteSpace(_createRequest.Email))
-                    {
-                        <div class="auth-space-y-1.5">
-                            <label class="label-caption">
-                                Maximale Verwendungen
-                            </label>
-                            <div class="auth-flex auth-items-center auth-gap-3">
-                                <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
-                                    <input type="checkbox" @bind="_unlimited" style="accent-color:var(--accent);" />
-                                    <span class="auth-text-sm" style="color:var(--text-secondary);">Unbegrenzt</span>
-                                </label>
-                                @if (!_unlimited)
-                                {
-                                    <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10" class="input-field" style="width:8rem;" />
-                                }
-                            </div>
-                            <p class="auth-text-xs" style="color:var(--text-muted);">
-                                Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
-                            </p>
-                        </div>
-                    }
-
-                    <div class="auth-space-y-1.5">
-                        <label class="label-caption">
-                            Gültig für (Tage)
-                        </label>
-                        <InputNumber @bind-Value="_createRequest.ExpirationDays" min="1" max="365" placeholder="z.B. 7" class="input-field" style="width:8rem;" />
-                        <p class="auth-text-xs" style="color:var(--text-muted);">Standard: 7 Tage. Leer lassen für kein Ablaufdatum.</p>
-                    </div>
-                </div>
-
-                <div class="auth-flex auth-gap-3 auth-mt-5">
-                    <button type="submit" disabled="@_isSaving" class="btn-primary">
-                        @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin"></i> }
-                        @(string.IsNullOrWhiteSpace(_createRequest.Email) ? "Einladungslink erstellen" : "Einladung senden")
-                    </button>
-                    <button type="button" @onclick="() => { _showCreateForm = false; _errorMessage = null; }" class="btn-ghost">
-                        Abbrechen
-                    </button>
-                </div>
-                @if (!string.IsNullOrEmpty(_errorMessage))
-                {
-                    <div class="alert alert-error auth-mt-3">@_errorMessage</div>
-                }
-            </EditForm>
-        </div>
     }
 
     <!-- Frisch erstellter Link-Banner -->
@@ -227,6 +152,90 @@
     }
 </div>
 
+@if (_showCreateForm)
+{
+    <div class="auth-fixed auth-inset-0 auth-z-[9999] auth-overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-p-4">
+            <div class="auth-fixed auth-inset-0 auth-transition-opacity" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);" @onclick="CloseCreateForm"></div>
+
+            <div class="auth-relative auth-max-w-lg auth-w-full card-surface" style="padding:0;">
+                <div class="auth-px-6 auth-py-4 auth-border-b auth-flex auth-justify-between auth-items-center" style="background:var(--bg-elevated);border-color:var(--border);">
+                    <h3 class="auth-text-lg auth-font-bold" style="color:var(--text-primary);">Neue Einladung erstellen</h3>
+                    <button type="button" @onclick="CloseCreateForm" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;">
+                        <i class="fa-solid fa-xmark auth-text-lg"></i>
+                    </button>
+                </div>
+                <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateInvitationForm">
+                    <DataAnnotationsValidator />
+                    <div class="auth-px-6 auth-py-6">
+                        <div class="auth-space-y-4">
+
+                            <div class="auth-space-y-1.5">
+                                <label class="label-caption">
+                                    E-Mail (optional – für persönliche Einladungen)
+                                </label>
+                                <InputText @bind-Value="_createRequest.Email" type="email" placeholder="max@unternehmen.de" class="input-field" />
+                                @if (!string.IsNullOrWhiteSpace(_createRequest.Email))
+                                {
+                                    <div class="auth-flex auth-items-center auth-gap-1.5 auth-text-xs auth-mt-1" style="color:var(--accent);">
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                        <span>Der Einladungslink wird direkt an diese E-Mail-Adresse gesendet. Der Link kann nur einmal verwendet werden.</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="auth-text-xs" style="color:var(--text-secondary);">Leer lassen für einen allgemeinen Link, den du selbst weitergibst.</p>
+                                }
+                            </div>
+
+                            @if (string.IsNullOrWhiteSpace(_createRequest.Email))
+                            {
+                                <div class="auth-space-y-1.5">
+                                    <label class="label-caption">
+                                        Maximale Verwendungen
+                                    </label>
+                                    <div class="auth-flex auth-items-center auth-gap-3">
+                                        <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
+                                            <input type="checkbox" @bind="_unlimited" style="accent-color:var(--accent);" />
+                                            <span class="auth-text-sm" style="color:var(--text-secondary);">Unbegrenzt</span>
+                                        </label>
+                                        @if (!_unlimited)
+                                        {
+                                            <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10" class="input-field" style="width:8rem;" />
+                                        }
+                                    </div>
+                                    <p class="auth-text-xs" style="color:var(--text-muted);">
+                                        Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
+                                    </p>
+                                </div>
+                            }
+
+                            <div class="auth-space-y-1.5">
+                                <label class="label-caption">
+                                    Gültig für (Tage)
+                                </label>
+                                <InputNumber @bind-Value="_createRequest.ExpirationDays" min="1" max="365" placeholder="z.B. 7" class="input-field" style="width:8rem;" />
+                                <p class="auth-text-xs" style="color:var(--text-muted);">Standard: 7 Tage. Leer lassen für kein Ablaufdatum.</p>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(_errorMessage))
+                        {
+                            <div class="alert alert-error auth-mt-4">@_errorMessage</div>
+                        }
+                    </div>
+                    <div class="auth-px-6 auth-py-4 auth-border-t auth-flex auth-justify-end auth-gap-3" style="background:var(--bg-elevated);border-color:var(--border);">
+                        <button type="button" @onclick="CloseCreateForm" class="btn-ghost">Abbrechen</button>
+                        <button type="submit" disabled="@_isSaving" class="btn-primary">
+                            @if (_isSaving) { <i class="fa-solid fa-spinner fa-spin"></i> }
+                            @(string.IsNullOrWhiteSpace(_createRequest.Email) ? "Einladungslink erstellen" : "Einladung senden")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<TeamInvitationDto> _invitations = [];
     private bool _isLoading = true;
@@ -302,6 +311,12 @@
         {
             _errorMessage = result.ErrorMessage;
         }
+    }
+
+    private void CloseCreateForm()
+    {
+        _showCreateForm = false;
+        _errorMessage = null;
     }
 
     private async Task HandleRevoke(string invitationId)

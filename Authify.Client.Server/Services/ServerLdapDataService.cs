@@ -67,6 +67,6 @@ public class ServerLdapDataService : ILdapDataService
     {
         var teamId = await GetAdminTeamIdAsync();
         if (teamId == null) return LdapTestConnectionResult.Fail("Kein Team oder keine Admin-Rechte.");
-        return await _ldapService.TestConnectionAsync(request);
+        return await _ldapService.TestConnectionAsync(teamId, request);
     }
 }

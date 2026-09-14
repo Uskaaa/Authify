@@ -89,7 +89,7 @@ public class LdapController : ControllerBase
         var teamId = await GetAdminTeamIdAsync();
         if (teamId == null) return Forbid();
 
-        var result = await _ldapService.TestConnectionAsync(request);
+        var result = await _ldapService.TestConnectionAsync(teamId, request);
         return Ok(result);
     }
 

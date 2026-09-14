@@ -3,6 +3,7 @@
 @using Authify.Core.Features
 @using Authify.Core.Interfaces
 @using Authify.Core.Models.Teams
+@using Authify.UI.Services
 
 @attribute [Authorize]
 @layout ProfileLayout
@@ -10,6 +11,7 @@
 @inject ITeamDataService TeamDataService
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
+@inject TeamNavStateService TeamNavState
 
 <div class="auth-space-y-6">
 
@@ -187,6 +189,7 @@
         {
             _showCreateForm = false;
             await LoadTeamAsync();
+            TeamNavState.NotifyTeamChanged();
         }
         else
         {
@@ -229,6 +232,7 @@
         {
             _team = null;
             _showDeleteConfirm = false;
+            TeamNavState.NotifyTeamChanged();
         }
         else
         {

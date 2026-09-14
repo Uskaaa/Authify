@@ -144,7 +144,7 @@ public class LdapService<TUser> : ILdapService
 
     // ── LDAP Test-Verbindung ─────────────────────────────────────────────────
 
-    public async Task<LdapTestConnectionResult> TestConnectionAsync(LdapTestConnectionRequest request)
+    public async Task<LdapTestConnectionResult> TestConnectionAsync(string teamId, LdapTestConnectionRequest request)
     {
         string bindPassword;
 
@@ -155,7 +155,7 @@ public class LdapService<TUser> : ILdapService
         else if (!string.IsNullOrEmpty(request.ExistingConfigId))
         {
             var existing = await _db.LdapConfigurations
-                .FirstOrDefaultAsync(c => c.Id == request.ExistingConfigId);
+                .FirstOrDefaultAsync(c => c.Id == request.ExistingConfigId && c.TeamId == teamId);
             if (existing == null)
                 return LdapTestConnectionResult.Fail("Konfiguration nicht gefunden.");
             try { bindPassword = _protector.Unprotect(existing.BindPasswordEncrypted); }
@@ -166,37 +166,40 @@ public class LdapService<TUser> : ILdapService
             return LdapTestConnectionResult.Fail("Kein BindPassword angegeben.");
         }
 
-        try
+        return await Task.Run(() =>
         {
-            using var conn = new LdapConnection { SecureSocketLayer = request.UseSsl };
-            conn.Connect(request.Host, request.Port);
-            conn.Bind(request.BindDn, bindPassword);
-
-            // Einfache Suche um zu prüfen ob BaseDn erreichbar
-            var results = conn.Search(
-                request.BaseDn,
-                LdapConnection.ScopeSub,
-                "(objectClass=*)",
-                new[] { "dn" },
-                typesOnly: false);
-
-            int count = 0;
-            while (results.HasMore() && count < 5)
+            try
             {
-                try { results.Next(); count++; }
-                catch (LdapReferralException) { break; }
-            }
+                using var conn = new LdapConnection { SecureSocketLayer = request.UseSsl };
+                conn.Connect(request.Host, request.Port);
+                conn.Bind(request.BindDn, bindPassword);
 
-            return LdapTestConnectionResult.Ok(count);
-        }
-        catch (LdapException ex)
-        {
-            return LdapTestConnectionResult.Fail($"LDAP-Fehler ({ex.ResultCode}): {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            return LdapTestConnectionResult.Fail($"Verbindungsfehler: {ex.Message}");
-        }
+                // Einfache Suche um zu prüfen ob BaseDn erreichbar
+                var results = conn.Search(
+                    request.BaseDn,
+                    LdapConnection.ScopeSub,
+                    "(objectClass=*)",
+                    new[] { "dn" },
+                    typesOnly: false);
+
+                int count = 0;
+                while (results.HasMore() && count < 5)
+                {
+                    try { results.Next(); count++; }
+                    catch (LdapReferralException) { break; }
+                }
+
+                return LdapTestConnectionResult.Ok(count);
+            }
+            catch (LdapException ex)
+            {
+                return LdapTestConnectionResult.Fail($"LDAP-Fehler ({ex.ResultCode}): {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return LdapTestConnectionResult.Fail($"Verbindungsfehler: {ex.Message}");
+            }
+        });
     }
 
     // ── LDAP Authentifizierung (Search-Bind-Pattern) ─────────────────────────
