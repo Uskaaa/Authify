@@ -12,13 +12,13 @@
 
 <RedirectToHomeIfAuthenticated RedirectUrl="@NavOptions.PostLoginUrl" />
 
-<div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'DM Sans',system-ui,sans-serif;padding:2rem 1rem;">
+<div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:2rem 1rem;">
     <div style="width:min(420px,100%);">
 
-        <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:2rem;">
+        <div class="card-surface">
 
             <div style="margin-bottom:1.75rem;">
-                <h1 style="font-family:'Syne',system-ui,sans-serif;font-weight:400;font-size:1.5rem;color:var(--text-primary);margin:0 0 0.25rem;">@Loc["Title_VerifyEmail"]</h1>
+                <h1 class="heading-3" style="font-size:1.5rem;margin:0 0 0.25rem;">@Loc["Title_VerifyEmail"]</h1>
                 <p style="font-size:0.875rem;color:var(--text-secondary);margin:0;">@Loc["Subtitle_EnterCode"]</p>
             </div>
 
@@ -30,16 +30,13 @@
                     <div style="display:flex;gap:0.5rem;justify-content:center;">
                         @for (int i = 0; i < 6; i++)
                         {
-                            <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                                   style="width:3rem;height:3.5rem;text-align:center;font-size:1.5rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);outline:none;font-family:inherit;" />
+                            <input class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" />
                         }
                     </div>
 
                     @if (_error)
                     {
-                        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;text-align:center;">
-                            @Loc["Error_VerificationFailed"]
-                        </div>
+                        <div class="alert alert-error" style="justify-content:center;">@Loc["Error_VerificationFailed"]</div>
                     }
 
                     <div style="text-align:center;font-size:0.875rem;color:var(--text-secondary);">
@@ -51,17 +48,16 @@
                         {
                             <span>@Loc["Text_NoCode"] </span>
                             <button type="button" @onclick="ResendOtp" disabled="@_isResending"
-                                    style="background:none;border:none;color:var(--text-primary);font-size:0.875rem;font-weight:500;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;">
+                                    style="background:none;border:none;color:var(--accent);font-size:0.875rem;font-weight:500;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline;">
                                 @(_isResending ? Loc["Btn_Sending"] : Loc["Btn_Resend"])
                             </button>
                         }
                     </div>
 
-                    <button type="submit" disabled="@(_isVerifying || OtpCode?.Length != 6)"
-                            style="width:100%;background:var(--text-primary);color:var(--bg);border:none;border-radius:100px;padding:0.75rem;font-size:0.875rem;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+                    <button type="submit" disabled="@(_isVerifying || OtpCode?.Length != 6)" class="btn-primary" style="width:100%;">
                         @if (_isVerifying)
                         {
-                            <i class="fas fa-spinner fa-spin"></i>
+                            <i class="fa-solid fa-spinner fa-spin"></i>
                         }
                         <span>@(_isVerifying ? Loc["Btn_Verifying"] : Loc["Btn_Verify"])</span>
                     </button>
