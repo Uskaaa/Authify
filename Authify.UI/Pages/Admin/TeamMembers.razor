@@ -19,7 +19,7 @@
         return;
     }
 
-    <div class="auth-flex auth-items-center auth-justify-between auth-mb-8">
+    <div class="auth-flex auth-items-center auth-justify-between auth-mb-8 auth-flex-wrap auth-gap-3">
         <div>
             <h1 class="heading-3" style="font-size:1.5rem;">Mitarbeiter</h1>
             <p class="auth-mt-1 auth-text-sm" style="color:var(--text-secondary);">Verwalte die Mitglieder deines Teams</p>
@@ -29,6 +29,15 @@
             Mitarbeiter hinzufügen
         </button>
     </div>
+
+    @if (_members.Count > 0)
+    {
+        <div class="auth-relative auth-w-full sm:auth-w-72 auth-mb-6">
+            <i class="fa-solid fa-search" style="position:absolute;left:0.875rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:0.7rem;pointer-events:none;"></i>
+            <input type="text" @bind="_memberSearch" @bind:event="oninput" class="input-field" style="width:100%;padding-left:2.25rem;"
+                   placeholder="Mitarbeiter suchen..." />
+        </div>
+    }
 
     @if (!_hasTeam)
     {
@@ -86,10 +95,17 @@
             <p class="auth-text-sm" style="color:var(--text-secondary);">Noch keine Mitarbeiter vorhanden.</p>
         </div>
     }
+    else if (!FilteredMembers.Any())
+    {
+        <div class="card-surface auth-text-center">
+            <i class="fa-solid fa-magnifying-glass auth-text-3xl auth-mb-3" style="color:var(--text-muted);"></i>
+            <p class="auth-text-sm" style="color:var(--text-secondary);">Keine Mitarbeiter gefunden.</p>
+        </div>
+    }
     else
     {
         <div class="card-surface" style="padding:0;overflow:hidden;">
-            @foreach (var member in _members)
+            @foreach (var member in FilteredMembers)
             {
                 <div class="auth-flex auth-items-center auth-justify-between auth-px-5 auth-py-4 auth-border-b last:auth-border-b-0" style="border-color:var(--border);">
                     <div class="auth-flex auth-items-center auth-gap-3">
@@ -180,6 +196,14 @@
     private string? _errorMessage;
     private string? _successMessage;
     private string? _newMemberTempPassword; // nur befüllt wenn E-Mail-Versand fehlschlug
+    private string _memberSearch = "";
+
+    private IEnumerable<TeamMemberDto> FilteredMembers =>
+        string.IsNullOrWhiteSpace(_memberSearch)
+            ? _members
+            : _members.Where(m =>
+                m.FullName.Contains(_memberSearch, StringComparison.OrdinalIgnoreCase) ||
+                m.Email.Contains(_memberSearch, StringComparison.OrdinalIgnoreCase));
 
     private CreateTeamMemberRequest _createRequest = new();
 

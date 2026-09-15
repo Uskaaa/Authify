@@ -167,6 +167,7 @@
                 </div>
                 <EditForm Model="_createRequest" OnValidSubmit="HandleCreate" FormName="CreateInvitationForm">
                     <DataAnnotationsValidator />
+                    <ValidationSummary />
                     <div class="auth-px-6 auth-py-6">
                         <div class="auth-space-y-4">
 
@@ -195,14 +196,14 @@
                                         Maximale Verwendungen
                                     </label>
                                     <div class="auth-flex auth-items-center auth-gap-3">
-                                        <label class="auth-flex auth-items-center auth-gap-2 auth-cursor-pointer">
-                                            <input type="checkbox" @bind="_unlimited" style="accent-color:var(--accent);" />
-                                            <span class="auth-text-sm" style="color:var(--text-secondary);">Unbegrenzt</span>
+                                        <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10"
+                                                     disabled="@_unlimited" class="input-field"
+                                                     style="@("width:8rem;" + (_unlimited ? "opacity:.5;" : ""))" />
+                                        <label class="switch" style="margin:0;align-items:center;">
+                                            <input type="checkbox" @bind="_unlimited" />
+                                            <span class="switch-ui" aria-hidden="true"></span>
+                                            <span class="switch-txt" style="flex-direction:row;align-items:center;gap:0.4rem;">Unbegrenzt</span>
                                         </label>
-                                        @if (!_unlimited)
-                                        {
-                                            <InputNumber @bind-Value="_createRequest.MaxUses" min="1" placeholder="z.B. 10" class="input-field" style="width:8rem;" />
-                                        }
                                     </div>
                                     <p class="auth-text-xs" style="color:var(--text-muted);">
                                         Ohne Angabe oder "Unbegrenzt" kann der Link beliebig oft verwendet werden.
@@ -309,7 +310,9 @@
         }
         else
         {
-            _errorMessage = result.ErrorMessage;
+            _errorMessage = string.IsNullOrEmpty(result.ErrorMessage)
+                ? "Einladung konnte nicht erstellt werden."
+                : result.ErrorMessage;
         }
     }
 
