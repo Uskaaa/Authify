@@ -15,7 +15,7 @@ public class CreateInvitationRequest
     public int? MaxUses { get; set; }
 
     /// <summary>
-    /// Gültigkeit in Tagen. Standard: 7 Tage.
+    /// Gültigkeit in Tagen. Standard: 7 Tage. Null = kein Ablaufdatum.
     /// </summary>
-    public int ExpirationDays { get; set; } = 7;
+    public int? ExpirationDays { get; set; } = 7;
 }

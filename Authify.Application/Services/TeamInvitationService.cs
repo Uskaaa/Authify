@@ -44,7 +44,9 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
             Token = token,
             Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim().ToLowerInvariant(),
             MaxUses = request.MaxUses,
-            ExpiresAt = DateTime.UtcNow.AddDays(Math.Clamp(request.ExpirationDays, 1, 30)),
+            ExpiresAt = request.ExpirationDays.HasValue
+                ? DateTime.UtcNow.AddDays(Math.Clamp(request.ExpirationDays.Value, 1, 365))
+                : null,
             CreatedByUserId = adminUserId
         };
 
@@ -105,7 +107,7 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
         if (invitation.IsRevoked)
             return OperationResult<TeamInvitationDto>.Fail("Diese Einladung wurde widerrufen.");
 
-        if (DateTime.UtcNow > invitation.ExpiresAt)
+        if (invitation.ExpiresAt.HasValue && DateTime.UtcNow > invitation.ExpiresAt.Value)
             return OperationResult<TeamInvitationDto>.Fail("Diese Einladung ist abgelaufen.");
 
         if (invitation.MaxUses.HasValue && invitation.UsedCount >= invitation.MaxUses.Value)
@@ -126,7 +128,7 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
         if (invitation.IsRevoked)
             return OperationResult<string>.Fail("Diese Einladung wurde widerrufen.");
 
-        if (DateTime.UtcNow > invitation.ExpiresAt)
+        if (invitation.ExpiresAt.HasValue && DateTime.UtcNow > invitation.ExpiresAt.Value)
             return OperationResult<string>.Fail("Diese Einladung ist abgelaufen.");
 
         if (invitation.MaxUses.HasValue && invitation.UsedCount >= invitation.MaxUses.Value)

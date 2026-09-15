@@ -25,7 +25,11 @@ public class TeamInvitation
     public int UsedCount { get; set; } = 0;
     public bool IsRevoked { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime ExpiresAt { get; set; }
+
+    /// <summary>
+    /// Null = kein Ablaufdatum (Einladung läuft nie automatisch ab).
+    /// </summary>
+    public DateTime? ExpiresAt { get; set; }
     public string CreatedByUserId { get; set; } = string.Empty;
     public Team? Team { get; set; }
 }
