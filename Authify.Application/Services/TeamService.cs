@@ -59,6 +59,9 @@ public class TeamService<TUser> : ITeamService
 
         await _db.SaveChangesAsync();
 
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnTeamCreatedAsync(team.Id, adminUserId);
+
         return OperationResult<TeamDto>.Ok(MapToDto(team, 1));
     }
 
@@ -205,6 +208,9 @@ public class TeamService<TUser> : ITeamService
 
         _db.TeamMembers.Add(member);
         await _db.SaveChangesAsync();
+
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnMemberJoinedAsync(team.Id, user.Id);
 
         // Passwort-Reset-Link generieren und per E-Mail senden
         string? returnedPassword = null;

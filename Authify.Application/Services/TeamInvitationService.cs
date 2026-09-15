@@ -16,14 +16,17 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _options;
+    private readonly IEnumerable<ITeamLifecycleHook> _teamLifecycleHooks;
 
     public TeamInvitationService(ITeamDbContext db, UserManager<TUser> userManager,
-        IEmailSender emailSender, InfrastructureOptions options)
+        IEmailSender emailSender, InfrastructureOptions options,
+        IEnumerable<ITeamLifecycleHook> teamLifecycleHooks)
     {
         _db = db;
         _userManager = userManager;
         _emailSender = emailSender;
         _options = options;
+        _teamLifecycleHooks = teamLifecycleHooks;
     }
 
     public async Task<OperationResult<TeamInvitationDto>> CreateInvitationAsync(string adminUserId, CreateInvitationRequest request)
@@ -182,6 +185,9 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
         _db.TeamMembers.Add(member);
         invitation.UsedCount++;
         await _db.SaveChangesAsync();
+
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnMemberJoinedAsync(invitation.TeamId, user.Id);
 
         // Passwort-Reset-Token zurückgeben, damit der Nutzer direkt zu change-password weitergeleitet wird
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
