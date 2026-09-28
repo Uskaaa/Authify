@@ -1,0 +1,110 @@
+name: Publish NuGet packages
+
+# On every push to main: raise the patch version of every library, build,
+# push the packages to GitHub Packages and commit the new versions back.
+# This replaces bumping <Version> in each class library and pushing by hand.
+#
+# Needs the repo secret PERSONAL_ACCESS_TOKEN (same one Mycelis uses):
+# a token with write:packages / read:packages.
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '.idea/**'
+  workflow_dispatch:
+
+# Two runs must never bump/publish at the same time.
+concurrency:
+  group: publish-nuget
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # push the version bump commit back to main
+
+env:
+  NUGET_SOURCE: https://nuget.pkg.github.com/Uskaaa/index.json
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Authify.UI runs `npm run css:build` as part of its build.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Authify.UI npm dependencies
+        run: npm ci
+        working-directory: Authify.UI
+
+      # --- 1. VERSIONEN HOCHZÄHLEN (Patch, pro Projekt) ---
+      - name: Bump patch version of every library
+        run: |
+          for f in $(git ls-files '*.csproj'); do
+            grep -q '<Version>' "$f" || continue
+            before=$(grep -oE '<Version>[^<]*' "$f" | head -1)
+            # First <Version> only; byte-safe, so BOM and CRLF stay untouched.
+            perl -0777 -pi -e 's{<Version>(\d+)\.(\d+)\.(\d+)</Version>}{"<Version>$1.$2.".($3+1)."</Version>"}e' "$f"
+            after=$(grep -oE '<Version>[^<]*' "$f" | head -1)
+            echo "$f: ${before#<Version>} -> ${after#<Version>}"
+          done
+
+      # --- 2. BAUEN (GeneratePackageOnBuild erzeugt die .nupkg) ---
+      - name: Restore
+        run: dotnet restore Authify.sln
+
+      - name: Build
+        run: dotnet build Authify.sln -c Release --no-restore
+
+      # --- 3. PUSHEN ---
+      - name: Push packages to GitHub Packages
+        run: |
+          mapfile -t PKGS < <(find . -path '*/bin/Release/*.nupkg' ! -name '*.symbols.nupkg' | sort)
+          if [ "${#PKGS[@]}" -eq 0 ]; then
+            echo "No .nupkg files were produced" >&2
+            exit 1
+          fi
+
+          {
+            echo "### Published packages"
+            echo ""
+            echo "| Package | Version |"
+            echo "| --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for p in "${PKGS[@]}"; do
+            dotnet nuget push "$p" \
+              --source "$NUGET_SOURCE" \
+              --api-key "${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+              --skip-duplicate
+
+            name=$(basename "$p" .nupkg)
+            id=$(echo "$name" | sed -E 's/\.[0-9]+\.[0-9]+\.[0-9]+.*$//')
+            ver=${name#"$id".}
+            echo "| $id | $ver |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      # --- 4. NEUE VERSIONEN INS REPO ZURÜCKSCHREIBEN ---
+      - name: Commit and push the version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.csproj'
+          git commit -m "chore: bump package versions [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
