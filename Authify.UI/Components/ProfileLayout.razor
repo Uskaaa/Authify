@@ -1,7 +1,9 @@
 @using Microsoft.JSInterop
 @using Authify.UI.Models.Branding
+@using Authify.UI.Services
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject IEnumerable<IProfileMenuContributor> Contributors
 @inject IJSRuntime JS
 @implements IDisposable
 
@@ -83,13 +85,26 @@
 
     private void SetPageTitle()
     {
-        var path = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Trim('/').ToLowerInvariant();
+        var path = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var cut = path.IndexOfAny(new[] { '?', '#' });
+        if (cut >= 0) path = path[..cut];
+        path = path.Trim('/').ToLowerInvariant();
+
+        // Libraries that contribute pages (see IProfileMenuContributor) name them themselves.
+        var contributed = Contributors
+            .SelectMany(c => c.GetItems())
+            .FirstOrDefault(i => string.Equals(i.Href.Trim('/'), path, StringComparison.OrdinalIgnoreCase));
+        if (contributed != null)
+        {
+            _currentPageTitle = contributed.PageTitle ?? contributed.Title;
+            return;
+        }
+
         _currentPageTitle = path switch
         {
             "profile-settings" => "Profile",
             "security-settings" => "Security",
             "privacy-settings" => "Privacy",
-            "billing-overview" => "Billing",
             "admin/team-settings" => "Team-Account",
             "admin/team-members" => "Mitarbeiter",
             "admin/team-invitations" => "Einladungslinks",
