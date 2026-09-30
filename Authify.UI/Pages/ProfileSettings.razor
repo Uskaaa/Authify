@@ -3,9 +3,12 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
+@using System.Globalization
+@using Authify.UI.Models
 @layout ProfileLayout
 @inject IJSRuntime JS
 @inject IAuthifyDataService DataService
+@inject IUiCultureProvider CultureProvider
 @inject IStringLocalizer<ProfileSettings> Loc
 
 @if (_showNotification)
@@ -257,6 +260,31 @@
                     </div>
                 </div>
             </div>
+
+            @if (_supportedCultures.Count > 0)
+            {
+                <div class="auth-mb-8 card-surface" style="padding:0;overflow:hidden;">
+                    <div class="auth-px-6 auth-py-4 auth-border-b" style="border-color:var(--border);">
+                        <h3 class="auth-text-lg auth-font-bold"
+                            style="color:var(--text-primary);">@Loc["Title_Language"]</h3>
+                        <p class="auth-mt-1 auth-text-sm"
+                           style="color:var(--text-secondary);">@Loc["Text_LanguageDesc"]</p>
+                    </div>
+                    <div class="auth-px-6 auth-py-6">
+                        <div class="auth-inline-flex auth-flex-wrap" style="gap:0.25rem;padding:0.25rem;border-radius:0.625rem;background:var(--bg-elevated);border:1px solid var(--border);">
+                            @foreach (var culture in _supportedCultures)
+                            {
+                                var isActive = culture.Code == _selectedCulture;
+                                <button type="button" disabled="@_isSwitchingCulture"
+                                        @onclick="() => SelectCultureAsync(culture.Code)"
+                                        style="@($"padding:0.5rem 1.125rem;border-radius:0.4375rem;border:none;font-size:0.8125rem;font-weight:600;cursor:pointer;transition:background .15s,color .15s;background:{(isActive ? "var(--accent)" : "transparent")};color:{(isActive ? "#fff" : "var(--text-secondary)")};")">
+                                    @culture.DisplayName
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
         }
 
         <div id="crop-dialog" class="auth-fixed auth-inset-0 auth-z-[9999] auth-hidden" role="dialog" aria-modal="true">
@@ -319,6 +347,10 @@
     private DotNetObjectReference<ProfileSettings>? _objRef;
     private ElementReference _rootElement;
 
+    private IReadOnlyList<UiCulture> _supportedCultures = [];
+    private string _selectedCulture = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    private bool _isSwitchingCulture = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -340,8 +372,27 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
+        _supportedCultures = CultureProvider.GetSupportedCultures();
         await LoadProfileData();
         _isLoading = false;
+    }
+
+    private async Task SelectCultureAsync(string code)
+    {
+        if (code == _selectedCulture || _isSwitchingCulture)
+        {
+            return;
+        }
+
+        _isSwitchingCulture = true;
+        try
+        {
+            await CultureProvider.SetCultureAsync(code);
+        }
+        finally
+        {
+            _isSwitchingCulture = false;
+        }
     }
 
     private async Task LoadProfileData()

@@ -89,6 +89,8 @@
     <data name="Btn_Change" xml:space="preserve"><value>Ändern</value></data>
     <data name="Btn_Remove" xml:space="preserve"><value>Entfernen</value></data>
     <data name="Text_FileSpecs" xml:space="preserve"><value>JPG, GIF oder PNG. Max. 1MB.</value></data>
+    <data name="Title_Language" xml:space="preserve"><value>Sprache</value></data>
+    <data name="Text_LanguageDesc" xml:space="preserve"><value>Wähle die Sprache, die in der gesamten Anwendung verwendet wird.</value></data>
 
     <data name="Title_Crop" xml:space="preserve"><value>Profilbild zuschneiden</value></data>
     <data name="Text_CropInstruction" xml:space="preserve"><value>Verschieben Sie den Kreis und ziehen Sie am Rand, um die Größe zu ändern</value></data>
