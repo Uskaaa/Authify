@@ -93,6 +93,8 @@
     <data name="Method_Email_Desc" xml:space="preserve"><value>Erhalten Sie Codes per E-Mail</value></data>
     <data name="Method_SMS_Name" xml:space="preserve"><value>SMS Verifizierung</value></data>
     <data name="Method_SMS_Desc" xml:space="preserve"><value>Erhalten Sie Codes per SMS</value></data>
+    <data name="Method_Totp_Name" xml:space="preserve"><value>Authenticator-App</value></data>
+    <data name="Method_Totp_Desc" xml:space="preserve"><value>Codes aus einer App wie Google Authenticator erhalten</value></data>
 
     <data name="Msg_ConnectFailed" xml:space="preserve"><value>Verbindung zum externen Anbieter fehlgeschlagen</value></data>
     <data name="Msg_ProviderDisconnected" xml:space="preserve"><value>{0} getrennt.</value></data>
@@ -101,6 +103,17 @@
     <data name="Msg_AddFailed" xml:space="preserve"><value>Hinzufügen fehlgeschlagen.</value></data>
     <data name="Msg_MethodRemoved" xml:space="preserve"><value>2FA Methode entfernt.</value></data>
     <data name="Msg_RemoveFailed" xml:space="preserve"><value>Entfernen fehlgeschlagen.</value></data>
+
+    <data name="Dialog_TotpSetup_Title" xml:space="preserve"><value>Authenticator-App einrichten</value></data>
+    <data name="Text_TotpSetupInstructions" xml:space="preserve"><value>Scanne diesen QR-Code mit deiner Authenticator-App und gib den angezeigten 6-stelligen Code ein, um die Einrichtung zu bestätigen.</value></data>
+    <data name="Label_TotpManualKey" xml:space="preserve"><value>Kein Scan möglich? Gib diesen Schlüssel manuell ein</value></data>
+    <data name="Label_TotpCode" xml:space="preserve"><value>Bestätigungscode</value></data>
+    <data name="Placeholder_TotpCode" xml:space="preserve"><value>123456</value></data>
+    <data name="Btn_ConfirmTotp" xml:space="preserve"><value>Bestätigen &amp; Aktivieren</value></data>
+    <data name="Btn_Verifying" xml:space="preserve"><value>Wird überprüft...</value></data>
+    <data name="Msg_TotpSetupFailed" xml:space="preserve"><value>Einrichtung der Authenticator-App fehlgeschlagen.</value></data>
+    <data name="Msg_TotpEnabled" xml:space="preserve"><value>Authenticator-App aktiviert.</value></data>
+    <data name="Msg_TotpConfirmFailed" xml:space="preserve"><value>Ungültiger Code. Bitte erneut versuchen.</value></data>
     <data name="Msg_DefaultUpdated" xml:space="preserve"><value>Standardmethode aktualisiert.</value></data>
     <data name="Msg_DefaultFailed" xml:space="preserve"><value>Aktualisierung fehlgeschlagen.</value></data>
     <data name="Msg_PasswordUpdated" xml:space="preserve"><value>Passwort erfolgreich aktualisiert!</value></data>

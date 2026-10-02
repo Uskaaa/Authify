@@ -56,6 +56,8 @@ public interface IAuthifyDataService
     Task<OperationResult> RemoveAsync(TwoFactorRequest request);
     Task<OperationResult<List<UserTwoFactor>>> GetAllAsync();
     Task<OperationResult<UserTwoFactor>> GetPreferredAsync();
+    Task<OperationResult<TotpSetupInfo>> GetTotpSetupInfoAsync();
+    Task<OperationResult> ConfirmTotpAsync(string code);
 
     //ExternalLoginManagementService - Platform-independent
     Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync();

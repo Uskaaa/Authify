@@ -3,6 +3,7 @@ using Authify.Core.Common;
 using Authify.Core.Extensions;
 using Authify.Core.Interfaces;
 using Authify.Core.Models;
+using Authify.Core.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,11 +46,17 @@ public class UserProfileService<TUser> : IUserProfileService
         profile.Company = request.Company;
         profile.Bio = request.Bio;
 
-        // Phone number change: reset confirmation
+        // Phone number change: reset confirmation, and disable SMS 2FA if it was active —
+        // otherwise OTPs would keep going to the new, unconfirmed number on every login.
         if (request.PhoneNumber != user.PhoneNumber)
         {
             user.PhoneNumber = request.PhoneNumber;
             user.PhoneNumberConfirmed = false;
+
+            var smsTwoFactor = await _context.UserTwoFactors
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.Method == TwoFactorMethod.Sms);
+            if (smsTwoFactor != null)
+                smsTwoFactor.IsEnabled = false;
         }
 
         profile.PhoneNumber = user.PhoneNumber;

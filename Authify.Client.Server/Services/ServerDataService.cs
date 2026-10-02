@@ -328,6 +328,24 @@ public class ServerDataService<TUser> : IAuthifyDataService where TUser : Applic
         return _twoFactorClaimService.GetPreferredAsync(userId);
     }
 
+    public Task<OperationResult<TotpSetupInfo>> GetTotpSetupInfoAsync()
+    {
+        var userId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Task.FromResult(OperationResult<TotpSetupInfo>.Fail("User not authenticated."));
+
+        return _twoFactorClaimService.GetTotpSetupInfoAsync(userId);
+    }
+
+    public Task<OperationResult> ConfirmTotpAsync(string code)
+    {
+        var userId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Task.FromResult(OperationResult.Fail("User not authenticated."));
+
+        return _twoFactorClaimService.ConfirmTotpAsync(userId, code);
+    }
+
     // ---- ExternalLoginManagementService ----
 
     public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync()

@@ -16,12 +16,14 @@ public class OtpService<TUser> : IOtpService<TUser>
     private readonly IDictionary<TwoFactorMethod, ITwoFactorHandler<TUser>> _handlers;
     private readonly TimeSpan _otpExpiration = TimeSpan.FromMinutes(5);
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly UserManager<TUser> _userManager;
 
     public OtpService(IMemoryCache memoryCache, IEmailSender emailSender, ISmsSender smsSender,
-        IDataProtectionProvider dataProtectionProvider)
+        IDataProtectionProvider dataProtectionProvider, UserManager<TUser> userManager)
     {
         _memoryCache = memoryCache;
         _dataProtectionProvider = dataProtectionProvider;
+        _userManager = userManager;
 
         // Handler Dictionary initialisieren
         _handlers = new Dictionary<TwoFactorMethod, ITwoFactorHandler<TUser>>
@@ -33,6 +35,10 @@ public class OtpService<TUser> : IOtpService<TUser>
 
     public async Task GenerateAndSendOtpAsync(TUser user, TwoFactorMethod method)
     {
+        // Authenticator-app codes are generated client-side from the shared secret already on
+        // the user's device — there is nothing for the server to generate or send here.
+        if (method == TwoFactorMethod.Totp) return;
+
         var otp = new Random().Next(100000, 999999).ToString();
         _memoryCache.Set($"otp_{user.Id}_{method}", otp, _otpExpiration);
 
@@ -48,6 +54,13 @@ public class OtpService<TUser> : IOtpService<TUser>
 
     public async Task<bool> ValidateOtpAsync(TUser user, TwoFactorMethod method, string otpCode)
     {
+        if (method == TwoFactorMethod.Totp)
+        {
+            var normalizedCode = otpCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            return await _userManager.VerifyTwoFactorTokenAsync(
+                user, _userManager.Options.Tokens.AuthenticatorTokenProvider, normalizedCode);
+        }
+
         if (_memoryCache.TryGetValue($"otp_{user.Id}_{method}", out string? cachedOtp))
         {
             if (cachedOtp == otpCode)

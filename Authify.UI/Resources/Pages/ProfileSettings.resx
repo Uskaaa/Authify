@@ -81,7 +81,7 @@
     <data name="Placeholder_Bio" xml:space="preserve"><value>Tell us a little about yourself...</value></data>
     <data name="Text_BioLimit" xml:space="preserve"><value>Maximum 500 characters</value></data>
 
-    <data name="Text_AutoSave" xml:space="preserve"><value>All changes are automatically saved</value></data>
+    <data name="Text_SaveHint" xml:space="preserve"><value>Click "Save Changes" to apply your updates.</value></data>
     <data name="Btn_Reset" xml:space="preserve"><value>Reset</value></data>
 
     <data name="Title_ProfilePic" xml:space="preserve"><value>Profile Picture</value></data>
@@ -89,6 +89,8 @@
     <data name="Btn_Change" xml:space="preserve"><value>Change</value></data>
     <data name="Btn_Remove" xml:space="preserve"><value>Remove</value></data>
     <data name="Text_FileSpecs" xml:space="preserve"><value>JPG, GIF or PNG. Max. 1MB.</value></data>
+    <data name="Title_Language" xml:space="preserve"><value>Language</value></data>
+    <data name="Text_LanguageDesc" xml:space="preserve"><value>Choose the language used across the application.</value></data>
 
     <data name="Title_Crop" xml:space="preserve"><value>Crop Profile Picture</value></data>
     <data name="Text_CropInstruction" xml:space="preserve"><value>Move the circle and drag the edge to resize</value></data>

@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
 @using Authify.Core.Features
+@using Authify.UI.Models
 @using Authify.UI.Services
 @implements IDisposable
 @inject IJSRuntime JS
@@ -8,6 +9,7 @@
 @inject LdapFeatureOptions LdapFeature
 @inject ITeamDataService TeamDataService
 @inject TeamNavStateService TeamNavState
+@inject IEnumerable<IProfileMenuContributor> Contributors
 
 <div class="sidebar-nav">
 <div class="auth-space-y-8">
@@ -26,34 +28,62 @@
         </div>
     </div>
 
-    @if (!_isTeamMember)
+    @* Sections that only libraries contribute to (e.g. billing) show up when such a library is active. *@
+    @{ var subscriptionItems = ContributedItems(ProfileMenuGroups.Subscription).ToList(); }
+    @if (subscriptionItems.Count > 0)
     {
         <div class="nav-group">
             <div class="nav-group-label">
-                Subscription
+                @ProfileMenuGroups.Subscription
             </div>
             <div class="auth-space-y-0.5">
-                @NavItem("billing-overview", "fa-solid fa-receipt", "Billing & Usage")
+                @foreach (var item in subscriptionItems)
+                {
+                    @ContributedNavItem(item)
+                }
             </div>
         </div>
     }
 
-    @if (TeamFeature.IsEnabled && !_isTeamMember)
+    @{ var adminItems = ContributedItems(ProfileMenuGroups.Admin).ToList(); }
+    @if ((TeamFeature.IsEnabled && !_isTeamMember) || adminItems.Count > 0)
     {
         <div class="nav-group">
             <div class="nav-group-label">
-                Admin-Einstellungen
+                @ProfileMenuGroups.Admin
             </div>
             <div class="auth-space-y-0.5">
-                @NavItem("admin/team-settings", "fa-solid fa-building", "Team-Account")
-                @if (_isTeamAdmin)
+                @if (TeamFeature.IsEnabled && !_isTeamMember)
                 {
-                    @NavItem("admin/team-members", "fa-solid fa-users", "Mitarbeiter")
-                    @NavItem("admin/team-invitations", "fa-solid fa-envelope-open-text", "Einladungslinks")
-                    @if (LdapFeature.IsEnabled)
+                    @NavItem("admin/team-settings", "fa-solid fa-building", "Team-Account")
+                    @if (_isTeamAdmin)
                     {
-                        @NavItem("admin/ldap", "fa-solid fa-server", "LDAP / Active Directory")
+                        @NavItem("admin/team-members", "fa-solid fa-users", "Mitarbeiter")
+                        @NavItem("admin/team-invitations", "fa-solid fa-envelope-open-text", "Einladungslinks")
+                        @if (LdapFeature.IsEnabled)
+                        {
+                            @NavItem("admin/ldap", "fa-solid fa-server", "LDAP / Active Directory")
+                        }
                     }
+                }
+                @foreach (var item in adminItems)
+                {
+                    @ContributedNavItem(item)
+                }
+            </div>
+        </div>
+    }
+
+    @foreach (var group in ExtraContributedGroups())
+    {
+        <div class="nav-group">
+            <div class="nav-group-label">
+                @group
+            </div>
+            <div class="auth-space-y-0.5">
+                @foreach (var item in ContributedItems(group))
+                {
+                    @ContributedNavItem(item)
                 }
             </div>
         </div>
@@ -118,6 +148,33 @@
         }
     }
     
+    private ProfileMenuContext MenuContext => new(_isTeamAdmin, _isTeamMember, TeamFeature.IsEnabled);
+
+    private IEnumerable<ProfileMenuItem> VisibleContributedItems()
+    {
+        var context = MenuContext;
+        return Contributors
+            .SelectMany(c => c.GetItems())
+            .Where(i => i.IsVisible?.Invoke(context) ?? true);
+    }
+
+    private IEnumerable<ProfileMenuItem> ContributedItems(string group)
+        => VisibleContributedItems()
+            .Where(i => string.Equals(i.Group, group, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(i => i.Order);
+
+    // Groups other than the built-in ones, in order of first appearance.
+    private IEnumerable<string> ExtraContributedGroups()
+    {
+        var builtIn = new[] { ProfileMenuGroups.AccountSettings, ProfileMenuGroups.Subscription, ProfileMenuGroups.Admin };
+        return VisibleContributedItems()
+            .Select(i => i.Group)
+            .Where(g => !string.IsNullOrWhiteSpace(g) && !builtIn.Contains(g, StringComparer.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private RenderFragment ContributedNavItem(ProfileMenuItem item) => NavItem(item.Href, item.IconClass, item.Title);
+
     private RenderFragment NavItem(string href, string icon, string text) => __builder =>
     {
         <NavLink href="@href" Match="NavLinkMatch.Prefix" class="nav-item" ActiveClass="active">

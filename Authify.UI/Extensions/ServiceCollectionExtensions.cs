@@ -44,6 +44,9 @@ public static class ServiceCollectionExtensions
         // Benachrichtigt die Sidebar-Navigation über Team-Änderungen (live, ohne Reload).
         services.TryAddScoped<TeamNavStateService>();
 
+        // Fallback NullUiCultureProvider – wird vom Host überschrieben, wenn er einen Sprachumschalter anbietet.
+        services.TryAddScoped<IUiCultureProvider, NullUiCultureProvider>();
+
         return services;
     }
 }
