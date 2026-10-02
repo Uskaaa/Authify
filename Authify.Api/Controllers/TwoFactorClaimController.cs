@@ -81,4 +81,37 @@ public class TwoFactorClaimController : ControllerBase
         var result = await _twoFactorClaimService.GetPreferredAsync(userId);
         return result.Success ? Ok(result) : NotFound(result);
     }
+
+    /// <summary>
+    /// Generiert/liefert den Authenticator-App-Secret des Nutzers (QR-Code + manueller Key).
+    /// </summary>
+    [HttpGet("totp/setup")]
+    public async Task<IActionResult> GetTotpSetup()
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.GetTotpSetupInfoAsync(userId);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    /// <summary>
+    /// Bestätigt einen Code aus der Authenticator-App und aktiviert TOTP als 2FA-Methode.
+    /// </summary>
+    [HttpPost("totp/confirm")]
+    public async Task<IActionResult> ConfirmTotp([FromBody] ConfirmTotpRequest request)
+    {
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var result = await _twoFactorClaimService.ConfirmTotpAsync(userId, request.Code);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+}
+
+public class ConfirmTotpRequest
+{
+    public string Code { get; set; } = string.Empty;
 }

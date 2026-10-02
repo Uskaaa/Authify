@@ -254,6 +254,12 @@ public class WasmDataService : IAuthifyDataService
     public Task<OperationResult<UserTwoFactor>> GetPreferredAsync() =>
         GetAsync<UserTwoFactor>("api/twofactorclaim/preferred");
 
+    public Task<OperationResult<TotpSetupInfo>> GetTotpSetupInfoAsync() =>
+        GetAsync<TotpSetupInfo>("api/twofactorclaim/totp/setup");
+
+    public Task<OperationResult> ConfirmTotpAsync(string code) =>
+        PostAsync("api/twofactorclaim/totp/confirm", new { Code = code });
+
     public async Task<OperationResult<List<ExternalLoginDto>>> GetConnectedProvidersAsync() =>
         await GetAsync<List<ExternalLoginDto>>("api/externallogin/connected");
 

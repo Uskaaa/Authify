@@ -289,12 +289,75 @@
                                                 <p class="auth-text-xs" style="color:var(--text-secondary);">@Loc[method.DescKey]</p>
                                             </div>
                                         </div>
-                                        <button @onclick="() => AddTwoFa(method)" class="btn-ghost" style="height:1.875rem;padding:0 0.75rem;font-size:0.75rem;">
+                                        <button @onclick="() => OnAddClicked(method)" class="btn-ghost" style="height:1.875rem;padding:0 0.75rem;font-size:0.75rem;">
                                             @Loc["Btn_Add"]
                                         </button>
                                     </div>
                                 }
                             </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (_showTotpSetupDialog)
+{
+    <div class="auth-fixed auth-inset-0 auth-z-[9999] auth-overflow-y-auto" role="dialog" aria-modal="true">
+        <div class="auth-flex auth-items-center auth-justify-center auth-min-h-screen auth-p-4 auth-text-center">
+            <div class="auth-fixed auth-inset-0 auth-transition-opacity" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);" @onclick="CloseTotpSetupDialog"></div>
+
+            <div class="auth-relative auth-max-w-md auth-w-full auth-max-h-[90vh] auth-overflow-hidden card-surface" style="padding:0;">
+
+                <div class="auth-px-6 auth-py-4 auth-border-b auth-flex auth-justify-between auth-items-center" style="background:var(--bg-elevated);border-color:var(--border);">
+                    <h3 class="auth-text-lg auth-font-bold" style="color:var(--text-primary);">@Loc["Dialog_TotpSetup_Title"]</h3>
+                    <button @onclick="CloseTotpSetupDialog" class="focus:auth-outline-none" style="color:var(--text-secondary);background:none;border:none;cursor:pointer;">
+                        <i class="fa-solid fa-xmark auth-text-lg"></i>
+                    </button>
+                </div>
+
+                <div class="auth-px-6 auth-py-6 auth-max-h-[70vh] auth-overflow-y-auto auth-space-y-5 auth-text-left">
+                    @if (_isLoadingTotpSetup)
+                    {
+                        <div class="auth-flex auth-justify-center auth-p-6">
+                            <i class="fa-solid fa-circle-notch fa-spin auth-text-2xl" style="color:var(--accent);"></i>
+                        </div>
+                    }
+                    else if (_totpSetupInfo != null)
+                    {
+                        <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_TotpSetupInstructions"]</p>
+
+                        <div class="auth-flex auth-justify-center">
+                            <img src="@_totpSetupInfo.QrCodeImageDataUri" alt="QR code" style="width:180px;height:180px;border-radius:var(--radius-md);background:#fff;padding:0.5rem;" />
+                        </div>
+
+                        <div>
+                            <label class="label-caption" style="display:block;margin-bottom:0.375rem;">@Loc["Label_TotpManualKey"]</label>
+                            <p class="auth-text-sm" style="font-family:monospace;letter-spacing:0.05em;word-break:break-all;color:var(--text-primary);background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.5rem 0.75rem;">@_totpSetupInfo.SharedKey</p>
+                        </div>
+
+                        <div>
+                            <label class="label-caption" style="display:block;margin-bottom:0.375rem;">@Loc["Label_TotpCode"]</label>
+                            <input type="text" @bind="_totpConfirmCode" maxlength="6" inputmode="numeric"
+                                   aria-label="@Loc["Placeholder_TotpCode"]"
+                                   class="input-field" style="width:8rem;text-align:center;letter-spacing:0.2em;"
+                                   placeholder="@Loc["Placeholder_TotpCode"]" />
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_totpSetupError))
+                        {
+                            <div class="alert alert-error"><i class="fa-solid fa-circle-exclamation auth-mt-0.5"></i><span>@_totpSetupError</span></div>
+                        }
+
+                        <div class="auth-flex auth-justify-end auth-gap-3 auth-pt-2">
+                            <button type="button" @onclick="CloseTotpSetupDialog" class="btn-ghost">
+                                @Loc["Btn_Cancel"]
+                            </button>
+                            <button type="button" @onclick="ConfirmTotpSetup" disabled="@(_isConfirmingTotp || _totpConfirmCode.Length != 6)" class="btn-primary">
+                                @if (_isConfirmingTotp) { <span>@Loc["Btn_Verifying"]</span> } else { <span>@Loc["Btn_ConfirmTotp"]</span> }
+                            </button>
                         </div>
                     }
                 </div>
@@ -323,6 +386,14 @@
     private List<TwoFaUiModel> _allSupportedMethods = new();
     private List<TwoFaUiModel> _activeTwoFaMethods = new();
     private List<TwoFaUiModel> _availableTwoFaMethods = new();
+
+    // TOTP setup dialog
+    private bool _showTotpSetupDialog = false;
+    private bool _isLoadingTotpSetup = false;
+    private bool _isConfirmingTotp = false;
+    private TotpSetupInfo? _totpSetupInfo;
+    private string _totpConfirmCode = string.Empty;
+    private string? _totpSetupError;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -376,14 +447,23 @@
                 BgClass = "auth-bg-orange-100 dark:auth-bg-orange-900/50",
                 TextClass = "auth-text-orange-600 dark:auth-text-orange-400"
             },
-            new TwoFaUiModel 
-            { 
-                MethodType = TwoFactorMethod.Sms, 
-                NameKey = "Method_SMS_Name", 
-                DescKey = "Method_SMS_Desc", 
+            new TwoFaUiModel
+            {
+                MethodType = TwoFactorMethod.Sms,
+                NameKey = "Method_SMS_Name",
+                DescKey = "Method_SMS_Desc",
                 IconSvg = "<svg class='auth-w-5 auth-h-5' fill='currentColor' viewBox='0 0 20 20'><path d='M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z'></path></svg>",
                 BgClass = "auth-bg-green-100 dark:auth-bg-green-900/50",
                 TextClass = "auth-text-green-600 dark:auth-text-green-400"
+            },
+            new TwoFaUiModel
+            {
+                MethodType = TwoFactorMethod.Totp,
+                NameKey = "Method_Totp_Name",
+                DescKey = "Method_Totp_Desc",
+                IconSvg = "<svg class='auth-w-5 auth-h-5' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z' clip-rule='evenodd'></path></svg>",
+                BgClass = "auth-bg-purple-100 dark:auth-bg-purple-900/50",
+                TextClass = "auth-text-purple-600 dark:auth-text-purple-400"
             }
         };
         
@@ -480,6 +560,70 @@
         await InvokeAsync(StateHasChanged);
     }
 
+
+    private async Task OnAddClicked(TwoFaUiModel method)
+    {
+        if (method.MethodType == TwoFactorMethod.Totp)
+        {
+            await OpenTotpSetupDialog();
+            return;
+        }
+
+        await AddTwoFa(method);
+    }
+
+    private async Task OpenTotpSetupDialog()
+    {
+        _totpSetupError = null;
+        _totpConfirmCode = string.Empty;
+        _totpSetupInfo = null;
+        _showTotpSetupDialog = true;
+        _isLoadingTotpSetup = true;
+
+        var result = await DataService.GetTotpSetupInfoAsync();
+        if (result.Success && result.Data != null)
+        {
+            _totpSetupInfo = result.Data;
+        }
+        else
+        {
+            _showTotpSetupDialog = false;
+            ShowNotification(result.ErrorMessage ?? Loc["Msg_TotpSetupFailed"], "auth-bg-red-500");
+        }
+
+        _isLoadingTotpSetup = false;
+        StateHasChanged();
+    }
+
+    private void CloseTotpSetupDialog()
+    {
+        _showTotpSetupDialog = false;
+        _totpSetupInfo = null;
+        _totpConfirmCode = string.Empty;
+        _totpSetupError = null;
+    }
+
+    private async Task ConfirmTotpSetup()
+    {
+        _isConfirmingTotp = true;
+        _totpSetupError = null;
+
+        var result = await DataService.ConfirmTotpAsync(_totpConfirmCode);
+        _isConfirmingTotp = false;
+
+        if (result.Success)
+        {
+            _showTotpSetupDialog = false;
+            _totpSetupInfo = null;
+            _totpConfirmCode = string.Empty;
+            ShowNotification(Loc["Msg_TotpEnabled"], "auth-bg-green-500");
+            await LoadTwoFaStatus();
+        }
+        else
+        {
+            _totpSetupError = result.ErrorMessage ?? Loc["Msg_TotpConfirmFailed"];
+        }
+    }
 
     private async Task AddTwoFa(TwoFaUiModel method)
     {

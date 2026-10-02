@@ -81,7 +81,7 @@
     <data name="Placeholder_Bio" xml:space="preserve"><value>Erzählen Sie uns etwas über sich...</value></data>
     <data name="Text_BioLimit" xml:space="preserve"><value>Maximal 500 Zeichen</value></data>
 
-    <data name="Text_AutoSave" xml:space="preserve"><value>Alle Änderungen werden automatisch gespeichert</value></data>
+    <data name="Text_SaveHint" xml:space="preserve"><value>Klicke auf "Änderungen speichern", um deine Aktualisierungen zu übernehmen.</value></data>
     <data name="Btn_Reset" xml:space="preserve"><value>Zurücksetzen</value></data>
 
     <data name="Title_ProfilePic" xml:space="preserve"><value>Profilbild</value></data>

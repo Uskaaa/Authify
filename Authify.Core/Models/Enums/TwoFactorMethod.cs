@@ -3,5 +3,6 @@
 public enum TwoFactorMethod
 {
     Email,
-    Sms
+    Sms,
+    Totp
 }
