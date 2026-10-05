@@ -1,7 +1,19 @@
 namespace Authify.Application.Services;
 
-internal static class MycelisEmailTemplate
+/// <summary>
+/// Shared HTML builder for every Mycelis-branded transactional/lifecycle email (2FA codes, account
+/// actions, onboarding/inactivity nudges from Mycelis.Application's LifecycleEmailWorker, ...).
+/// Public (not internal) specifically so the host app's own background services can call
+/// BuildActionEmail directly instead of duplicating this markup.
+/// </summary>
+public static class MycelisEmailTemplate
 {
+    // Mycelis' actual brand accent (sage green) + its paired "ink" text color for on-accent text —
+    // mirrors the site's own --accent/--accent-ink CSS variables (app.css) — not a generic/placeholder
+    // color. Email clients can't read CSS custom properties, so the same two values are inlined here.
+    private const string Accent = "#7FA98C";
+    private const string AccentInk = "#0D1410";
+
     public static string BuildActionEmail(
         string title,
         string intro,
@@ -17,14 +29,14 @@ internal static class MycelisEmailTemplate
             <h2 style="margin:0 0 16px;color:#fff;font-size:20px;font-weight:600;">{title}</h2>
             <p style="margin:0 0 24px;color:#d1d5db;font-size:15px;line-height:1.6;">{intro}</p>
             <div style="margin-top:32px;margin-bottom:24px;">
-              <a href="{actionUrl}" style="display:inline-block;background:#6366f1;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:600;">
+              <a href="{actionUrl}" style="display:inline-block;background:{Accent};color:{AccentInk};text-decoration:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:600;">
                 {actionLabel}
               </a>
             </div>
             {outroBlock}
             <p style="color:#4b5563;font-size:12px;margin-top:24px;word-break:break-all;">
               If the button doesn't work, use this link:<br>
-              <a href="{actionUrl}" style="color:#6366f1;text-decoration:underline;">{actionUrl}</a>
+              <a href="{actionUrl}" style="color:{Accent};text-decoration:underline;">{actionUrl}</a>
             </p>
             """);
     }
@@ -49,8 +61,9 @@ internal static class MycelisEmailTemplate
         return $"""
             <div style="background-color:#050505;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
               <div style="max-width:600px;margin:0 auto;background:#0a0a0a;border:1px solid #1f1f1f;border-radius:16px;overflow:hidden;">
+                <div style="height:3px;background:{Accent};"></div>
                 <div style="padding:32px;border-bottom:1px solid #1f1f1f;text-align:center;">
-                  <img src="https://mycelis.com/logo-email.png" alt="Mycelis" style="height:32px;display:inline-block;">
+                  <img src="https://mycelis.ai/logo.png" alt="Mycelis" style="height:32px;display:inline-block;">
                 </div>
                 <div style="padding:40px 32px;">
                   {innerContent}
