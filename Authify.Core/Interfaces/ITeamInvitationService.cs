@@ -10,4 +10,5 @@ public interface ITeamInvitationService
     Task<OperationResult> RevokeInvitationAsync(string adminUserId, string invitationId);
     Task<OperationResult<TeamInvitationDto>> GetInvitationByTokenAsync(string token);
     Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request);
+    Task<OperationResult> AcceptInvitationForUserAsync(string userId, string token, bool transferResources);
 }

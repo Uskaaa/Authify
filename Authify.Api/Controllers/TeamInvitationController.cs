@@ -84,4 +84,20 @@ public class TeamInvitationController : ControllerBase
         var result = await _invitationService.AcceptInvitationAsync(request);
         return result.Success ? Ok(result) : BadRequest(result);
     }
+
+    /// <summary>
+    /// Einladung als eingeloggter Nutzer annehmen (bestehender Account). Die Identität kommt aus dem Token,
+    /// nicht aus dem Request-Body.
+    /// </summary>
+    [Authorize]
+    [HttpPost("accept-as-current-user")]
+    public async Task<IActionResult> AcceptInvitationAsCurrentUser([FromBody] AcceptInvitationAsCurrentUserRequest request)
+    {
+        if (!_teamFeature.IsEnabled) return FeatureDisabled();
+        var userId = UserId;
+        if (userId == null) return Unauthorized();
+
+        var result = await _invitationService.AcceptInvitationForUserAsync(userId, request.Token, request.TransferResources);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
 }

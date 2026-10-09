@@ -112,6 +112,10 @@ public class WasmTeamDataService : ITeamDataService
     public Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request) =>
         PostAsync<string>("api/teaminvitation/accept", request);
 
+    public Task<OperationResult> AcceptInvitationAsCurrentUserAsync(string token, bool transferResources) =>
+        PostAsync("api/teaminvitation/accept-as-current-user",
+            new AcceptInvitationAsCurrentUserRequest { Token = token, TransferResources = transferResources });
+
     public Task<OperationResult<bool>> IsTeamAdminAsync() =>
         GetAsync<bool>("api/team/is-admin");
 

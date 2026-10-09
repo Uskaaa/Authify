@@ -109,6 +109,13 @@ public class ServerTeamDataService : ITeamDataService
     public Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request) =>
         _invitationService.AcceptInvitationAsync(request);
 
+    public async Task<OperationResult> AcceptInvitationAsCurrentUserAsync(string token, bool transferResources)
+    {
+        var userId = GetCurrentUserId();
+        if (userId == null) return OperationResult.Fail("Nicht authentifiziert.");
+        return await _invitationService.AcceptInvitationForUserAsync(userId, token, transferResources);
+    }
+
     public async Task<OperationResult<bool>> IsTeamAdminAsync()
     {
         var userId = GetCurrentUserId();

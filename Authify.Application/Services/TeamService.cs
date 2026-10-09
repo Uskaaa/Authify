@@ -12,16 +12,18 @@ public class TeamService<TUser> : ITeamService
     where TUser : ApplicationUser, new()
 {
     private readonly ITeamDbContext _db;
+    private readonly IAuthifyDbContext _authDb;
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _options;
     private readonly IEnumerable<ITeamLifecycleHook> _teamLifecycleHooks;
 
-    public TeamService(ITeamDbContext db, UserManager<TUser> userManager,
+    public TeamService(ITeamDbContext db, IAuthifyDbContext authDb, UserManager<TUser> userManager,
         IEmailSender emailSender, InfrastructureOptions options,
         IEnumerable<ITeamLifecycleHook> teamLifecycleHooks)
     {
         _db = db;
+        _authDb = authDb;
         _userManager = userManager;
         _emailSender = emailSender;
         _options = options;
@@ -61,6 +63,8 @@ public class TeamService<TUser> : ITeamService
 
         foreach (var hook in _teamLifecycleHooks)
             await hook.OnTeamCreatedAsync(team.Id, adminUserId);
+
+        await PersonalAccessTokenScope.MoveAsync(_authDb, adminUserId, adminUserId, team.Id);
 
         return OperationResult<TeamDto>.Ok(MapToDto(team, 1));
     }
@@ -123,6 +127,11 @@ public class TeamService<TUser> : ITeamService
             await hook.OnTeamDeletingAsync(team.Id, adminUserId);
         }
 
+        // Ressourcen des Teams wandern zurück zum Admin (siehe Hooks) – seine Keys ziehen mit,
+        // die Keys aller anderen Mitglieder verlieren mit dem Team ihren Scope.
+        await PersonalAccessTokenScope.MoveAsync(_authDb, adminUserId, team.Id, adminUserId);
+        await PersonalAccessTokenScope.RevokeAsync(_authDb, team.Id);
+
         _db.TeamMembers.RemoveRange(team.Members);
         _db.TeamInvitations.RemoveRange(team.Invitations);
         _db.Teams.Remove(team);
@@ -168,36 +177,27 @@ public class TeamService<TUser> : ITeamService
         if (team == null)
             return OperationResult<TeamMemberDto>.Fail("Team nicht gefunden.");
 
+        // Ein bestehender Account darf nie ohne Zustimmung seines Inhabers in ein Team gezogen werden –
+        // beim Beitritt wandern seine Ressourcen in den Team-Scope (siehe ITeamLifecycleHook.OnMemberJoinedAsync).
+        // Bestehende Nutzer müssen eine Einladung erhalten und sie eingeloggt selbst annehmen.
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
-        {
-            var alreadyMember = await _db.TeamMembers.AnyAsync(m => m.UserId == existingUser.Id && m.TeamId == team.Id);
-            if (alreadyMember)
-                return OperationResult<TeamMemberDto>.Fail("Dieser Nutzer ist bereits Mitglied des Teams.");
-        }
+            return OperationResult<TeamMemberDto>.Fail(
+                "Für diese E-Mail-Adresse existiert bereits ein Konto. Sende stattdessen eine Einladung – die Person muss sie selbst annehmen.");
 
         var tempPassword = request.TemporaryPassword ?? GenerateTemporaryPassword();
-        bool isNewUser = existingUser == null;
 
-        TUser? user;
-        if (isNewUser)
+        var user = new TUser
         {
-            user = new TUser
-            {
-                FullName = request.FullName,
-                UserName = request.Email,
-                Email = request.Email,
-                EmailConfirmed = true
-            };
+            FullName = request.FullName,
+            UserName = request.Email,
+            Email = request.Email,
+            EmailConfirmed = true
+        };
 
-            var createResult = await _userManager.CreateAsync(user, tempPassword);
-            if (!createResult.Succeeded)
-                return OperationResult<TeamMemberDto>.Fail(string.Join(", ", createResult.Errors.Select(e => e.Description)));
-        }
-        else
-        {
-            user = existingUser;
-        }
+        var createResult = await _userManager.CreateAsync(user, tempPassword);
+        if (!createResult.Succeeded)
+            return OperationResult<TeamMemberDto>.Fail(string.Join(", ", createResult.Errors.Select(e => e.Description)));
 
         var member = new TeamMember
         {
@@ -214,29 +214,26 @@ public class TeamService<TUser> : ITeamService
 
         // Passwort-Reset-Link generieren und per E-Mail senden
         string? returnedPassword = null;
-        if (isNewUser)
+        try
         {
-            try
-            {
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var encodedToken = Uri.EscapeDataString(resetToken);
-                var encodedEmail = Uri.EscapeDataString(user.Email!);
-                var resetLink = $"{_options.Domain.TrimEnd('/')}/reset-password?email={encodedEmail}&token={encodedToken}&invited=true";
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Uri.EscapeDataString(resetToken);
+            var encodedEmail = Uri.EscapeDataString(user.Email!);
+            var resetLink = $"{_options.Domain.TrimEnd('/')}/reset-password?email={encodedEmail}&token={encodedToken}&invited=true";
 
-                var html = MycelisEmailTemplate.BuildActionEmail(
-                    title: "You have been added to a team",
-                    intro: $"Hello {user.FullName}, you have been added to the team {team.Name}.",
-                    actionLabel: "Set password",
-                    actionUrl: resetLink,
-                    outro: "This link is valid for 24 hours.");
+            var html = MycelisEmailTemplate.BuildActionEmail(
+                title: "You have been added to a team",
+                intro: $"Hello {user.FullName}, you have been added to the team {team.Name}.",
+                actionLabel: "Set password",
+                actionUrl: resetLink,
+                outro: "This link is valid for 24 hours.");
 
-                await _emailSender.SendEmailAsync(user.Email!, $"You have been added to {team.Name}", html);
-            }
-            catch
-            {
-                // E-Mail-Versand fehlgeschlagen – Admin erhält das Passwort zur manuellen Weitergabe
-                returnedPassword = tempPassword;
-            }
+            await _emailSender.SendEmailAsync(user.Email!, $"You have been added to {team.Name}", html);
+        }
+        catch
+        {
+            // E-Mail-Versand fehlgeschlagen – Admin erhält das Passwort zur manuellen Weitergabe
+            returnedPassword = tempPassword;
         }
 
         return OperationResult<TeamMemberDto>.Ok(new TeamMemberDto
@@ -266,6 +263,10 @@ public class TeamService<TUser> : ITeamService
 
         foreach (var hook in _teamLifecycleHooks)
             await hook.OnMemberRemovingAsync(team.Id, member.UserId);
+
+        // API-Keys, die das Mitglied im Team-Scope erstellt hat, tragen die TeamId als Tenant und
+        // würden sonst nach dem Entfernen weiter Zugriff auf Team-Ressourcen und -Wallet geben.
+        await PersonalAccessTokenScope.RevokeAsync(_authDb, team.Id, member.UserId);
 
         _db.TeamMembers.Remove(member);
         await _db.SaveChangesAsync();

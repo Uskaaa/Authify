@@ -52,6 +52,9 @@ public class NullTeamDataService : ITeamDataService
     public Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request) =>
         Task.FromResult(OperationResult<string>.Fail("Team-Features sind nicht aktiviert."));
 
+    public Task<OperationResult> AcceptInvitationAsCurrentUserAsync(string token, bool transferResources) =>
+        Task.FromResult(_disabled);
+
     public Task<OperationResult<bool>> IsTeamAdminAsync() =>
         Task.FromResult(_falseResult);
 

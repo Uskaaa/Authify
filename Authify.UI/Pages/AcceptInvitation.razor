@@ -7,6 +7,7 @@
 @inject ITeamDataService TeamDataService
 @inject TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <div style="min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:2rem 1rem;">
     <div style="width:min(420px,100%);">
@@ -56,6 +57,49 @@
                 @if (!string.IsNullOrEmpty(_errorMessage))
                 {
                     <div class="alert alert-error" style="margin-bottom:1.25rem;">@_errorMessage</div>
+                }
+
+                @if (_isAuthenticated)
+                {
+                    <p style="font-size:0.875rem;color:var(--text-secondary);margin:0 0 1.25rem;">
+                        Du bist angemeldet als <strong style="color:var(--text-primary);">@_currentEmail</strong>.
+                        Was soll mit deinen bisherigen Workspaces und Ressourcen passieren?
+                    </p>
+
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.25rem;">
+                        <label style="display:flex;gap:0.625rem;align-items:flex-start;cursor:pointer;">
+                            <input type="radio" name="transferResources" checked="@(!_transferResources)" @onchange="() => _transferResources = false" style="margin-top:0.2rem;" />
+                            <span style="font-size:0.875rem;">
+                                <strong style="color:var(--text-primary);">Privat behalten</strong><br />
+                                <span style="color:var(--text-secondary);">Deine Ressourcen bleiben bei dir und sind wieder da, wenn du das Team verlässt. Laufende Deployments und OpenWebUI-Instanzen werden gestoppt – Chats ohne aktivierte Persistenz gehen dabei verloren. Laufende Kosten (z.&nbsp;B. Knowledge-Base-Speicher) zahlt weiter dein eigenes Wallet.</span>
+                            </span>
+                        </label>
+                        <label style="display:flex;gap:0.625rem;align-items:flex-start;cursor:pointer;">
+                            <input type="radio" name="transferResources" checked="@_transferResources" @onchange="() => _transferResources = true" style="margin-top:0.2rem;" />
+                            <span style="font-size:0.875rem;">
+                                <strong style="color:var(--text-primary);">Ins Team übernehmen</strong><br />
+                                <span style="color:var(--text-secondary);">Workspaces, Deployments, Knowledge Bases und API-Keys gehören danach dem Team und laufen auf dessen Kosten weiter. Wenn du das Team verlässt, bleiben sie beim Team.</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <p style="font-size:0.8125rem;color:var(--text-muted);margin:0 0 1.25rem;">
+                        Dein Wallet-Guthaben und deine Zahlungsmethoden bleiben in jedem Fall privat.
+                    </p>
+
+                    <button type="button" @onclick="HandleAcceptAsCurrentUser" disabled="@_isSubmitting" class="btn-primary" style="width:100%;">
+                        @if (_isSubmitting)
+                        {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            <span>Beitreten...</span>
+                        }
+                        else
+                        {
+                            <span>Team beitreten</span>
+                        }
+                    </button>
+
+                    return;
                 }
 
                 <EditForm Model="_acceptRequest" OnValidSubmit="HandleAccept" FormName="AcceptInvitationForm">
@@ -120,7 +164,7 @@
                 </EditForm>
 
                 <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--text-secondary);">
-                    Bereits ein Konto? <a href="login" style="color:var(--accent);font-weight:500;text-decoration:none;">Anmelden</a>
+                    Bereits ein Konto? <a href="@($"login?returnUrl={Uri.EscapeDataString($"/accept-invitation?token={_token}")}")" style="color:var(--accent);font-weight:500;text-decoration:none;">Anmelden</a>
                 </p>
             }
 
@@ -139,6 +183,9 @@
     private bool _emailPrefilled;
     private bool _showPassword;
     private bool _showConfirmPassword;
+    private bool _isAuthenticated;
+    private bool _transferResources;
+    private string? _currentEmail;
 
     protected override async Task OnInitializedAsync()
     {
@@ -172,6 +219,11 @@
 
         _invitation = result.Data;
 
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = authState.User.Identity?.IsAuthenticated == true;
+        _currentEmail = authState.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                        ?? authState.User.Identity?.Name;
+
         if (!string.IsNullOrEmpty(_invitation.Email))
         {
             _acceptRequest.Email = _invitation.Email;
@@ -189,6 +241,21 @@
 
         if (result.Success && result.Data != null)
             NavigationManager.NavigateTo("/" + result.Data, forceLoad: true);
+        else
+            _errorMessage = result.ErrorMessage ?? "Fehler beim Beitreten des Teams.";
+    }
+
+    private async Task HandleAcceptAsCurrentUser()
+    {
+        if (_token == null) return;
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        var result = await TeamDataService.AcceptInvitationAsCurrentUserAsync(_token, _transferResources);
+        _isSubmitting = false;
+
+        if (result.Success)
+            NavigationManager.NavigateTo("/", forceLoad: true);
         else
             _errorMessage = result.ErrorMessage ?? "Fehler beim Beitreten des Teams.";
     }

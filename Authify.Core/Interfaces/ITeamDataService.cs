@@ -29,6 +29,9 @@ public interface ITeamDataService
     Task<OperationResult<TeamInvitationDto>> GetInvitationByTokenAsync(string token);
     Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request);
 
+    // Einladung als eingeloggter Nutzer annehmen (bestehender Account)
+    Task<OperationResult> AcceptInvitationAsCurrentUserAsync(string token, bool transferResources);
+
     // Rollen-Abfragen
     Task<OperationResult<bool>> IsTeamAdminAsync();
     Task<OperationResult<bool>> IsTeamMemberAsync();

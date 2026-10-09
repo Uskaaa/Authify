@@ -13,16 +13,18 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
     where TUser : ApplicationUser, new()
 {
     private readonly ITeamDbContext _db;
+    private readonly IAuthifyDbContext _authDb;
     private readonly UserManager<TUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly InfrastructureOptions _options;
     private readonly IEnumerable<ITeamLifecycleHook> _teamLifecycleHooks;
 
-    public TeamInvitationService(ITeamDbContext db, UserManager<TUser> userManager,
+    public TeamInvitationService(ITeamDbContext db, IAuthifyDbContext authDb, UserManager<TUser> userManager,
         IEmailSender emailSender, InfrastructureOptions options,
         IEnumerable<ITeamLifecycleHook> teamLifecycleHooks)
     {
         _db = db;
+        _authDb = authDb;
         _userManager = userManager;
         _emailSender = emailSender;
         _options = options;
@@ -119,82 +121,128 @@ public class TeamInvitationService<TUser> : ITeamInvitationService
         return OperationResult<TeamInvitationDto>.Ok(MapToDto(invitation, invitation.Team.Name));
     }
 
+    /// <summary>
+    /// Öffentlicher Flow: legt einen <b>neuen</b> Account an und tritt dem Team bei. Für eine E-Mail-Adresse,
+    /// zu der bereits ein Konto existiert, wird abgelehnt – sonst könnte jeder mit einem Einladungslink
+    /// (oder ein Admin mit einer selbst erstellten Einladung) einen fremden Account ins Team ziehen und
+    /// über den zurückgegebenen Reset-Link übernehmen. Bestehende Nutzer nutzen <see cref="AcceptInvitationForUserAsync"/>.
+    /// </summary>
     public async Task<OperationResult<string>> AcceptInvitationAsync(AcceptInvitationRequest request)
     {
-        var invitation = await _db.TeamInvitations
-            .Include(i => i.Team)
-            .FirstOrDefaultAsync(i => i.Token == request.Token);
+        var invitationResult = await LoadUsableInvitationAsync(request.Token);
+        if (!invitationResult.Success)
+            return OperationResult<string>.Fail(invitationResult.ErrorMessage!);
+        var invitation = invitationResult.Data!;
 
-        if (invitation?.Team == null)
-            return OperationResult<string>.Fail("Einladung nicht gefunden.");
-
-        if (invitation.IsRevoked)
-            return OperationResult<string>.Fail("Diese Einladung wurde widerrufen.");
-
-        if (invitation.ExpiresAt.HasValue && DateTime.UtcNow > invitation.ExpiresAt.Value)
-            return OperationResult<string>.Fail("Diese Einladung ist abgelaufen.");
-
-        if (invitation.MaxUses.HasValue && invitation.UsedCount >= invitation.MaxUses.Value)
-            return OperationResult<string>.Fail("Das Nutzungslimit dieser Einladung wurde erreicht.");
-
-        // E-Mail-spezifische Einladung: Adresse muss übereinstimmen
-        if (!string.IsNullOrEmpty(invitation.Email) &&
-            !string.Equals(invitation.Email, request.Email.Trim(), StringComparison.OrdinalIgnoreCase))
+        if (!InvitationMatchesEmail(invitation, request.Email))
             return OperationResult<string>.Fail("Diese Einladung gilt nur für eine andere E-Mail-Adresse.");
 
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
-        {
-            var alreadyMember = await _db.TeamMembers.AnyAsync(m => m.UserId == existingUser.Id);
-            if (alreadyMember)
-                return OperationResult<string>.Fail("Du bist bereits Mitglied eines Teams.");
-        }
+            return OperationResult<string>.Fail(
+                "Für diese E-Mail-Adresse existiert bereits ein Konto. Bitte melde dich an, um die Einladung anzunehmen.");
 
-        TUser user;
-        if (existingUser == null)
+        var user = new TUser
         {
-            user = new TUser
-            {
-                FullName = request.FullName,
-                UserName = request.Email,
-                Email = request.Email,
-                EmailConfirmed = true
-            };
-
-            var createResult = await _userManager.CreateAsync(user, request.Password);
-            if (!createResult.Succeeded)
-                return OperationResult<string>.Fail(string.Join(", ", createResult.Errors.Select(e => e.Description)));
-        }
-        else
-        {
-            user = existingUser;
-            var addPasswordResult = await _userManager.AddPasswordAsync(user, request.Password);
-            if (!addPasswordResult.Succeeded)
-            {
-                // Nutzer hat schon ein Passwort – trotzdem dem Team hinzufügen
-            }
-        }
-
-        var member = new TeamMember
-        {
-            TeamId = invitation.TeamId,
-            UserId = user.Id,
-            Role = TeamMemberRole.Member
+            FullName = request.FullName,
+            UserName = request.Email,
+            Email = request.Email,
+            EmailConfirmed = true
         };
 
-        _db.TeamMembers.Add(member);
-        invitation.UsedCount++;
-        await _db.SaveChangesAsync();
+        var createResult = await _userManager.CreateAsync(user, request.Password);
+        if (!createResult.Succeeded)
+            return OperationResult<string>.Fail(string.Join(", ", createResult.Errors.Select(e => e.Description)));
 
-        foreach (var hook in _teamLifecycleHooks)
-            await hook.OnMemberJoinedAsync(invitation.TeamId, user.Id);
+        // Frisch angelegter Account – es gibt nichts Privates, das zurückbleiben könnte.
+        await AddMemberAsync(invitation, user.Id, transferResources: true);
 
-        // Passwort-Reset-Token zurückgeben, damit der Nutzer direkt zu change-password weitergeleitet wird
+        // Passwort-Reset-Token zurückgeben, damit der Nutzer direkt zu change-password weitergeleitet wird.
+        // Unbedenklich, da der Account in diesem Request mit dem Passwort des Aufrufers angelegt wurde.
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         var encodedToken = Uri.EscapeDataString(resetToken);
         var encodedEmail = Uri.EscapeDataString(user.Email!);
 
         return OperationResult<string>.Ok($"reset-password?email={encodedEmail}&token={encodedToken}&invited=true");
+    }
+
+    /// <summary>
+    /// Eingeloggter Flow: der angemeldete Nutzer <paramref name="userId"/> tritt dem Team bei. Die Identität
+    /// kommt ausschließlich aus der Session, nie aus dem Request. <paramref name="transferResources"/>
+    /// entscheidet, ob seine bisherigen Ressourcen ins Team wandern oder privat (und bis zum Austritt
+    /// eingefroren) bleiben.
+    /// </summary>
+    public async Task<OperationResult> AcceptInvitationForUserAsync(string userId, string token, bool transferResources)
+    {
+        var invitationResult = await LoadUsableInvitationAsync(token);
+        if (!invitationResult.Success)
+            return OperationResult.Fail(invitationResult.ErrorMessage!);
+        var invitation = invitationResult.Data!;
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return OperationResult.Fail("Nutzer nicht gefunden.");
+
+        if (!InvitationMatchesEmail(invitation, user.Email))
+            return OperationResult.Fail("Diese Einladung gilt nur für eine andere E-Mail-Adresse.");
+
+        if (await _db.Teams.AnyAsync(t => t.AdminUserId == userId))
+            return OperationResult.Fail("Du bist Admin eines eigenen Teams und kannst keinem anderen Team beitreten.");
+
+        if (await _db.TeamMembers.AnyAsync(m => m.UserId == userId))
+            return OperationResult.Fail("Du bist bereits Mitglied eines Teams.");
+
+        await AddMemberAsync(invitation, userId, transferResources);
+        return OperationResult.Ok();
+    }
+
+    private async Task<OperationResult<TeamInvitation>> LoadUsableInvitationAsync(string token)
+    {
+        var invitation = await _db.TeamInvitations
+            .Include(i => i.Team)
+            .FirstOrDefaultAsync(i => i.Token == token);
+
+        if (invitation?.Team == null)
+            return OperationResult<TeamInvitation>.Fail("Einladung nicht gefunden.");
+
+        if (invitation.IsRevoked)
+            return OperationResult<TeamInvitation>.Fail("Diese Einladung wurde widerrufen.");
+
+        if (invitation.ExpiresAt.HasValue && DateTime.UtcNow > invitation.ExpiresAt.Value)
+            return OperationResult<TeamInvitation>.Fail("Diese Einladung ist abgelaufen.");
+
+        if (invitation.MaxUses.HasValue && invitation.UsedCount >= invitation.MaxUses.Value)
+            return OperationResult<TeamInvitation>.Fail("Das Nutzungslimit dieser Einladung wurde erreicht.");
+
+        return OperationResult<TeamInvitation>.Ok(invitation);
+    }
+
+    // E-Mail-spezifische Einladung: Adresse muss übereinstimmen
+    private static bool InvitationMatchesEmail(TeamInvitation invitation, string? email) =>
+        string.IsNullOrEmpty(invitation.Email) ||
+        string.Equals(invitation.Email, email?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private async Task AddMemberAsync(TeamInvitation invitation, string userId, bool transferResources)
+    {
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnMemberJoiningAsync(invitation.TeamId, userId, transferResources);
+
+        _db.TeamMembers.Add(new TeamMember
+        {
+            TeamId = invitation.TeamId,
+            UserId = userId,
+            Role = TeamMemberRole.Member
+        });
+        invitation.UsedCount++;
+        await _db.SaveChangesAsync();
+
+        foreach (var hook in _teamLifecycleHooks)
+            await hook.OnMemberJoinedAsync(invitation.TeamId, userId, transferResources);
+
+        // Behält der Nutzer seine Ressourcen privat, bleiben auch seine persönlichen Keys im persönlichen
+        // Scope – sie ruhen, solange er im Team ist (der Host lässt nur Keys des aktuellen Scopes zu).
+        if (transferResources)
+            await PersonalAccessTokenScope.MoveAsync(_authDb, userId, userId, invitation.TeamId);
     }
 
     private static string GenerateSecureToken()

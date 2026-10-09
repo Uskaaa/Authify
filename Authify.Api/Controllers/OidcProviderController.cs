@@ -21,6 +21,7 @@ public class OidcProviderController : ControllerBase
     private readonly IMemoryCache _cache;
     private readonly ITeamService _teamService;
     private readonly IPersonalAccessTokenService _patService;
+    private readonly IEnumerable<IOidcClientAccessValidator> _clientAccessValidators;
 
     // mycelis_change - reserved client_id for the Mycelis CLI's browser-login handoff (see AuthorizeApi/Token below).
     // Unlike mycelis-client-{userId}/{teamId}, the CLI can't know this value in advance since it doesn't know
@@ -35,13 +36,15 @@ public class OidcProviderController : ControllerBase
         IJwtTokenService jwtService,
         IMemoryCache cache,
         ITeamService teamService,
-        IPersonalAccessTokenService patService)
+        IPersonalAccessTokenService patService,
+        IEnumerable<IOidcClientAccessValidator> clientAccessValidators)
     {
         _config = config;
         _jwtService = jwtService;
         _cache = cache;
         _teamService = teamService;
         _patService = patService;
+        _clientAccessValidators = clientAccessValidators;
     }
 
     [HttpGet(".well-known/openid-configuration")]
@@ -268,18 +271,16 @@ public class OidcProviderController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
         
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(redirect_uri)) 
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(redirect_uri) || string.IsNullOrEmpty(client_id)) 
             return BadRequest("Fehlende Parameter.");
 
-        // Erwartete Client-IDs für diesen Nutzer:
-        var personalClientId = $"mycelis-client-{userId}";
+        // The code issued below is exchanged at /oidc/token for a full access token (and, for the CLI, a PAT)
+        // without any client secret check, so whoever receives the redirect effectively receives the
+        // user's session. The redirect target therefore has to be validated, not just the client_id.
+        if (!Uri.TryCreate(redirect_uri, UriKind.Absolute, out var redirectUri))
+            return BadRequest("Ungültige redirect_uri.");
 
-        // Prüfen ob Nutzer in einem Team ist
-        var teamResult = await _teamService.GetTeamByMemberAsync(userId);
-        var teamClientId = teamResult.Success ? $"mycelis-client-{teamResult.Data!.Id}" : null;
-
-        // mycelis_change - the CLI's fixed client_id is valid for any authenticated user, not tied to a specific instance.
-        if (client_id != personalClientId && (teamClientId == null || client_id != teamClientId) && client_id != CliClientId)
+        if (!await IsClientAccessAllowedAsync(userId, client_id, redirectUri))
         {
             return StatusCode(403, "Zugriff verweigert! Du bist nicht der Besitzer oder Mitglied des Teams dieser Instanz.");
         }
@@ -292,6 +293,26 @@ public class OidcProviderController : ControllerBase
         var targetUrl = $"{redirect_uri}?code={code}&state={state}";
         
         return Ok(new { redirectUrl = targetUrl });
+    }
+
+    private async Task<bool> IsClientAccessAllowedAsync(string userId, string clientId, Uri redirectUri)
+    {
+        // mycelis_change - the CLI's fixed client_id is valid for any authenticated user, but only with a
+        // loopback redirect (its local callback listener) - never an arbitrary external host.
+        if (clientId == CliClientId)
+            return redirectUri.IsLoopback && redirectUri.Scheme == Uri.UriSchemeHttp;
+
+        foreach (var validator in _clientAccessValidators)
+        {
+            var decision = await validator.IsAllowedAsync(userId, clientId, redirectUri);
+            if (decision.HasValue) return decision.Value;
+        }
+
+        // Default: client_id must belong to the user's personal or team scope.
+        if (clientId == $"mycelis-client-{userId}") return true;
+
+        var teamResult = await _teamService.GetTeamByMemberAsync(userId);
+        return teamResult.Success && clientId == $"mycelis-client-{teamResult.Data!.Id}";
     }
 
     [HttpPost("token")]
