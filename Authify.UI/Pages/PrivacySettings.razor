@@ -1,12 +1,15 @@
 @page "/privacy-settings"
 @using Microsoft.AspNetCore.Components.Web
 @using Authify.Core.Common
+@using Authify.Core.Interfaces
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Localization
 
 @layout ProfileLayout
 @inject IJSRuntime JS
 @inject IAuthifyDataService DataService
+@inject ITeamDataService TeamDataService
+@inject Authify.Core.Features.TeamFeatureOptions TeamFeature
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PrivacySettings> Loc
 
@@ -97,6 +100,13 @@
                     </button>
                 </div>
 
+                @if (_isInTeam)
+                {
+                    <div class="auth-border-t" style="border-color:var(--border);"></div>
+                    <p class="auth-text-sm" style="color:var(--text-secondary);">@Loc["Text_TeamAccountManaged"]</p>
+                }
+                else
+                {
                 <div class="auth-border-t" style="border-color:var(--border);"></div>
 
                 <div class="auth-space-y-6">
@@ -172,6 +182,7 @@
                         @Loc["Btn_DeletePermanently"]
                     </button>
                 </div>
+                }
 
                 <div class="auth-pt-8 auth-border-t" style="border-color:var(--border);">
                     <div class="auth-p-5" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-md);">
@@ -256,6 +267,24 @@
 }
 
 @code {
+    // Accounts in a team (member or admin) can't deactivate/delete themselves here: a member is managed
+    // by the team, an admin would orphan the team. Export stays available to everyone.
+    private bool _isInTeam;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!TeamFeature.IsEnabled) return;
+        try
+        {
+            var member = await TeamDataService.IsTeamMemberAsync();
+            _isInTeam = member.Success && member.Data;
+        }
+        catch
+        {
+            // Keep the sections visible; the server enforces the rule anyway.
+        }
+    }
+
     private bool _showDeactivateModal = false;
     private bool _showDeleteModal = false;
     private bool _isExporting = false;

@@ -13,12 +13,15 @@ public class UserAccountService<TUser> : IUserAccountService
         private readonly UserManager<TUser> _userManager;
         private readonly IAuthifyDbContext _context;
         private readonly IUserDataExportService<TUser> _userDataExportService;
+        private readonly ITeamService? _teamService;
 
-        public UserAccountService(UserManager<TUser> userManager, IAuthifyDbContext context, IUserDataExportService<TUser> userDataExportService)
+        public UserAccountService(UserManager<TUser> userManager, IAuthifyDbContext context, IUserDataExportService<TUser> userDataExportService,
+            IEnumerable<ITeamService> teamServices)
         {
             _userManager = userManager;
             _context = context;
             _userDataExportService = userDataExportService;
+            _teamService = teamServices.FirstOrDefault(); // only registered when the team feature is on
         }
 
         // ---- Export ----
@@ -63,8 +66,22 @@ public class UserAccountService<TUser> : IUserAccountService
         }
 
         // ---- Deactivate ----
+        // A team account can't deactivate/delete itself: a member is managed by the team, and an admin would
+        // leave the team (and everything it owns) orphaned – the admin deletes the team first.
+        private async Task<bool> IsInTeamAsync(string userId)
+        {
+            if (_teamService == null) return false;
+            var team = await _teamService.GetTeamByMemberAsync(userId);
+            return team.Success && team.Data != null;
+        }
+
+        private const string TeamAccountMessage =
+            "Dein Konto gehört zu einem Team und kann nicht selbst deaktiviert oder gelöscht werden.";
+
         public async Task<OperationResult> DeactivateAccountAsync(string userId)
         {
+            if (await IsInTeamAsync(userId)) return OperationResult.Fail(TeamAccountMessage);
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return OperationResult.Fail("User not found.");
@@ -93,6 +110,8 @@ public class UserAccountService<TUser> : IUserAccountService
         // ---- Delete ----
         public async Task<OperationResult> DeleteAccountAsync(string userId)
         {
+            if (await IsInTeamAsync(userId)) return OperationResult.Fail(TeamAccountMessage);
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return OperationResult.Fail("User not found.");

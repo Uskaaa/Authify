@@ -10,6 +10,7 @@
 @inject ITeamDataService TeamDataService
 @inject TeamNavStateService TeamNavState
 @inject IEnumerable<IProfileMenuContributor> Contributors
+@inject IEnumerable<IProfileMenuPermissionProvider> PermissionProviders
 
 <div class="sidebar-nav">
 <div class="auth-space-y-8">
@@ -21,10 +22,8 @@
         <div class="auth-space-y-0.5">
             @NavItem("profile-settings", "fa-solid fa-user", "Profile")
             @NavItem("security-settings", "fa-solid fa-shield-halved", "Security")
-            @if (!_isTeamMember)
-            {
-                @NavItem("privacy-settings", "fa-solid fa-lock", "Privacy")
-            }
+            @* Everyone gets the privacy page (data export); deactivate/delete are hidden there for team accounts. *@
+            @NavItem("privacy-settings", "fa-solid fa-lock", "Privacy")
         </div>
     </div>
 
@@ -102,6 +101,7 @@
 @code {
     private bool _isTeamAdmin;
     private bool _isTeamMember;
+    private IReadOnlySet<string> _permissions = new HashSet<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -127,6 +127,14 @@
                 // Ignorieren falls Service nicht verfügbar
             }
         }
+
+        var permissions = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var provider in PermissionProviders)
+        {
+            try { permissions.UnionWith(await provider.GetPermissionsAsync()); }
+            catch { /* a failing provider just contributes nothing */ }
+        }
+        _permissions = permissions;
     }
 
     private async void HandleTeamChanged()
@@ -148,7 +156,7 @@
         }
     }
     
-    private ProfileMenuContext MenuContext => new(_isTeamAdmin, _isTeamMember, TeamFeature.IsEnabled);
+    private ProfileMenuContext MenuContext => new(_isTeamAdmin, _isTeamMember, TeamFeature.IsEnabled, _permissions);
 
     private IEnumerable<ProfileMenuItem> VisibleContributedItems()
     {

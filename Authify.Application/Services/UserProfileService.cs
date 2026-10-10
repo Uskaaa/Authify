@@ -41,6 +41,9 @@ public class UserProfileService<TUser> : IUserProfileService
             await _context.UserProfiles.AddAsync(profile);
         }
 
+        // The account's FullName is what's read back (GetProfile) and shown everywhere else (team lists,
+        // e-mails); the profile copy alone never became visible.
+        user.FullName = request.FullName;
         profile.FullName = request.FullName;
         profile.JobTitle = request.JobTitle;
         profile.Company = request.Company;

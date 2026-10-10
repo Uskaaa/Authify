@@ -103,4 +103,7 @@
     <data name="Msg_DeactivateFailed" xml:space="preserve"><value>Deactivation failed.</value></data>
     <data name="Msg_DeleteFailed" xml:space="preserve"><value>Deletion failed.</value></data>
 
+  <data name="Text_TeamAccountManaged" xml:space="preserve">
+    <value>Your account belongs to a team, so it can't be deactivated or deleted here – as a member, contact your team admin; as the admin, delete the team first.</value>
+  </data>
 </root>
